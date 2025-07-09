@@ -1,0 +1,26 @@
+name: isar_agent_memory
+version: 0.1.0
+description: >-
+  Universal, local-first cognitive memory package for LLMs and AI agents. Graph-based, explainable, LLM-agnostic. Inspired by Cognee/Graphiti.
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+
+dependencies:
+  isar: ^3.1.0+1
+  google_generative_ai: ^0.2.2
+  collection: ^1.17.2
+  meta: ^1.10.0
+  uuid: ^4.2.1
+  dvdb: ^1.0.6 # Dart Vector DB for efficient, local-first vector search (HNSW)
+  langchain: ^0.7.8
+  langchain_google: ^0.6.5
+  graphs: ^2.3.1
+  # Add your embedding provider dependencies as needed (e.g., google_generative_ai, openai, etc.)
+
+dev_dependencies:
+  build_runner: ^2.4.10
+  isar_flutter_libs: ^3.1.0+1 # Provides Isar binaries
+  isar_generator: ^3.1.0+1
+  test: ^1.24.0
+  lints: ^3.0.0

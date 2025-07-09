@@ -1,0 +1,276 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'degree.dart';
+
+// **************************************************************************
+// IsarEmbeddedGenerator
+// **************************************************************************
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const DegreeSchema = Schema(
+  name: r'Degree',
+  id: 8962167479248401892,
+  properties: {
+    r'frequency': PropertySchema(
+      id: 0,
+      name: r'frequency',
+      type: IsarType.long,
+    ),
+    r'importance': PropertySchema(
+      id: 1,
+      name: r'importance',
+      type: IsarType.double,
+    ),
+    r'lastAccessed': PropertySchema(
+      id: 2,
+      name: r'lastAccessed',
+      type: IsarType.dateTime,
+    )
+  },
+  estimateSize: _degreeEstimateSize,
+  serialize: _degreeSerialize,
+  deserialize: _degreeDeserialize,
+  deserializeProp: _degreeDeserializeProp,
+);
+
+int _degreeEstimateSize(
+  Degree object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  return bytesCount;
+}
+
+void _degreeSerialize(
+  Degree object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeLong(offsets[0], object.frequency);
+  writer.writeDouble(offsets[1], object.importance);
+  writer.writeDateTime(offsets[2], object.lastAccessed);
+}
+
+Degree _degreeDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = Degree(
+    frequency: reader.readLongOrNull(offsets[0]) ?? 1,
+    importance: reader.readDoubleOrNull(offsets[1]) ?? 1.0,
+    lastAccessed: reader.readDateTimeOrNull(offsets[2]),
+  );
+  return object;
+}
+
+P _degreeDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readLongOrNull(offset) ?? 1) as P;
+    case 1:
+      return (reader.readDoubleOrNull(offset) ?? 1.0) as P;
+    case 2:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+extension DegreeQueryFilter on QueryBuilder<Degree, Degree, QFilterCondition> {
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> frequencyEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'frequency',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> frequencyGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'frequency',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> frequencyLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'frequency',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> frequencyBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'frequency',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> importanceEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'importance',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> importanceGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'importance',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> importanceLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'importance',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> importanceBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'importance',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> lastAccessedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastAccessed',
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> lastAccessedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastAccessed',
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> lastAccessedEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastAccessed',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> lastAccessedGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastAccessed',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> lastAccessedLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastAccessed',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Degree, Degree, QAfterFilterCondition> lastAccessedBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastAccessed',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+}
+
+extension DegreeQueryObject on QueryBuilder<Degree, Degree, QFilterCondition> {}
