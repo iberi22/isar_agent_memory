@@ -5,7 +5,7 @@
   "packages": [
     {
       "name": "isar_agent_memory",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "dependencies": [
         "collection",
         "dvdb",
