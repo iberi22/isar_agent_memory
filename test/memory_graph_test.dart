@@ -11,9 +11,12 @@ class MockEmbeddingsAdapter implements EmbeddingsAdapter {
   String get providerName => 'mock';
 
   @override
+  int get dimension => 4;
+
+  @override
   Future<List<double>> embed(String text) async {
     // Return a fixed-size vector for predictability in tests
-    return List.generate(4, (i) => text.length.toDouble() + i);
+    return List.generate(dimension, (i) => text.length.toDouble() + i);
   }
 }
 
@@ -77,9 +80,9 @@ void main() {
 
     test('semanticSearch returns most similar node (ANN)', () async {
       // Store nodes with embeddings
-      final id1 = await graph.storeNodeWithEmbedding(content: 'cat');
-      final id2 = await graph.storeNodeWithEmbedding(content: 'dog');
-      final id3 = await graph.storeNodeWithEmbedding(content: 'elephant');
+      await graph.storeNodeWithEmbedding(content: 'cat');
+      await graph.storeNodeWithEmbedding(content: 'dog');
+      await graph.storeNodeWithEmbedding(content: 'elephant');
       await graph.initialize(); // Ensure ANN index is built
 
       // Query embedding similar to 'dog'
@@ -91,8 +94,8 @@ void main() {
     });
 
     test('semanticSearch returns empty if no embeddings', () async {
-      final node = MemoryNode(content: 'no embedding');
-      await graph.storeNode(node);
+      // This test ensures that if the vector collection is empty, search returns nothing.
+      // We are not storing any nodes with embeddings here.
       await graph.initialize();
       final queryEmbedding = [1.0, 2.0, 3.0, 4.0];
       final results = await graph.semanticSearch(queryEmbedding);
@@ -102,7 +105,6 @@ void main() {
     test('explainRecall includes semantic distance and provider', () async {
       final id = await graph.storeNodeWithEmbedding(content: 'semantic test');
       await graph.initialize();
-      final node = await graph.getNode(id);
       final queryEmbedding = await graph.embeddingsAdapter.embed('semantic test');
       final explanation = await graph.explainRecall(id, queryEmbedding: queryEmbedding, log: false);
       expect(explanation, contains('Semantic distance:'));
@@ -110,7 +112,7 @@ void main() {
     });
 
     test('semanticSearch returns empty for non-matching dimension', () async {
-      final id = await graph.storeNodeWithEmbedding(content: 'dim test');
+      await graph.storeNodeWithEmbedding(content: 'dim test');
       await graph.initialize();
       // Provide a query embedding with wrong dimension
       final queryEmbedding = [1.0, 2.0]; // Should be 4

@@ -1,0 +1,18 @@
+# Dart & Flutter
+.dart_tool/
+.packages
+build/
+
+# IDE-specific
+.idea/
+.vscode/
+*.iml
+*.ipr
+
+# Logs and databases
+*.log
+*.db
+pubspec.lock
+
+# Other
+.DS_Store

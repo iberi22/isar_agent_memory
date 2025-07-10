@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:test/test.dart';
 import 'package:isar_agent_memory/src/gemini_embeddings_adapter.dart';
 
 void main() {
   group('GeminiEmbeddingsAdapter', () {
-    // NOTE: Set your Gemini API key as an environment variable or inject here for real test
-    const apiKey = String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
+    // Read API key from environment variables for testing.
+    final apiKey = Platform.environment['GEMINI_API_KEY'] ?? '';
     final adapter = GeminiEmbeddingsAdapter(apiKey: apiKey);
 
     test('returns embedding for valid text', () async {

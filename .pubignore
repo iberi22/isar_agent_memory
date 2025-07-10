@@ -1,0 +1,17 @@
+# Directories
+build/
+.dart_tool/
+
+# Databases
+*db/
+*.isar
+*.isar.lock
+
+# Binaries
+*.dll
+
+# IDE files
+.idea/
+
+# Lockfile
+pubspec.lock

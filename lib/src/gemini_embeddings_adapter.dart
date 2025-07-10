@@ -15,15 +15,19 @@ class GeminiEmbeddingsAdapter implements EmbeddingsAdapter {
   }
 
   @override
-  String get providerName => 'gemini';
+  final String providerName = 'gemini';
+
+  @override
+  int get dimension => 768; // Gemini text-embedding-004 has 768 dimensions.
 
   /// Generates an embedding vector for the given text using Gemini API.
   @override
   Future<List<double>> embed(String text) async {
     final response = await _geminiModel.embedContent(Content.text(text));
-    if (response == null || response.embedding == null) {
+    final embedding = response.embedding;
+    if (embedding.values.isEmpty) {
       throw Exception('No embedding returned from Gemini API');
     }
-    return response.embedding!.values.map((e) => e.toDouble()).toList();
+    return embedding.values.map((e) => e.toDouble()).toList();
   }
 }
