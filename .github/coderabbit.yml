@@ -1,0 +1,21 @@
+# .github/coderabbit.yml
+rules:
+  - description: "Auto-approve and auto-merge PRs from Dependabot and Renovate if CI passes"
+    if:
+      author: [dependabot[bot], renovate[bot]]
+      status: success
+    approve: true
+    merge: true
+    merge_method: squash
+
+  - description: "Auto-approve and auto-merge PRs with 'automerge' label if CI passes"
+    if:
+      labels: ["automerge"]
+      status: success
+    approve: true
+    merge: true
+    merge_method: squash
+
+  - description: "Suggest refactors and code improvements for all PRs"
+    if: {}
+    review: true

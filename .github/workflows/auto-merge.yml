@@ -1,0 +1,17 @@
+name: Auto-merge PRs
+
+on:
+  pull_request:
+    types: [labeled, synchronize, opened, reopened]
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    if: contains(join(github.event.pull_request.labels.*.name, ','), 'automerge')
+    steps:
+      - name: Enable auto-merge for PR
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash
+          token: ${{ secrets.GITHUB_TOKEN }}

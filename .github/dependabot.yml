@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "pub"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "automerge"
+    commit-message:
+      prefix: "chore(deps)"
+    allow:
+      - dependency-type: "all"
+    ignore:
+      - dependency-name: "isar_agent_memory"
