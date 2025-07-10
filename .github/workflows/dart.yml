@@ -1,4 +1,4 @@
-name: Flutter CI
+name: Dart CI
 
 on:
   push:
@@ -13,19 +13,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
         with:
-          channel: 'stable'
+          sdk: stable
 
       - name: Install dependencies
-        run: flutter pub get
+        run: dart pub get
 
       - name: Verify formatting
-        run: flutter format --output=none --set-exit-if-changed .
+        run: dart format --output=none --set-exit-if-changed .
 
       - name: Analyze project source
-        run: flutter analyze --fatal-infos .
+        run: dart analyze --fatal-infos .
 
       - name: Run tests
-        run: flutter test
+        run: dart test
