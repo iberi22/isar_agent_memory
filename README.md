@@ -333,6 +333,50 @@ dart test
 
 ## Contributing
 
+---
+
+## 🔄 Continuous Dependency Updates & Auto-Merge
+
+This repository uses **Dependabot** to automatically detect and propose updates to all dependencies declared in `pubspec.yaml`. When a new version of a dependency is released, Dependabot creates a Pull Request (PR) with the update.
+
+- **Auto-merge workflow:** Any PR with the `automerge` label will be automatically merged into `main` if all CI checks pass.
+- **CI enforcement:** All merges to `main` require passing tests and formatting/lint checks, ensuring stability.
+- **Bot integration:** You can extend this setup with bots like Renovate, Jules, or Coderabbit for advanced review, feature tracking, or semantic PRs.
+
+**How to keep your project always up to date:**
+1. Dependabot creates PRs for new dependency versions.
+2. The PR runs all tests and checks.
+3. If everything passes and the PR has the `automerge` label, it is merged automatically.
+
+This guarantees your package always benefits from the latest features and security updates in its dependencies.
+
+---
+
+## 🤖 Advanced AI & Multi-Bot DevOps Strategy
+
+This repository leverages a robust, modern, and fully-automated DevOps approach to ensure all dependencies, features, and the Flutter SDK itself remain up-to-date and secure:
+
+- **Coderabbit**: AI-powered bot for code review, auto-approval, auto-merge, and refactor suggestions. Auto-merges PRs from trusted bots (Dependabot, Renovate) and those with the `automerge` label if CI passes.
+- **Dependabot**: Native GitHub bot that opens PRs for new versions of Dart/Flutter dependencies. PRs are auto-labeled and merged if checks pass.
+- **Renovate**: Advanced bot for dependency upgrades, monorepos, and workflows. Monitors not only Dart/Flutter packages but also GitHub Actions, Docker, and the Flutter SDK version. Auto-merges safe updates.
+- **Jules (Google Labs)**: Can be triggered via GitHub Issues to research, recommend, or execute the best bot or workflow for upgrades, refactors, or dependency management. Ensures the most effective tool is always used for each update.
+
+**How it works:**
+1. Dependabot and Renovate monitor all dependencies and the Flutter SDK, opening PRs for any new version or update.
+2. Coderabbit reviews, approves, and merges PRs from trusted bots or with the `automerge` label if CI passes.
+3. Jules can be triggered via Issues to research and select the best bot or run custom upgrade/refactor tasks.
+4. All merges to `main` require passing CI (tests, lint, format) for maximum stability.
+
+This setup guarantees:
+- Always using the latest secure and feature-rich versions of dependencies and Flutter.
+- Zero manual intervention for routine upgrades.
+- AI-assisted code quality, refactoring, and review.
+- Rapid adoption of new features and best practices from the Dart/Flutter ecosystem.
+
+**You can customize or extend this workflow via `.github/coderabbit.yml`, `.github/renovate.json`, and `.github/dependabot.yml` as your needs evolve.**
+
+---
+
 PRs, issues, and feedback are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) when available.
 
 ---
