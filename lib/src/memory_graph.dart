@@ -7,33 +7,45 @@ import 'models/memory_edge.dart';
 import 'models/memory_embedding.dart';
 
 /// Main API for interacting with the universal agent memory graph.
-/// Provides CRUD, semantic search, embeddings integration, and explainability for LLMs/agents.
+///
+/// Provides CRUD operations, semantic search, embeddings integration, and
+/// explainability features for LLMs and AI agents.
 class MemoryGraph {
+  /// The underlying Isar database instance.
   final Isar isar;
+
+  /// The adapter for generating embeddings.
   final EmbeddingsAdapter embeddingsAdapter;
+
+  /// The collection for vector storage and search, powered by DVDB.
   late final dvdb.Collection _vectorCollection;
 
-  /// Create a MemoryGraph with the given [Isar] instance and [EmbeddingsAdapter].
+  /// Creates a [MemoryGraph] with the given [Isar] instance and [EmbeddingsAdapter].
+  ///
+  /// Initializes the default vector collection.
   MemoryGraph(this.isar, {required this.embeddingsAdapter}) {
     _vectorCollection = dvdb.DVDB().collection('default');
   }
 
-  /// Initializes the vector index with existing nodes from Isar.
-  /// This should be called once when the application starts.
+  /// Initializes the vector index with existing nodes from the Isar database.
+  ///
+  /// This method should be called once when the application starts to ensure the
+  /// vector index is synchronized with the persisted nodes.
   Future<void> initialize() async {
     final allNodes = await isar.memoryNodes.where().findAll();
-    
+
     for (final node in allNodes) {
       if (node.embedding != null) {
-        // The DVDB example shows addDocument is synchronous.
-        _vectorCollection.addDocument(node.id.toString(), node.content, Float64List.fromList(node.embedding!.vector));
+        _vectorCollection.addDocument(node.id.toString(), node.content,
+            Float64List.fromList(node.embedding!.vector));
       }
     }
   }
 
-  /// Stores a new memory node with an embedding generated from [content].
+  /// Stores a new memory node with an embedding generated from its [content].
   ///
-  /// [type], [metadata] and other fields are optional. Embedding is generated via the adapter (Gemini).
+  /// The embedding is created using the provided [embeddingsAdapter].
+  /// Returns the unique ID of the stored node.
   Future<int> storeNodeWithEmbedding({
     required String content,
     String? type,
@@ -54,55 +66,74 @@ class MemoryGraph {
     return await storeNode(node);
   }
 
-  /// Store a new memory node (manual, with or without embedding).
-  /// Also adds the node's embedding to the vector index if it exists.
+  /// Stores a [MemoryNode] in the database.
+  ///
+  /// If the node has an embedding, it is also added to the vector index.
+  /// Returns the unique ID of the stored node.
   Future<int> storeNode(MemoryNode node) async {
     final nodeId = await isar.writeTxn(() => isar.memoryNodes.put(node));
-    // Also add to the vector index
     if (node.embedding != null) {
-      _vectorCollection.addDocument(nodeId.toString(), node.content, Float64List.fromList(node.embedding!.vector));
+      _vectorCollection.addDocument(nodeId.toString(), node.content,
+          Float64List.fromList(node.embedding!.vector));
     }
     return nodeId;
   }
 
-  /// Get a memory node by ID.
+  /// Retrieves a [MemoryNode] by its unique [id].
+  ///
+  /// Returns `null` if no node with the given ID is found.
   Future<MemoryNode?> getNode(int id) async {
     return await isar.memoryNodes.get(id);
   }
 
-  /// Delete a memory node by ID from both Isar and the vector index.
+  /// Deletes a [MemoryNode] by its [id] from both the database and the vector index.
+  ///
+  /// Returns `true` if the deletion was successful.
   Future<bool> deleteNode(int id) async {
-    // Remove from vector index first
     _vectorCollection.removeDocument(id.toString());
-    // Then remove from Isar
     return await isar.writeTxn(() => isar.memoryNodes.delete(id));
   }
 
-  /// Store a new edge (relation) between nodes.
+  /// Stores a [MemoryEdge] in the database.
+  ///
+  /// Returns the unique ID of the stored edge.
   Future<int> storeEdge(MemoryEdge edge) async {
     return await isar.writeTxn(() => isar.memoryEdges.put(edge));
   }
 
-  /// Get all edges for a node (incoming or outgoing).
+  /// Retrieves all edges connected to a given [nodeId], both incoming and outgoing.
   Future<List<MemoryEdge>> getEdgesForNode(int nodeId) async {
-    final outgoing = await isar.memoryEdges.filter().fromNodeIdEqualTo(nodeId).findAll();
-    final incoming = await isar.memoryEdges.filter().toNodeIdEqualTo(nodeId).findAll();
+    final outgoing =
+        await isar.memoryEdges.filter().fromNodeIdEqualTo(nodeId).findAll();
+    final incoming =
+        await isar.memoryEdges.filter().toNodeIdEqualTo(nodeId).findAll();
     return [...outgoing, ...incoming];
   }
 
-  /// Semantic search for nodes using the efficient HNSW index from DVDB.
-  /// Returns topK most similar nodes, including distance.
+  /// Performs a semantic search for nodes using a [queryEmbedding].
+  ///
+  /// Returns a list of the [topK] most similar nodes, along with their distance
+  /// and the embedding provider.
+  ///
+  /// Throws an [ArgumentError] if the query embedding's dimension does not match.
   // TODO: The dvdb package is currently broken (internal typo `searchineSimilarity` instead of `cosineSimilarity`).
   // This method will fail until dvdb is fixed or replaced. Tests are skipped.
-  Future<List<({MemoryNode node, double distance, String provider})>> semanticSearch(
+  Future<List<({MemoryNode node, double distance, String provider})>>
+      semanticSearch(
     List<double> queryEmbedding, {
     int topK = 5,
   }) async {
-    // Ensure the query embedding has the same dimension as the collection.
     if (queryEmbedding.length != embeddingsAdapter.dimension) {
-      return [];
+      throw ArgumentError(
+          'Query embedding dimension (${queryEmbedding.length}) does not match collection dimension (${embeddingsAdapter.dimension}).');
     }
-        final searchResults = _vectorCollection.search(Float64List.fromList(queryEmbedding), numResults: topK);
+
+    // TODO: The dvdb package is currently broken (internal typo `searchineSimilarity` instead of `cosineSimilarity`).
+    // This method will fail until dvdb is fixed or replaced. Tests are skipped.
+    final searchResults = _vectorCollection.search(
+      Float64List.fromList(queryEmbedding),
+      numResults: topK,
+    );
 
     if (searchResults.isEmpty) return [];
 
@@ -123,7 +154,7 @@ class MemoryGraph {
     return results;
   }
 
-  /// Helper: L2 distance between two vectors.
+  /// Calculates the L2 (Euclidean) distance between two vectors.
   double _l2(List<double> a, List<double> b) {
     if (a.length != b.length) return double.infinity;
     double sum = 0;
@@ -133,11 +164,14 @@ class MemoryGraph {
     return sum;
   }
 
-  /// Explain why a node was retrieved, including:
-  /// - Semantic distance and embedding provider (if queryEmbedding provided)
-  /// - Path(s) from root nodes (BFS up to [maxDepth])
-  /// - Activation (recency, frequency, degree)
-  /// - Simple logging for traceability
+  /// Generates an explanation for why a given [nodeId] was retrieved.
+  ///
+  /// The explanation includes:
+  /// - Semantic distance from a [queryEmbedding], if provided.
+  /// - Activation information (recency, frequency, importance) from the node's [Degree].
+  /// - Paths from root nodes, up to a [maxDepth].
+  ///
+  /// If [log] is true, the explanation is also printed to the console.
   Future<String> explainRecall(
     int nodeId, {
     List<double>? queryEmbedding,
@@ -148,14 +182,15 @@ class MemoryGraph {
     if (node == null) return 'Node not found.';
     final edges = await getEdgesForNode(nodeId);
     final now = DateTime.now().toUtc();
-    StringBuffer explain = StringBuffer();
+    final explain = StringBuffer();
     explain.write('Node ${node.id} recalled; ${edges.length} relations.');
-    // Semantic similarity
+
     if (queryEmbedding != null && node.embedding != null) {
       final dist = _l2(node.embedding!.vector, queryEmbedding);
-      explain.write(' Semantic distance: ${dist.toStringAsFixed(3)} (provider: ${node.embedding!.provider}).');
+      explain.write(
+          ' Semantic distance: ${dist.toStringAsFixed(3)} (provider: ${node.embedding!.provider}).');
     }
-    // Activation info
+
     if (node.degree != null) {
       explain.write(' Activation(recency: ');
       if (node.degree!.lastAccessed != null) {
@@ -164,9 +199,10 @@ class MemoryGraph {
       } else {
         explain.write('never');
       }
-      explain.write(', freq: ${node.degree!.frequency}, imp: ${node.degree!.importance}).');
+      explain.write(
+          ', freq: ${node.degree!.frequency}, imp: ${node.degree!.importance}).');
     }
-    // Path tracing (BFS up to maxDepth)
+
     final paths = await _findPathsToNode(nodeId, maxDepth: maxDepth);
     if (paths.isNotEmpty) {
       explain.write(' Path(s) from roots (depth ≤ $maxDepth): ');
@@ -175,36 +211,45 @@ class MemoryGraph {
         explain.write('; ');
       }
     }
+
     if (log) {
-      // Simple print log for traceability
       print('[ExplainRecall] Node $nodeId: ${explain.toString()}');
     }
     return explain.toString();
   }
 
-  /// Finds paths from root nodes to [targetId] up to [maxDepth] (BFS).
-  /// Returns a list of node id paths.
-  Future<List<List<int>>> _findPathsToNode(int targetId, {int maxDepth = 2}) async {
-    List<List<int>> paths = [];
-    
-    // Find all root nodes (nodes with no incoming edges)
+  /// Finds all paths from root nodes to a [targetId] using Breadth-First Search (BFS).
+  ///
+  /// A root node is defined as a node with no incoming edges.
+  /// The search is limited to a [maxDepth].
+  /// Returns a list of paths, where each path is a list of node IDs.
+  Future<List<List<int>>> _findPathsToNode(int targetId,
+      {int maxDepth = 2}) async {
+    final List<List<int>> paths = [];
+
     final allNodes = await isar.memoryNodes.where().findAll();
     final allEdges = await isar.memoryEdges.where().findAll();
     final nodeIds = allNodes.map((n) => n.id).toSet();
     final toIds = allEdges.map((e) => e.toNodeId).toSet();
     final rootIds = nodeIds.difference(toIds);
-    // BFS from roots to targetId
+
     for (final root in rootIds) {
-      final queue = <List<int>>[[root]];
+      final queue = <List<int>>[
+        [root]
+      ];
       while (queue.isNotEmpty) {
         final path = queue.removeAt(0);
         final last = path.last;
+
         if (path.length > maxDepth + 1) continue;
+
         if (last == targetId) {
           paths.add(path);
           continue;
         }
-        final outgoing = allEdges.where((e) => e.fromNodeId == last).map((e) => e.toNodeId);
+
+        final outgoing =
+            allEdges.where((e) => e.fromNodeId == last).map((e) => e.toNodeId);
         for (final next in outgoing) {
           if (!path.contains(next)) {
             queue.add([...path, next]);

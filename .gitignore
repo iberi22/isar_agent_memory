@@ -16,3 +16,6 @@ pubspec.lock
 
 # Other
 .DS_Store
+.dart_tool/
+.dart_tool/package_graph.json
+.dart_tool/package_config.json
