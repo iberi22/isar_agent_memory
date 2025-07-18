@@ -35,6 +35,8 @@ jobs:
 
       - name: Run tests
         run: flutter test
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
   automerge:
     # This job runs only after the 'build' job has succeeded
