@@ -22,7 +22,7 @@ class MemoryNode {
     this.embedding,
     Degree? degree,
     this.metadata,
-  })  : createdAt = DateTime.now() {
+  }) : createdAt = DateTime.now() {
     this.degree = degree ?? Degree();
   }
 
