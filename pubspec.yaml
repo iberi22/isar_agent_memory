@@ -34,12 +34,7 @@ dev_dependencies:
   isar_generator: ^3.1.0+1
   lints: ^3.0.0
   test: ^1.24.0
-  pre_commit: ^2.2.0
+
 
 dependency_overrides:
   analyzer: ^5.13.0
-
-# Configuration for pre-commit hooks
-pre_commit:
-  # By default, this enables hooks for formatting, analyzing, and running tests on staged files.
-  # This ensures code quality before committing.
