@@ -16,14 +16,15 @@ class MemoryNode {
   /// [content] is the only required parameter.
   /// [degree] is initialized to a default [Degree] object if not provided.
   MemoryNode({
-    required content,
+    required this.content,
     this.type,
     this.updatedAt,
     this.embedding,
     Degree? degree,
     this.metadata,
-  })  : createdAt = DateTime.now(),
-        this.degree = degree ?? Degree();
+  })  : createdAt = DateTime.now() {
+    this.degree = degree ?? Degree();
+  }
 
   /// Unique identifier for this node, managed by Isar.
   Id id = Isar.autoIncrement;
