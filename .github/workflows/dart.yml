@@ -41,6 +41,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     # Condition to run only on pull requests that are not in draft
+    permissions:
+      contents: write
+      pull-requests: write
     if: github.event.pull_request.draft == false
     steps:
       - name: Merge PR
