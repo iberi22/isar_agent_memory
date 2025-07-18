@@ -1,17 +1,21 @@
 name: Flutter CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -22,10 +26,27 @@ jobs:
         run: flutter pub get
 
       - name: Verify formatting
-        run: flutter format --output=none --set-exit-if-changed .
+        # Use 'dart format' which is the correct command
+        run: dart format --output=none --set-exit-if-changed .
 
       - name: Analyze project source
-        run: flutter analyze --fatal-infos .
+        # Use 'dart analyze' which is the correct command
+        run: dart analyze --fatal-infos .
 
       - name: Run tests
         run: flutter test
+
+  automerge:
+    # This job runs only after the 'build' job has succeeded
+    needs: build
+    runs-on: ubuntu-latest
+    # Condition to run only on pull requests that are not in draft
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Merge PR
+        uses: pascalgn/automerge-action@v0.16.3
+        env:
+          # The GITHUB_TOKEN is required for the action to interact with the repo
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          # Optional: Define merge strategy (merge, squash, rebase)
+          MERGE_METHOD: "squash"
