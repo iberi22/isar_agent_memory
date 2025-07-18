@@ -3,7 +3,6 @@ import 'package:test/test.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
 import 'package:isar_agent_memory/src/embeddings_adapter.dart';
-import 'package:isar_agent_memory/src/memory_graph.dart';
 
 // Mock implementation for testing without real API calls
 class MockEmbeddingsAdapter implements EmbeddingsAdapter {
@@ -69,7 +68,7 @@ void main() {
     test('explainRecall includes activation info', () async {
       final node = MemoryNode(content: 'Test explainability');
       final id = await graph.storeNode(node);
-      
+
       final explanation = await graph.explainRecall(id, log: false);
 
       expect(explanation, contains('Node $id recalled'));
@@ -105,8 +104,10 @@ void main() {
     test('explainRecall includes semantic distance and provider', () async {
       final id = await graph.storeNodeWithEmbedding(content: 'semantic test');
       await graph.initialize();
-      final queryEmbedding = await graph.embeddingsAdapter.embed('semantic test');
-      final explanation = await graph.explainRecall(id, queryEmbedding: queryEmbedding, log: false);
+      final queryEmbedding =
+          await graph.embeddingsAdapter.embed('semantic test');
+      final explanation = await graph.explainRecall(id,
+          queryEmbedding: queryEmbedding, log: false);
       expect(explanation, contains('Semantic distance:'));
       expect(explanation, contains('provider: mock'));
     });
@@ -121,7 +122,8 @@ void main() {
     });
 
     test('explainRecall handles missing node gracefully', () async {
-      final explanation = await graph.explainRecall(99999, queryEmbedding: [1,2,3,4], log: false);
+      final explanation = await graph.explainRecall(99999,
+          queryEmbedding: [1, 2, 3, 4], log: false);
       expect(explanation, contains('Node not found'));
     });
 
@@ -130,7 +132,8 @@ void main() {
       final n2 = MemoryNode(content: 'B');
       final id1 = await graph.storeNode(n1);
       final id2 = await graph.storeNode(n2);
-      final edge = MemoryEdge(fromNodeId: id1, toNodeId: id2, relation: 'cause');
+      final edge =
+          MemoryEdge(fromNodeId: id1, toNodeId: id2, relation: 'cause');
       await graph.storeEdge(edge);
       final edges = await graph.getEdgesForNode(id1);
       expect(edges, isNotEmpty);
@@ -138,4 +141,3 @@ void main() {
     });
   });
 }
-

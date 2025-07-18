@@ -7,7 +7,8 @@ class GeminiEmbeddingsAdapter implements EmbeddingsAdapter {
   final String model;
   late final GenerativeModel _geminiModel;
 
-  GeminiEmbeddingsAdapter({required this.apiKey, this.model = 'embedding-001'}) {
+  GeminiEmbeddingsAdapter(
+      {required this.apiKey, this.model = 'embedding-001'}) {
     _geminiModel = GenerativeModel(
       model: model,
       apiKey: apiKey,
