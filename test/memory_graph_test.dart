@@ -27,17 +27,33 @@ void main() {
 
     setUpAll(() async {
       // Initialize Isar for pure Dart environment
-      await Isar.initializeIsarCore(download: true);
+      print('Attempting to initialize IsarCore...');
+      try {
+        await Isar.initializeIsarCore(download: true);
+        print('IsarCore initialized successfully.');
+      } catch (e) {
+        print('Error initializing IsarCore: $e');
+        rethrow;
+      }
     });
 
     setUp(() async {
       // Create a clean directory for each test
+      print('Creating test directory: $testDbPath');
       await Directory(testDbPath).create(recursive: true);
-      isar = await Isar.open(
-        [MemoryNodeSchema, MemoryEdgeSchema],
-        inspector: false,
-        directory: testDbPath,
-      );
+      print('Test directory created.');
+      print('Attempting to open Isar database...');
+      try {
+        isar = await Isar.open(
+          [MemoryNodeSchema, MemoryEdgeSchema],
+          inspector: false,
+          directory: testDbPath,
+        );
+        print('Isar database opened successfully.');
+      } catch (e) {
+        print('Error opening Isar database: $e');
+        rethrow;
+      }
       // Use the mock adapter for tests
       graph = MemoryGraph(isar, embeddingsAdapter: MockEmbeddingsAdapter());
     });
