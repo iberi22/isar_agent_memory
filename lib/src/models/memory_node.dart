@@ -16,7 +16,7 @@ class MemoryNode {
   /// [content] is the only required parameter.
   /// [degree] is initialized to a default [Degree] object if not provided.
   MemoryNode({
-    required this.content,
+    required content,
     this.type,
     this.updatedAt,
     this.embedding,
