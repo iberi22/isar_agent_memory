@@ -96,6 +96,18 @@ if (results.isNotEmpty) {
 
 ---
 
+## ⚠️ Known Issues
+
+- The `dvdb` package currently contains a typo (`searchineSimilarity`) that can cause ANN searches to return no results. `MemoryGraph.semanticSearch` now falls back to a brute-force L2 scan until the library is fixed.
+- Before running the tests locally you must expose your Gemini API key:
+
+```bash
+export GEMINI_API_KEY=<YOUR_KEY>
+dart test
+```
+
+---
+
 ## 🧪 Testing
 
 - Run unit tests:

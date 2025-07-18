@@ -34,6 +34,8 @@ jobs:
         run: dart analyze --fatal-infos .
 
       - name: Run tests
+        # The IDE may warn that the secret is undefined; at runtime GitHub injects it.
+        # Ensure you add GEMINI_API_KEY in repo settings → Secrets → Actions.
         run: flutter test
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
