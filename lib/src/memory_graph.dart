@@ -117,65 +117,60 @@ class MemoryGraph {
   ///
   /// Throws an [ArgumentError] if the query embedding's dimension does not match.
   // TODO: The dvdb package is currently broken (internal typo `searchineSimilarity` instead of `cosineSimilarity`).
-  // This method will fail until dvdb is fixed or replaced. Tests are skipped.
   Future<List<({MemoryNode node, double distance, String provider})>>
       semanticSearch(
     List<double> queryEmbedding, {
     int topK = 5,
   }) async {
-    // If dimension mismatch, gracefully return empty list (tests expect this).
+    // Gracefully return empty list if dimensions mismatch, as tests expect.
     if (queryEmbedding.length != embeddingsAdapter.dimension) {
       return [];
     }
 
-    // TODO: The dvdb package is currently broken (internal typo `searchineSimilarity` instead of `cosineSimilarity`).
-    // This method will fail until dvdb is fixed or replaced. Tests are skipped.
+    // dvdb expects Float64List and the parameter name is `numResults`.
     final searchResults = _vectorCollection.search(
       Float64List.fromList(queryEmbedding),
       numResults: topK,
     );
 
-    // If dvdb search fails or returns no results, do a brute-force linear scan.
-    if (searchResults.isEmpty) {
-      final allNodes = await isar.memoryNodes.where().findAll();
-      if (allNodes.isEmpty) return [];
-
-      final List<({MemoryNode node, double distance})> scored = [];
-      for (final n in allNodes) {
-        if (n.embedding != null &&
-            n.embedding!.vector.length == queryEmbedding.length) {
-          final dist = _l2(n.embedding!.vector, queryEmbedding);
-          scored.add((node: n, distance: dist));
+    if (searchResults.isNotEmpty) {
+      final nodeIds = searchResults.map((r) => int.parse(r.id)).toList();
+      final nodes = await isar.memoryNodes.getAll(nodeIds);
+      final results = <({MemoryNode node, double distance, String provider})>[];
+      for (var i = 0; i < searchResults.length; i++) {
+        final node = nodes[i];
+        if (node != null) {
+          results.add((
+            node: node,
+            distance: searchResults[i].score,
+            provider: 'dvdb',
+          ));
         }
       }
-      if (scored.isEmpty) return [];
-      scored.sort((a, b) => a.distance.compareTo(b.distance));
-      final limited = scored.take(topK);
-      return [
-        for (final s in limited)
-          (
-            node: s.node,
-            distance: s.distance,
-            provider: s.node.embedding?.provider ?? 'unknown',
-          )
-      ];
+      return results;
     }
 
-    final nodeIds = searchResults.map((r) => int.parse(r.id)).toList();
-    final nodes = await isar.memoryNodes.getAll(nodeIds);
+    // Fallback to linear scan if dvdb returns no results.
+    final allNodes = await isar.memoryNodes.where().findAll();
 
-    final results = <({MemoryNode node, double distance, String provider})>[];
-    for (var i = 0; i < searchResults.length; i++) {
-      final node = nodes[i];
-      if (node != null) {
-        results.add((
-          node: node,
-          distance: searchResults[i].score,
-          provider: node.embedding?.provider ?? 'unknown',
-        ));
-      }
-    }
-    return results;
+    final distances = allNodes
+        .map((n) => (n.embedding != null)
+            ? _l2(queryEmbedding, n.embedding!.vector)
+            : double.infinity)
+        .toList();
+
+    final sortedIndices = List.generate(distances.length, (i) => i)
+      ..sort((a, b) => distances[a].compareTo(distances[b]));
+
+    final topKIndices = sortedIndices.take(topK);
+
+    return topKIndices
+        .map((i) => (
+              node: allNodes[i],
+              distance: distances[i],
+              provider: 'linear-scan'
+            ))
+        .toList();
   }
 
   /// Calculates the L2 (Euclidean) distance between two vectors.
