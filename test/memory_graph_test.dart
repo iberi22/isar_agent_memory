@@ -27,31 +27,31 @@ void main() {
 
     setUpAll(() async {
       // Initialize Isar for pure Dart environment
-      print('Attempting to initialize IsarCore...');
+      stderr.writeln('Attempting to initialize IsarCore...');
       try {
         await Isar.initializeIsarCore(download: true);
-        print('IsarCore initialized successfully.');
+        stderr.writeln('IsarCore initialized successfully.');
       } catch (e) {
-        print('Error initializing IsarCore: $e');
+        stderr.writeln('Error initializing IsarCore: $e');
         rethrow;
       }
     });
 
     setUp(() async {
       // Create a clean directory for each test
-      print('Creating test directory: $testDbPath');
+      stderr.writeln('Creating test directory: $testDbPath');
       await Directory(testDbPath).create(recursive: true);
-      print('Test directory created.');
-      print('Attempting to open Isar database...');
+      stderr.writeln('Test directory created.');
+      stderr.writeln('Attempting to open Isar database...');
       try {
         isar = await Isar.open(
           [MemoryNodeSchema, MemoryEdgeSchema],
           inspector: false,
           directory: testDbPath,
         );
-        print('Isar database opened successfully.');
+        stderr.writeln('Isar database opened successfully.');
       } catch (e) {
-        print('Error opening Isar database: $e');
+        stderr.writeln('Error opening Isar database: $e');
         rethrow;
       }
       // Use the mock adapter for tests
