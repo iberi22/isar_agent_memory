@@ -136,29 +136,30 @@ class MemoryGraph {
     );
 
     // If dvdb search fails or returns no results, do a brute-force linear scan.
-  if (searchResults.isEmpty) {
-    final allNodes = await isar.memoryNodes.where().findAll();
-    if (allNodes.isEmpty) return [];
+    if (searchResults.isEmpty) {
+      final allNodes = await isar.memoryNodes.where().findAll();
+      if (allNodes.isEmpty) return [];
 
-    final List<({MemoryNode node, double distance})> scored = [];
-    for (final n in allNodes) {
-      if (n.embedding != null && n.embedding!.vector.length == queryEmbedding.length) {
-        final dist = _l2(n.embedding!.vector, queryEmbedding);
-        scored.add((node: n, distance: dist));
+      final List<({MemoryNode node, double distance})> scored = [];
+      for (final n in allNodes) {
+        if (n.embedding != null &&
+            n.embedding!.vector.length == queryEmbedding.length) {
+          final dist = _l2(n.embedding!.vector, queryEmbedding);
+          scored.add((node: n, distance: dist));
+        }
       }
+      if (scored.isEmpty) return [];
+      scored.sort((a, b) => a.distance.compareTo(b.distance));
+      final limited = scored.take(topK);
+      return [
+        for (final s in limited)
+          (
+            node: s.node,
+            distance: s.distance,
+            provider: s.node.embedding?.provider ?? 'unknown',
+          )
+      ];
     }
-    if (scored.isEmpty) return [];
-    scored.sort((a, b) => a.distance.compareTo(b.distance));
-    final limited = scored.take(topK);
-    return [
-      for (final s in limited)
-        (
-          node: s.node,
-          distance: s.distance,
-          provider: s.node.embedding?.provider ?? 'unknown',
-        )
-    ];
-  }
 
     final nodeIds = searchResults.map((r) => int.parse(r.id)).toList();
     final nodes = await isar.memoryNodes.getAll(nodeIds);
