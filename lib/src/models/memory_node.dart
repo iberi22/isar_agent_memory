@@ -22,8 +22,9 @@ class MemoryNode {
     this.embedding,
     Degree? degree,
     this.metadata,
-  })  : createdAt = DateTime.now(),
-        this.degree = degree ?? Degree();
+  }) : createdAt = DateTime.now() {
+    this.degree = degree ?? Degree();
+  }
 
   /// Unique identifier for this node, managed by Isar.
   Id id = Isar.autoIncrement;

@@ -1,31 +1,64 @@
-name: Dart CI
+name: Flutter CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@v1
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          sdk: stable
+          channel: 'stable'
 
       - name: Install dependencies
-        run: dart pub get
+        run: flutter pub get
 
       - name: Verify formatting
+        # Use 'dart format' which is the correct command
         run: dart format --output=none --set-exit-if-changed .
 
       - name: Analyze project source
+        # Use 'dart analyze' which is the correct command
         run: dart analyze --fatal-infos .
 
+      - name: Install test project dependencies
+        run: flutter pub get
+        working-directory: ./isar_agent_memory_tests
+
       - name: Run tests
-        run: dart test
+        # The IDE may warn that the secret is undefined; at runtime GitHub injects it.
+        # Ensure you add GEMINI_API_KEY in repo settings → Secrets → Actions.
+        run: flutter test
+        working-directory: ./isar_agent_memory_tests
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+  automerge:
+    # This job runs only after the 'build' job has succeeded
+    needs: build
+    runs-on: ubuntu-latest
+    # Condition to run only on pull requests that are not in draft
+    permissions:
+      contents: write
+      pull-requests: write
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Merge PR
+        uses: pascalgn/automerge-action@v0.16.3
+        env:
+          # The GITHUB_TOKEN is required for the action to interact with the repo
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          # Optional: Define merge strategy (merge, squash, rebase)
+          MERGE_METHOD: "squash"
