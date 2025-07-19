@@ -12,7 +12,11 @@ build/
 # Logs and databases
 *.log
 *.db
-pubspec.lock
+
+# Native Binaries
+*.dll
+*.so
+*.dylib
 
 # Other
 .DS_Store
