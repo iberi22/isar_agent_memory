@@ -27,22 +27,14 @@ dependencies:
   # Add your embedding provider dependencies as needed (e.g., google_generative_ai, openai, etc.)
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  build_runner: ^2.4.10
+  build_runner: ^2.4.13
   flutter_lints: ^3.0.0
   isar_flutter_libs: ^3.1.0+1 # Provides Isar binaries
   isar_generator: ^3.1.0+1
   lints: ^3.0.0
-  test: ^1.24.0
-  dart_pre_commit: ^2.3.3
 
 
-dependency_overrides:
-  analyzer: ^5.13.0
 
 dart_pre_commit:
   tasks:
     - task: format
-    - task: test
-

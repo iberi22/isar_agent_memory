@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
 import 'package:isar_agent_memory/src/embeddings_adapter.dart';
+import 'dart:convert';
+import 'package:path/path.dart' as p;
 import 'package:flutter_test/flutter_test.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter/services.dart';
@@ -43,14 +45,38 @@ void main() {
     const testDbPath = './testdb';
 
     setUpAll(() async {
-      // Initialize Isar for pure Dart environment
-      stderr.writeln('Attempting to initialize IsarCore...');
+      // Workaround to manually copy the Isar native binary for the test environment.
       try {
-        await Isar.initializeIsarCore(download: true);
-        stderr.writeln('IsarCore initialized successfully.');
+        await Isar.initializeIsarCore();
       } catch (e) {
-        stderr.writeln('Error initializing IsarCore: $e');
-        rethrow;
+        if (e.toString().contains('Failed to load dynamic library')) {
+          stderr.writeln('Isar binary not found. Attempting to copy it manually...');
+          final packageConfig = File('.dart_tool/package_config.json');
+          final content = await packageConfig.readAsString();
+          final json = jsonDecode(content) as Map<String, dynamic>;
+          final isarFlutterLibsEntry = (json['packages'] as List).firstWhere(
+            (p) => p['name'] == 'isar_flutter_libs',
+            orElse: () => null,
+          );
+
+          if (isarFlutterLibsEntry == null) {
+            throw Exception('isar_flutter_libs package not found in .dart_tool/package_config.json');
+          }
+
+          final libPathUri = Uri.parse(isarFlutterLibsEntry['rootUri'] as String);
+          final libPath = File.fromUri(libPathUri).path;
+          final isarBinary = File(p.join(libPath, 'windows', 'isar.dll'));
+
+          if (!await isarBinary.exists()) {
+            throw Exception('isar.dll not found at ${isarBinary.path}');
+          }
+
+          await isarBinary.copy('./isar.dll');
+          stderr.writeln('Successfully copied isar.dll, retrying initialization...');
+          await Isar.initializeIsarCore();
+        } else {
+          rethrow;
+        }
       }
     });
 

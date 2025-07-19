@@ -23,10 +23,7 @@ jobs:
           channel: 'stable'
 
       - name: Install dependencies
-        run: |
-          flutter pub get
-          flutter pub run isar_generator build
-          flutter pub add isar_flutter_libs --dev
+        run: flutter pub get
 
       - name: Verify formatting
         # Use 'dart format' which is the correct command
@@ -36,10 +33,15 @@ jobs:
         # Use 'dart analyze' which is the correct command
         run: dart analyze --fatal-infos .
 
+      - name: Install test project dependencies
+        run: flutter pub get
+        working-directory: ./isar_agent_memory_tests
+
       - name: Run tests
         # The IDE may warn that the secret is undefined; at runtime GitHub injects it.
         # Ensure you add GEMINI_API_KEY in repo settings → Secrets → Actions.
         run: flutter test
+        working-directory: ./isar_agent_memory_tests
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
