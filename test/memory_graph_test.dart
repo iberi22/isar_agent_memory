@@ -1,8 +1,10 @@
 import 'dart:io';
-import 'package:test/test.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
 import 'package:isar_agent_memory/src/embeddings_adapter.dart';
+import 'package:flutter_test/flutter_test.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter/services.dart';
 
 // Mock implementation for testing without real API calls
 class MockEmbeddingsAdapter implements EmbeddingsAdapter {
@@ -20,6 +22,21 @@ class MockEmbeddingsAdapter implements EmbeddingsAdapter {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  // Create a dummy directory for path_provider mock
+  Directory('./test_app_documents').createSync(recursive: true);
+
+  // Mock path_provider for tests
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(
+          const MethodChannel('plugins.flutter.io/path_provider'),
+          (MethodCall methodCall) async {
+    if (methodCall.method == 'getApplicationDocumentsDirectory') {
+      return './test_app_documents'; // Return a dummy path for testing
+    }
+    return null;
+  });
   group('MemoryGraph Tests', () {
     late Isar isar;
     late MemoryGraph graph;
@@ -61,7 +78,9 @@ void main() {
     tearDown(() async {
       await isar.close(deleteFromDisk: true);
       // Clear the dvdb collection to ensure no state leakage between tests
-      graph.clearVectorCollection();
+      addTearDown(() async {
+        graph.clearVectorCollection();
+      });
     });
 
     test('store and retrieve node', () async {

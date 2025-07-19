@@ -19,6 +19,8 @@
       ],
       "devDependencies": [
         "build_runner",
+        "dart_pre_commit",
+        "flutter_lints",
         "flutter_test",
         "isar_flutter_libs",
         "isar_generator",
@@ -41,6 +43,23 @@
         "pub_semver",
         "source_span",
         "watcher",
+        "yaml"
+      ]
+    },
+    {
+      "name": "dart_pre_commit",
+      "version": "2.3.3",
+      "dependencies": [
+        "args",
+        "console",
+        "convert",
+        "crypto",
+        "freezed_annotation",
+        "json_annotation",
+        "meta",
+        "path",
+        "pub_semver",
+        "riverpod",
         "yaml"
       ]
     },
@@ -102,6 +121,13 @@
       "dependencies": [
         "flutter",
         "isar"
+      ]
+    },
+    {
+      "name": "flutter_lints",
+      "version": "3.0.2",
+      "dependencies": [
+        "lints"
       ]
     },
     {
@@ -330,6 +356,43 @@
       "dependencies": [
         "meta"
       ]
+    },
+    {
+      "name": "riverpod",
+      "version": "1.0.3+1",
+      "dependencies": [
+        "collection",
+        "meta",
+        "state_notifier"
+      ]
+    },
+    {
+      "name": "json_annotation",
+      "version": "4.9.0",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
+      "name": "freezed_annotation",
+      "version": "1.1.0",
+      "dependencies": [
+        "collection",
+        "json_annotation",
+        "meta"
+      ]
+    },
+    {
+      "name": "console",
+      "version": "4.1.0",
+      "dependencies": [
+        "vector_math"
+      ]
+    },
+    {
+      "name": "args",
+      "version": "2.7.0",
+      "dependencies": []
     },
     {
       "name": "webkit_inspection_protocol",
@@ -728,11 +791,6 @@
       ]
     },
     {
-      "name": "args",
-      "version": "2.7.0",
-      "dependencies": []
-    },
-    {
       "name": "vm_service",
       "version": "15.0.0",
       "dependencies": []
@@ -916,6 +974,13 @@
       ]
     },
     {
+      "name": "state_notifier",
+      "version": "0.7.2+1",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
       "name": "web_socket",
       "version": "1.0.1",
       "dependencies": [
@@ -972,13 +1037,6 @@
       "name": "sky_engine",
       "version": "0.0.0",
       "dependencies": []
-    },
-    {
-      "name": "json_annotation",
-      "version": "4.9.0",
-      "dependencies": [
-        "meta"
-      ]
     },
     {
       "name": "checked_yaml",

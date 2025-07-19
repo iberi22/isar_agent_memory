@@ -290,7 +290,7 @@ class MemoryGraph {
   /// Clears the vector collection.
   ///
   /// This is primarily for testing purposes to ensure a clean state between tests.
-  void clearVectorCollection() {
+  Future<void> clearVectorCollection() async {
     _vectorCollection.clear();
   }
 }
