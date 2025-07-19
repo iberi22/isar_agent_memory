@@ -23,7 +23,10 @@ jobs:
           channel: 'stable'
 
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          flutter pub get
+          flutter pub run isar_generator build
+          flutter pub add isar_flutter_libs --dev
 
       - name: Verify formatting
         # Use 'dart format' which is the correct command
