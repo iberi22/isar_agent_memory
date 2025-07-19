@@ -293,4 +293,4 @@ class MemoryGraph {
   void clearVectorCollection() {
     _vectorCollection.clear();
   }
-  }
+}
