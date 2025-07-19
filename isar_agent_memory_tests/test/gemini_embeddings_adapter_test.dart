@@ -9,11 +9,17 @@ void main() {
     final apiKey = Platform.environment['GEMINI_API_KEY'] ?? '';
     final adapter = GeminiEmbeddingsAdapter(apiKey: apiKey);
 
-    test('returns embedding for valid text', () async {
-      final embedding = await adapter.embed('Hello world!');
-      expect(embedding, isA<List<double>>());
-      expect(embedding.length, greaterThan(0));
-    }, skip: apiKey.isEmpty ? 'No Gemini API key provided, skipping real API test.' : null);
+    test(
+      'returns embedding for valid text',
+      () async {
+        final embedding = await adapter.embed('Hello world!');
+        expect(embedding, isA<List<double>>());
+        expect(embedding.length, greaterThan(0));
+      },
+      skip: apiKey.isEmpty
+          ? 'No Gemini API key provided, skipping real API test.'
+          : null,
+    );
 
     test('throws on invalid API key', () async {
       final badAdapter = GeminiEmbeddingsAdapter(apiKey: 'INVALID_KEY');

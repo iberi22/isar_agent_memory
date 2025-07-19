@@ -32,13 +32,14 @@ void main() {
   // Mock path_provider for tests
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(
-          const MethodChannel('plugins.flutter.io/path_provider'),
-          (MethodCall methodCall) async {
-    if (methodCall.method == 'getApplicationDocumentsDirectory') {
-      return './test_app_documents'; // Return a dummy path for testing
-    }
-    return null;
-  });
+        const MethodChannel('plugins.flutter.io/path_provider'),
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'getApplicationDocumentsDirectory') {
+            return './test_app_documents'; // Return a dummy path for testing
+          }
+          return null;
+        },
+      );
   group('MemoryGraph Tests', () {
     late Isar isar;
     late MemoryGraph graph;
@@ -50,7 +51,9 @@ void main() {
         await Isar.initializeIsarCore();
       } catch (e) {
         if (e.toString().contains('Failed to load dynamic library')) {
-          stderr.writeln('Isar binary not found. Attempting to copy it manually...');
+          stderr.writeln(
+            'Isar binary not found. Attempting to copy it manually...',
+          );
           final packageConfig = File('.dart_tool/package_config.json');
           final content = await packageConfig.readAsString();
           final json = jsonDecode(content) as Map<String, dynamic>;
@@ -60,10 +63,14 @@ void main() {
           );
 
           if (isarFlutterLibsEntry == null) {
-            throw Exception('isar_flutter_libs package not found in .dart_tool/package_config.json');
+            throw Exception(
+              'isar_flutter_libs package not found in .dart_tool/package_config.json',
+            );
           }
 
-          final libPathUri = Uri.parse(isarFlutterLibsEntry['rootUri'] as String);
+          final libPathUri = Uri.parse(
+            isarFlutterLibsEntry['rootUri'] as String,
+          );
           final libPath = File.fromUri(libPathUri).path;
           final isarBinary = File(p.join(libPath, 'windows', 'isar.dll'));
 
@@ -72,7 +79,9 @@ void main() {
           }
 
           await isarBinary.copy('./isar.dll');
-          stderr.writeln('Successfully copied isar.dll, retrying initialization...');
+          stderr.writeln(
+            'Successfully copied isar.dll, retrying initialization...',
+          );
           await Isar.initializeIsarCore();
         } else {
           rethrow;
@@ -167,10 +176,14 @@ void main() {
     test('explainRecall includes semantic distance and provider', () async {
       final id = await graph.storeNodeWithEmbedding(content: 'semantic test');
       await graph.initialize();
-      final queryEmbedding =
-          await graph.embeddingsAdapter.embed('semantic test');
-      final explanation = await graph.explainRecall(id,
-          queryEmbedding: queryEmbedding, log: false);
+      final queryEmbedding = await graph.embeddingsAdapter.embed(
+        'semantic test',
+      );
+      final explanation = await graph.explainRecall(
+        id,
+        queryEmbedding: queryEmbedding,
+        log: false,
+      );
       expect(explanation, contains('Semantic distance:'));
       expect(explanation, contains('provider: mock'));
     });
@@ -185,8 +198,11 @@ void main() {
     });
 
     test('explainRecall handles missing node gracefully', () async {
-      final explanation = await graph.explainRecall(99999,
-          queryEmbedding: [1, 2, 3, 4], log: false);
+      final explanation = await graph.explainRecall(
+        99999,
+        queryEmbedding: [1, 2, 3, 4],
+        log: false,
+      );
       expect(explanation, contains('Node not found'));
     });
 
@@ -195,8 +211,11 @@ void main() {
       final n2 = MemoryNode(content: 'B');
       final id1 = await graph.storeNode(n1);
       final id2 = await graph.storeNode(n2);
-      final edge =
-          MemoryEdge(fromNodeId: id1, toNodeId: id2, relation: 'cause');
+      final edge = MemoryEdge(
+        fromNodeId: id1,
+        toNodeId: id2,
+        relation: 'cause',
+      );
       await graph.storeEdge(edge);
       final edges = await graph.getEdgesForNode(id1);
       expect(edges, isNotEmpty);
