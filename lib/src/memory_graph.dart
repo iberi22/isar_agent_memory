@@ -32,14 +32,20 @@ class MemoryGraph {
   /// This method should be called once when the application starts to ensure the
   /// vector index is synchronized with the persisted nodes.
   Future<void> initialize() async {
+    // Load any documents persisted on disk to keep the in-memory map in sync.
+    await _vectorCollection.load();
+
     final allNodes = await isar.memoryNodes.where().findAll();
 
     for (final node in allNodes) {
       if (node.embedding != null) {
+        // Ensure we do not keep stale duplicates of the same ID.
+        _vectorCollection.removeDocument(node.id.toString());
         _vectorCollection.addDocument(node.id.toString(), node.content,
             Float64List.fromList(node.embedding!.vector));
       }
     }
+    // Removed explicit buildIndex call for dvdb <1.1.0; index builds lazily.
   }
 
   /// Stores a new memory node with an embedding generated from its [content].
@@ -73,6 +79,8 @@ class MemoryGraph {
   Future<int> storeNode(MemoryNode node) async {
     final nodeId = await isar.writeTxn(() => isar.memoryNodes.put(node));
     if (node.embedding != null) {
+      // Replace any existing vector for this ID to avoid duplicates during tests
+      _vectorCollection.removeDocument(nodeId.toString());
       _vectorCollection.addDocument(nodeId.toString(), node.content,
           Float64List.fromList(node.embedding!.vector));
     }
@@ -278,4 +286,11 @@ class MemoryGraph {
     }
     return paths;
   }
-}
+
+  /// Clears the vector collection.
+  ///
+  /// This is primarily for testing purposes to ensure a clean state between tests.
+  void clearVectorCollection() {
+    _vectorCollection.clear();
+  }
+  }

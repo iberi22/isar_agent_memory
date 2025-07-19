@@ -60,6 +60,8 @@ void main() {
 
     tearDown(() async {
       await isar.close(deleteFromDisk: true);
+      // Clear the dvdb collection to ensure no state leakage between tests
+      graph.clearVectorCollection();
     });
 
     test('store and retrieve node', () async {
