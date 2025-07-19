@@ -1,0 +1,18 @@
+# Set default behavior, in case users don't have core.autocrlf set.
+* text=auto eol=lf
+
+# Explicitly declare text files you want to always be normalized and converted
+# to LF line endings on checkout.
+*.dart text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.g.dart text eol=lf
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary
+*.dll binary
+*.so binary
+*.dylib binary
