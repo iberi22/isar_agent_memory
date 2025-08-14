@@ -10,33 +10,6 @@
 
 ---
 
-## 🧩 Overview
-
-**isar_agent_memory** is a universal, local-first cognitive memory package for LLMs and AI agents in Dart/Flutter. Inspired by [Cognee](https://github.com/topoteretes/cognee) and [Graphiti](https://github.com/getzep/graphiti), but portable, explainable, and LLM-agnostic.
-
-- ⚡ **Efficient semantic search**: ANN (HNSW, via [dvdb](https://pub.dev/packages/dvdb)) for fast context retrieval and recall.
-- 🔌 **Pluggable embeddings**: Gemini, OpenAI, or your own.
-- 🕸️ **Universal graph**: Nodes, edges, metadata, degree (recency, frequency, importance).
-- 🧠 **Explainability**: Trace why a memory was recalled (semantic distance, activation, paths).
-- 🤖 **LLM-agnostic**: Use with any agent, chatbot, or LLM workflow.
-- 🧪 **Robust tests & example**: Unit tests and real integration.
-
----
-
-## 🏗️ Architecture
-
-```mermaid
-graph TD;
-    Agent/LLM -->|recall/store| MemoryGraphAPI
-    MemoryGraphAPI -->|CRUD| IsarDB[(Isar DB)]
-    MemoryGraphAPI -->|ANN Search| DVDB[(dvdb ANN)]
-    MemoryGraphAPI -->|Embeddings| EmbeddingsAdapter
-    IsarDB -->|Nodes/Edges| Data
-    DVDB -->|HNSW| Embeddings
-```
-
----
-
 ## 🚀 Quickstart
 
 ### 1. Add to your `pubspec.yaml`
@@ -93,6 +66,39 @@ if (results.isNotEmpty) {
 - [dvdb](https://pub.dev/packages/dvdb): ANN (HNSW) for fast vector search.
 - [LangChain](https://pub.dev/packages/langchain): LLM/agent workflows.
 - [Gemini](https://pub.dev/packages/google_generative_ai): Embeddings provider.
+
+---
+
+## 🛠️ Troubleshooting
+
+### Isar Native Library (`isar.dll`) Loading Failure in Tests
+
+**Problem:**
+When running `flutter test` within the `isar_agent_memory_tests` subproject on a Windows environment (both locally and in GitHub Actions), the tests may fail with an error similar to `Invalid argument(s): Failed to load dynamic library '...\isar.dll'`.
+
+This occurs because the standard Flutter test runner sometimes fails to automatically locate and load the native Isar binary provided by the `isar_flutter_libs` package.
+
+**Solution:**
+A robust, programmatic workaround has been implemented directly within the `test/memory_graph_test.dart` file. The `setUpAll` block for these tests now includes logic that:
+1. Attempts to initialize Isar normally.
+2. If it catches a `Failed to load dynamic library` error, it automatically...
+3. Locates the `package_config.json` file to find the exact path of the `isar_flutter_libs` package in the local system's pub cache.
+4. Copies the correct `isar.dll` from the package's `windows` directory into the root of the test project.
+5. Retries the Isar initialization, which now succeeds.
+
+This ensures that the tests are self-contained and run reliably across different Windows machines and in the CI/CD pipeline without requiring manual configuration.
+
+---
+
+## ⚠️ Known Issues
+
+- The `dvdb` package currently contains a typo (`searchineSimilarity`) that can cause ANN searches to return no results. `MemoryGraph.semanticSearch` now falls back to a brute-force L2 scan until the library is fixed.
+- Before running the tests locally you must expose your Gemini API key:
+
+```bash
+export GEMINI_API_KEY=<YOUR_KEY>
+dart test
+```
 
 ---
 
@@ -163,11 +169,7 @@ A universal, local-first cognitive memory package for LLMs and AI agents in Dart
 - **Explainability**: Trace why a memory was recalled (semantic distance, activation, paths).
 - **LLM-agnostic**: Use with any agent, chatbot, or LLM workflow.
 
----
-
-## Architecture
-
-```
+```mermaid
 +-------------------+
 |   Agent / LLM     |
 +-------------------+
@@ -335,6 +337,27 @@ dart test
 
 ---
 
+## ⚙️ Dependency Management & Testing Strategy
+
+Due to complex dependency conflicts between `isar_generator` (for code generation) and `flutter_test` (for testing, which pins several core Dart packages like `analyzer`, `matcher`, `test_api`, and `vm_service`), this repository now employs a separated project architecture for testing.
+
+- **`isar_agent_memory` (Main Project)**: This project focuses solely on the library's core logic and code generation. It contains `isar_generator` and its compatible dependencies. It **does not** include `flutter_test` or `test` in its `dev_dependencies` to avoid conflicts.
+
+- **`isar_agent_memory_tests` (Dedicated Test Project)**: A separate Flutter project located at the root level (`../isar_agent_memory_tests`) is now responsible for running all unit and integration tests. This project includes `flutter_test`, `test`, and other testing-related dependencies, and it imports `isar_agent_memory` as a local path dependency.
+
+### Running Tests
+
+To run the tests for `isar_agent_memory`, navigate to the `isar_agent_memory_tests` directory and execute the `flutter test` command:
+
+```bash
+cd ../isar_agent_memory_tests
+flutter test
+```
+
+This separation ensures that both code generation and testing environments can maintain their required dependency versions without conflict, providing a stable and reliable development experience.
+
+---
+
 ## 🔄 Continuous Dependency Updates & Auto-Merge
 
 This repository uses **Dependabot** to automatically detect and propose updates to all dependencies declared in `pubspec.yaml`. When a new version of a dependency is released, Dependabot creates a Pull Request (PR) with the update.
@@ -344,6 +367,7 @@ This repository uses **Dependabot** to automatically detect and propose updates 
 - **Bot integration:** You can extend this setup with bots like Renovate, Jules, or Coderabbit for advanced review, feature tracking, or semantic PRs.
 
 **How to keep your project always up to date:**
+
 1. Dependabot creates PRs for new dependency versions.
 2. The PR runs all tests and checks.
 3. If everything passes and the PR has the `automerge` label, it is merged automatically.
@@ -362,12 +386,14 @@ This repository leverages a robust, modern, and fully-automated DevOps approach 
 - **Jules (Google Labs)**: Can be triggered via GitHub Issues to research, recommend, or execute the best bot or workflow for upgrades, refactors, or dependency management. Ensures the most effective tool is always used for each update.
 
 **How it works:**
+
 1. Dependabot and Renovate monitor all dependencies and the Flutter SDK, opening PRs for any new version or update.
 2. Coderabbit reviews, approves, and merges PRs from trusted bots or with the `automerge` label if CI passes.
 3. Jules can be triggered via Issues to research and select the best bot or run custom upgrade/refactor tasks.
 4. All merges to `main` require passing CI (tests, lint, format) for maximum stability.
 
 This setup guarantees:
+
 - Always using the latest secure and feature-rich versions of dependencies and Flutter.
 - Zero manual intervention for routine upgrades.
 - AI-assisted code quality, refactoring, and review.
