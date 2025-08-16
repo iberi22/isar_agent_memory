@@ -80,6 +80,7 @@ This occurs because the standard Flutter test runner sometimes fails to automati
 
 **Solution:**
 A robust, programmatic workaround has been implemented directly within the `test/memory_graph_test.dart` file. The `setUpAll` block for these tests now includes logic that:
+
 1. Attempts to initialize Isar normally.
 2. If it catches a `Failed to load dynamic library` error, it automatically...
 3. Locates the `package_config.json` file to find the exact path of the `isar_flutter_libs` package in the local system's pub cache.
