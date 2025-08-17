@@ -6,12 +6,23 @@ build/
 *db/
 *.isar
 *.isar.lock
+*.isar-lck
 
 # Binaries
 *.dll
+example/isar.dll
+isar.dll
 
 # IDE files
 .idea/
 
 # Lockfile
 pubspec.lock
+
+# Env files (do not publish)
+.env
+.env.*
+!.env.example
+
+# Nested test app (not part of published package)
+isar_agent_memory_tests/

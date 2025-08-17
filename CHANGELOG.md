@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.0 - 2025-08-17
+
+- Sanitización mayor del proyecto para eliminar DVDB como backend vectorial.
+  - Se elimina la dependencia `dvdb` del paquete y su export público.
+  - Se deja `vector_index_dvdb.dart` como stub deprecado que lanza `UnsupportedError` para evitar uso accidental.
+  - ObjectBox queda como único backend soportado/documentado para ANN (HNSW) on-device.
+- Tests sin plugins nativos:
+  - Nuevo `InMemoryVectorIndex` para pruebas, sin dependencias nativas.
+  - Se removió `isar_flutter_libs` del subproyecto de tests.
+  - Se deshabilitó el test de plantilla `widget_test.dart` (no aporta a este paquete y requiere UI).
+  - Corrección de similitud en el índice en memoria (cosine/L2/dot) para resultados consistentes.
+- Documentación:
+  - Limpieza de README/TASKS eliminando referencias a DVDB.
+  - Aclarado ObjectBox como backend por defecto.
+  - Corrección de lints y estructura de secciones.
+- Estado: suite de tests pasando en CI local; lista para publicar versión menor con cambios potencialmente disruptivos (pre-1.0).
+
 ## 0.1.2 - 2025-07-10
 
 - Fix: Resolved JavaScript error in Isar generated files by integrating `build_runner`.

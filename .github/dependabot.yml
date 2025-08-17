@@ -7,10 +7,53 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
-      - "automerge"
     commit-message:
       prefix: "chore(deps)"
+      include: "scope"
     allow:
       - dependency-type: "all"
     ignore:
       - dependency-name: "isar_agent_memory"
+    versioning-strategy: increase
+    groups:
+      dart-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+      dart-major:
+        applies-to: version-updates
+        update-types:
+          - major
+
+  - package-ecosystem: "pub"
+    directory: "/isar_agent_memory_tests"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    allow:
+      - dependency-type: "all"
+    versioning-strategy: increase
+    groups:
+      tests-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+      tests-major:
+        applies-to: version-updates
+        update-types:
+          - major
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "ci"
+    open-pull-requests-limit: 5

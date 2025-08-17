@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 import 'package:isar/isar.dart';
-import 'package:dvdb/dvdb.dart' as dvdb;
 import 'embeddings_adapter.dart';
 import 'models/memory_node.dart';
 import 'models/memory_edge.dart';
 import 'models/memory_embedding.dart';
+import 'vector_index.dart';
+import 'vector_index_objectbox.dart';
 
 /// Main API for interacting with the universal agent memory graph.
 ///
@@ -17,14 +18,18 @@ class MemoryGraph {
   /// The adapter for generating embeddings.
   final EmbeddingsAdapter embeddingsAdapter;
 
-  /// The collection for vector storage and search, powered by DVDB.
-  late final dvdb.Collection _vectorCollection;
+  /// Pluggable vector index backend (e.g., ObjectBox, Remote/custom).
+  late final VectorIndex _index;
 
   /// Creates a [MemoryGraph] with the given [Isar] instance and [EmbeddingsAdapter].
-  ///
-  /// Initializes the default vector collection.
-  MemoryGraph(this.isar, {required this.embeddingsAdapter}) {
-    _vectorCollection = dvdb.DVDB().collection('default');
+  /// Optionally, a custom [VectorIndex] can be provided. If none is provided,
+  /// a default ObjectBox-based index will be used.
+  MemoryGraph(
+    this.isar, {
+    required this.embeddingsAdapter,
+    VectorIndex? index,
+  }) {
+    _index = index ?? ObjectBoxVectorIndex.open(namespace: 'default');
   }
 
   /// Initializes the vector index with existing nodes from the Isar database.
@@ -32,20 +37,21 @@ class MemoryGraph {
   /// This method should be called once when the application starts to ensure the
   /// vector index is synchronized with the persisted nodes.
   Future<void> initialize() async {
-    // Load any documents persisted on disk to keep the in-memory map in sync.
-    await _vectorCollection.load();
+    await _index.load();
 
     final allNodes = await isar.memoryNodes.where().findAll();
-
     for (final node in allNodes) {
       if (node.embedding != null) {
-        // Ensure we do not keep stale duplicates of the same ID.
-        _vectorCollection.removeDocument(node.id.toString());
-        _vectorCollection.addDocument(node.id.toString(), node.content,
-            Float64List.fromList(node.embedding!.vector));
+        await _index.removeDocument(node.id.toString());
+        // Convert to Float32 for generic interface; index may upcast if needed.
+        await _index.addDocument(
+          node.id.toString(),
+          node.content,
+          Float32List.fromList(
+              node.embedding!.vector.map((e) => e.toDouble()).toList()),
+        );
       }
     }
-    // Removed explicit buildIndex call for dvdb <1.1.0; index builds lazily.
   }
 
   /// Stores a new memory node with an embedding generated from its [content].
@@ -80,9 +86,13 @@ class MemoryGraph {
     final nodeId = await isar.writeTxn(() => isar.memoryNodes.put(node));
     if (node.embedding != null) {
       // Replace any existing vector for this ID to avoid duplicates during tests
-      _vectorCollection.removeDocument(nodeId.toString());
-      _vectorCollection.addDocument(nodeId.toString(), node.content,
-          Float64List.fromList(node.embedding!.vector));
+      await _index.removeDocument(nodeId.toString());
+      await _index.addDocument(
+        nodeId.toString(),
+        node.content,
+        Float32List.fromList(
+            node.embedding!.vector.map((e) => e.toDouble()).toList()),
+      );
     }
     return nodeId;
   }
@@ -98,7 +108,7 @@ class MemoryGraph {
   ///
   /// Returns `true` if the deletion was successful.
   Future<bool> deleteNode(int id) async {
-    _vectorCollection.removeDocument(id.toString());
+    await _index.removeDocument(id.toString());
     return await isar.writeTxn(() => isar.memoryNodes.delete(id));
   }
 
@@ -124,7 +134,7 @@ class MemoryGraph {
   /// and the embedding provider.
   ///
   /// Throws an [ArgumentError] if the query embedding's dimension does not match.
-  // TODO: The dvdb package is currently broken (internal typo `searchineSimilarity` instead of `cosineSimilarity`).
+  // Vector index search via pluggable backend (ObjectBox by default).
   Future<List<({MemoryNode node, double distance, String provider})>>
       semanticSearch(
     List<double> queryEmbedding, {
@@ -135,10 +145,10 @@ class MemoryGraph {
       return [];
     }
 
-    // dvdb expects Float64List and the parameter name is `numResults`.
-    final searchResults = _vectorCollection.search(
-      Float64List.fromList(queryEmbedding),
-      numResults: topK,
+    // Use pluggable vector index.
+    final searchResults = await _index.search(
+      Float32List.fromList(queryEmbedding.map((e) => e.toDouble()).toList()),
+      topK: topK,
     );
 
     if (searchResults.isNotEmpty) {
@@ -151,14 +161,14 @@ class MemoryGraph {
           results.add((
             node: node,
             distance: searchResults[i].score,
-            provider: 'dvdb',
+            provider: _index.provider,
           ));
         }
       }
       return results;
     }
 
-    // Fallback to linear scan if dvdb returns no results.
+    // Fallback to linear scan if the index returns no results.
     final allNodes = await isar.memoryNodes.where().findAll();
 
     final distances = allNodes
@@ -291,6 +301,6 @@ class MemoryGraph {
   ///
   /// This is primarily for testing purposes to ensure a clean state between tests.
   Future<void> clearVectorCollection() async {
-    _vectorCollection.clear();
+    await _index.clear();
   }
 }

@@ -3,7 +3,6 @@
 [![pub package](https://img.shields.io/pub/v/isar_agent_memory.svg)](https://pub.dev/packages/isar_agent_memory)
 [![Build Status](https://github.com/iberi22/isar_agent_memory/actions/workflows/dart.yml/badge.svg)](https://github.com/iberi22/isar_agent_memory/actions)
 [![Isar](https://img.shields.io/badge/db-isar-blue?logo=databricks)](https://isar.dev)
-[![dvdb](https://img.shields.io/badge/ANN-dvdb-green?logo=databricks)](https://pub.dev/packages/dvdb)
 [![LangChain](https://img.shields.io/badge/llm-langchain-yellow?logo=python)](https://pub.dev/packages/langchain)
 
 > 🚧 **BETA**: This package is in active development. API may change. Feedback and PRs are welcome!
@@ -12,17 +11,16 @@
 
 ## 🚀 Quickstart
 
-### 1. Add to your `pubspec.yaml`
+### 1) Añadir dependencia (pubspec.yaml)
 
 ```yaml
-isar_agent_memory: ^0.1.0
+isar_agent_memory: ^0.1.20
 ```
 
 ### 2. Basic Usage
 
 ```dart
 import 'package:isar_agent_memory/isar_agent_memory.dart';
-import 'package:isar_agent_memory/src/gemini_embeddings_adapter.dart';
 
 final adapter = GeminiEmbeddingsAdapter(apiKey: '<YOUR_GEMINI_API_KEY>');
 final isar = await Isar.open([
@@ -52,7 +50,8 @@ if (results.isNotEmpty) {
 ## 🧬 Features
 
 - Universal graph API: store, recall, relate, search, explain.
-- Fast ANN search via dvdb (HNSW).
+- Fast ANN search via **ObjectBox (HNSW)** — backend por defecto.
+- Pluggable vector index: ObjectBox por defecto; puedes implementar un backend personalizado.
 - Pluggable embeddings (Gemini, OpenAI, custom).
 - Explainability: semantic distance, activation, path tracing.
 - Robust tests and real-world example.
@@ -63,7 +62,7 @@ if (results.isNotEmpty) {
 ## 🛠️ Integrations
 
 - [Isar](https://isar.dev): Local, fast NoSQL DB for Dart/Flutter.
-- [dvdb](https://pub.dev/packages/dvdb): ANN (HNSW) for fast vector search.
+- [ObjectBox](https://objectbox.io): On-device vector search (HNSW) con floatVector & HNSW index (por defecto).
 - [LangChain](https://pub.dev/packages/langchain): LLM/agent workflows.
 - [Gemini](https://pub.dev/packages/google_generative_ai): Embeddings provider.
 
@@ -93,8 +92,7 @@ This ensures that the tests are self-contained and run reliably across different
 
 ## ⚠️ Known Issues
 
-- The `dvdb` package currently contains a typo (`searchineSimilarity`) that can cause ANN searches to return no results. `MemoryGraph.semanticSearch` now falls back to a brute-force L2 scan until the library is fixed.
-- Before running the tests locally you must expose your Gemini API key:
+- Antes de correr tests de integración reales con Gemini, debes exponer tu API key:
 
 ```bash
 export GEMINI_API_KEY=<YOUR_KEY>
@@ -142,13 +140,13 @@ MIT
 
 ---
 
-> **isar_agent_memory** is not affiliated with Isar, dvdb, LangChain, Gemini, or OpenAI. Names/logos are for reference only.
+> **isar_agent_memory** is not affiliated with Isar, LangChain, Gemini, or OpenAI. Names/logos are for reference only.
 
 ---
 
 ### 🏷️ Tags
 
-`isar` `dvdb` `langchain` `embeddings` `memory` `agents` `llm` `flutter` `dart`
+`isar` `langchain` `embeddings` `memory` `agents` `llm` `flutter` `dart`
 
 ---
 
@@ -162,7 +160,7 @@ A universal, local-first cognitive memory package for LLMs and AI agents in Dart
 
 ## Overview
 
-**isar_agent_memory** provides a robust, explainable, and extensible memory system for agents and LLMs. It combines a universal graph (nodes, edges, metadata) with efficient vector search (ANN via [dvdb](https://pub.dev/packages/dvdb)), pluggable embeddings, and advanced explainability for agent reasoning.
+**isar_agent_memory** provides a robust, explainable, and extensible memory system for agents and LLMs. It combines a universal graph (nodes, edges, metadata) with efficient vector search (ANN via ObjectBox by default), pluggable embeddings, and advanced explainability for agent reasoning.
 
 - **Universal graph**: Store facts, messages, concepts, and relations.
 - **Efficient semantic search**: ANN (HNSW) for context retrieval and recall.
@@ -182,7 +180,7 @@ A universal, local-first cognitive memory package for LLMs and AI agents in Dart
          |
          v
 +-------------------+         +----------------------+
-|  Isar (Graph DB)  | <-----> |  dvdb (ANN Vector DB)|
+|  Isar (Graph DB)  | <-----> |  ObjectBox (ANN Vector DB) |
 +-------------------+         +----------------------+
          |                               |
          v                               v
@@ -192,7 +190,7 @@ A universal, local-first cognitive memory package for LLMs and AI agents in Dart
 
 - **MemoryGraph** is the main API: store, recall, relate, search, explain.
 - **Isar** stores nodes, edges, metadata, activation info.
-- **dvdb** provides fast semantic search via ANN (HNSW index).
+- **ObjectBox** provides fast semantic search via ANN (HNSW index) by default.
 - **EmbeddingsAdapter** lets you plug in Gemini, OpenAI, or custom providers.
 
 ---
@@ -202,14 +200,15 @@ A universal, local-first cognitive memory package for LLMs and AI agents in Dart
 ### 1. Add to your `pubspec.yaml`
 
 ```yaml
-isar_agent_memory:
-  path: ./packages/isar_agent_memory # or use from pub.dev when published
+isar_agent_memory: ^0.2.0
 isar: ^3.1.0
-isar_flutter_libs: ^3.1.0
-# dvdb and your embedding provider as needed
+# Si usas Flutter, añade también:
+# isar_flutter_libs: ^3.1.0
+# ObjectBox es el backend por defecto.
+# Añade tu proveedor de embeddings según necesidad.
 ```
 
-### 2. Initialize and use
+### 2) Inicializar y usar
 
 ```dart
 import 'package:isar/isar.dart';
@@ -244,7 +243,7 @@ if (results.isNotEmpty) {
 ## Embeddings: Pluggable Providers
 
 - Use the built-in `GeminiEmbeddingsAdapter` or implement your own via the `EmbeddingsAdapter` interface.
-- Example for Gemini (Google):
+- Example for Gemini (Google) — model "text-embedding-004" (dimensión dinámica):
 
 ```dart
 final adapter = GeminiEmbeddingsAdapter(apiKey: '<YOUR_GEMINI_API_KEY>');
@@ -263,11 +262,73 @@ class MyEmbeddingsAdapter implements EmbeddingsAdapter {
 }
 ```
 
+### Fallback a Gemini (cloud)
+
+Compón proveedores con `FallbackEmbeddingsAdapter` para priorizar on-device/local y usar Gemini (cloud) sólo si el primario falla o devuelve vector vacío.
+
+```dart
+import 'dart:io';
+import 'package:isar_agent_memory/isar_agent_memory.dart';
+
+// Ejemplo de adaptador local (placeholder)
+class MyLocalAdapter implements EmbeddingsAdapter {
+  @override
+  String get providerName => 'local';
+  @override
+  int get dimension => 384;
+  @override
+  Future<List<double>> embed(String text) async {
+    // Genera embeddings on-device o lanza excepción para simular fallo
+    throw Exception('local failed');
+  }
+}
+
+final local = MyLocalAdapter();
+final gemini = GeminiEmbeddingsAdapter(
+  apiKey: Platform.environment['GEMINI_API_KEY'] ?? '',
+  timeout: Duration(seconds: 15),
+  maxRetries: 2,
+);
+final adapter = FallbackEmbeddingsAdapter(
+  primary: local,
+  fallback: gemini,
+  fallbackOnEmpty: true,
+);
+
+final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
+```
+
+Notas:
+
+- `FallbackEmbeddingsAdapter` intenta `primary` y, si falla o devuelve vacío (opcional), usa `fallback` (Gemini).
+- `GeminiEmbeddingsAdapter` soporta `timeout`, `maxRetries` y `retryBaseDelay` (exponential backoff).
+
+### Variables de entorno (.env)
+
+- Copia `.env.example` a `.env` y coloca tu `GEMINI_API_KEY` (no se publica ni se commitea).
+- Dart/Flutter no carga `.env` automáticamente; usa variables de entorno del sistema, `flutter_dotenv`, o inyección de configuración.
+
+Ejemplos de uso temporal (no persistente):
+
+macOS/Linux (bash/zsh):
+
+```bash
+export GEMINI_API_KEY=xxxx
+flutter test
+```
+
+Windows (PowerShell):
+
+```powershell
+$env:GEMINI_API_KEY = "xxxx"
+flutter test
+```
+
 ---
 
 ## Semantic Search (ANN)
 
-- Uses [dvdb](https://pub.dev/packages/dvdb) for fast Approximate Nearest Neighbor search (HNSW index).
+- Usa ObjectBox (HNSW) por defecto.
 - Store nodes with embeddings, then retrieve relevant memories via ANN:
 
 ```dart
@@ -277,6 +338,72 @@ for (final result in results) {
   print('Node: ${result.node.content}, Distance: ${result.distance}, Provider: ${result.provider}');
 }
 ```
+
+---
+
+## 🔌 Pluggable Vector Index Backends
+
+- **ObjectBox (por defecto)**: HNSW on-device con consultas `nearestNeighborsF32` y `findWithScores`.
+
+Uso con ObjectBox (por defecto):
+
+```dart
+// No necesitas pasar un índice: usa ObjectBox por defecto
+final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
+```
+
+Uso con ObjectBox (personalizado):
+
+Opción A — fábrica conveniente (no necesitas importar el archivo generado):
+
+```dart
+final index = ObjectBoxVectorIndex.open(
+  directory: './obxdb',
+  namespace: 'default',
+);
+final graph = MemoryGraph(isar, embeddingsAdapter: adapter, index: index);
+```
+
+Opción B — apertura manual del Store (requiere el archivo generado `objectbox.g.dart`):
+
+```dart
+import 'package:objectbox/objectbox.dart';
+import 'package:isar_agent_memory/objectbox.g.dart';
+
+final store = openStore(directory: './obxdb');
+final index = ObjectBoxVectorIndex(store: store, namespace: 'default');
+final graph = MemoryGraph(isar, embeddingsAdapter: adapter, index: index);
+```
+
+
+Notas (ObjectBox):
+
+- La entidad `ObxVectorDoc` usa `@HnswIndex(dimensions: 768, distanceType: VectorDistanceType.cosine)`.
+- Si tus embeddings tienen otra dimensión, crea una variante de la entidad/índice y regenera el código.
+- Para coseno, normalizamos L2 en escritura/búsqueda para consistencia.
+
+---
+
+## ⚙️ Configurar ObjectBox (opcional)
+
+1. Dependencias en `pubspec.yaml`:
+
+```yaml
+dependencies:
+  objectbox: ^4.1.0
+dev_dependencies:
+  objectbox_generator: ^4.1.0
+  build_runner: ^2.4.13
+```
+
+1. Generar código:
+
+```bash
+dart pub get
+dart run build_runner build --delete-conflicting-outputs
+```
+
+1. Crear índice con `ObjectBoxVectorIndex.open(...)` o manualmente con `openStore(...)` como arriba.
 
 ---
 
@@ -322,15 +449,18 @@ dart test
 
 ## Roadmap
 
-- [x] Gemini embeddings adapter (real, pluggable)
-- [x] Graph CRUD, semantic search, explainability
-- [x] Example integration and documentation
-- [x] Robust ANN and explainability tests
-- [ ] UI for API key management (Flutter)
-- [ ] Advanced explainability (reasoning paths, activation)
-- [ ] More tests and edge cases
-- [ ] Export/sync (Firestore/JSON)
-- [ ] Community adapters (OpenAI, local, etc.)
+- [x] Pluggable `VectorIndex` + `ObjectBoxVectorIndex` por defecto
+- [x] `GeminiEmbeddingsAdapter` + `FallbackEmbeddingsAdapter`
+- [x] `InMemoryVectorIndex` para tests; suite robusta ANN/explainability
+- [ ] `OnDeviceEmbeddingsAdapter` (TFLite/ONNX), INT8, 256–384d (Android foco)
+- [ ] Benchmarks y telemetría: latencia p50/p95, memoria pico, accuracy
+- [ ] Recuperación híbrida: denso + BM25/FTS; fusión de puntajes (MMR)
+- [ ] Re-ranker ligero on-device sobre top-K
+- [ ] Sincronización: cifrado cliente, versionado, deduplicación, background; opción ObjectBox Sync
+- [ ] Explainability 2.0: trazas/ponderaciones y export JSON
+- [ ] Wrapper `VectorStore` para LangChain.dart
+- [ ] App ejemplo Flutter (Android): ingestión, búsqueda, UI de claves
+- [ ] Privacidad/seguridad: cifrado at-rest, gestión de llaves, PII
 
 ---
 

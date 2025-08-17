@@ -22,6 +22,15 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Cache Pub packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -44,21 +53,3 @@ jobs:
         working-directory: ./isar_agent_memory_tests
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-
-  automerge:
-    # This job runs only after the 'build' job has succeeded
-    needs: build
-    runs-on: ubuntu-latest
-    # Condition to run only on pull requests that are not in draft
-    permissions:
-      contents: write
-      pull-requests: write
-    if: github.event.pull_request.draft == false
-    steps:
-      - name: Merge PR
-        uses: pascalgn/automerge-action@v0.16.3
-        env:
-          # The GITHUB_TOKEN is required for the action to interact with the repo
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          # Optional: Define merge strategy (merge, squash, rebase)
-          MERGE_METHOD: "squash"

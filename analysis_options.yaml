@@ -1,5 +1,8 @@
 include: package:lints/recommended.yaml
 
+analyzer:
+  exclude:
+    - isar_agent_memory_tests/**
 linter:
   rules:
     # Add any specific lint rules here if needed

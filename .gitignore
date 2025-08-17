@@ -12,6 +12,12 @@ build/
 # Logs and databases
 *.log
 *.db
+# Isar database files
+*.isar
+*.isar.lock
+*.isar-lck
+# Local db directories (exampledb/, testdb/, etc.)
+*db/
 
 # Native Binaries
 *.dll
@@ -23,3 +29,12 @@ build/
 .dart_tool/
 .dart_tool/package_graph.json
 .dart_tool/package_config.json
+
+# Env files (keep example tracked)
+.env
+.env.*
+!.env.example
+
+# Lockfiles (do not version in library packages)
+pubspec.lock
+isar_agent_memory_tests/pubspec.lock
