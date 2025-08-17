@@ -1,0 +1,60 @@
+name: Release on merge (tag + GitHub Release)
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  tag-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch tags
+        run: git fetch --tags --force
+
+      - name: Read current and previous versions
+        id: ver
+        shell: bash
+        run: |
+          set -euo pipefail
+          CURRENT=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          PREV=$(git show HEAD^:pubspec.yaml | grep '^version:' | awk '{print $2}' || echo "")
+          echo "current=$CURRENT" >> $GITHUB_OUTPUT
+          echo "previous=$PREV" >> $GITHUB_OUTPUT
+
+      - name: Skip if version did not change
+        if: steps.ver.outputs.previous == steps.ver.outputs.current
+        run: echo "Version unchanged; skipping."
+
+      - name: Create and push tag
+        if: steps.ver.outputs.previous != steps.ver.outputs.current
+        env:
+          TAG: v${{ steps.ver.outputs.current }}
+        run: |
+          set -euo pipefail
+          if git rev-parse -q --verify "refs/tags/$TAG"; then
+            echo "Tag $TAG already exists. Skipping create."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+          fi
+
+      - name: Create GitHub Release
+        if: steps.ver.outputs.previous != steps.ver.outputs.current
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.current }}
+          name: v${{ steps.ver.outputs.current }}
+          body: |
+            See CHANGELOG.md for details.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
