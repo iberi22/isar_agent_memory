@@ -47,7 +47,8 @@ class MemoryGraph {
         await _index.addDocument(
           node.id.toString(),
           node.content,
-          Float32List.fromList(node.embedding!.vector.map((e) => e.toDouble()).toList()),
+          Float32List.fromList(
+              node.embedding!.vector.map((e) => e.toDouble()).toList()),
         );
       }
     }
@@ -89,7 +90,8 @@ class MemoryGraph {
       await _index.addDocument(
         nodeId.toString(),
         node.content,
-        Float32List.fromList(node.embedding!.vector.map((e) => e.toDouble()).toList()),
+        Float32List.fromList(
+            node.embedding!.vector.map((e) => e.toDouble()).toList()),
       );
     }
     return nodeId;

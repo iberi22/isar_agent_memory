@@ -49,7 +49,8 @@ class GeminiEmbeddingsAdapter implements EmbeddingsAdapter {
         return vec;
       } on TimeoutException catch (e) {
         if (attempt >= maxRetries) {
-          throw Exception('Gemini embeddings request timed out after ${attempt + 1} attempt(s): $e');
+          throw Exception(
+              'Gemini embeddings request timed out after ${attempt + 1} attempt(s): $e');
         }
         final delay = retryBaseDelay * (1 << attempt);
         await Future.delayed(delay);
@@ -57,7 +58,8 @@ class GeminiEmbeddingsAdapter implements EmbeddingsAdapter {
       } catch (e) {
         // Retry on any transient failure; surface after exhausting attempts
         if (attempt >= maxRetries) {
-          throw Exception('Gemini embeddings request failed after ${attempt + 1} attempt(s): $e');
+          throw Exception(
+              'Gemini embeddings request failed after ${attempt + 1} attempt(s): $e');
         }
         final delay = retryBaseDelay * (1 << attempt);
         await Future.delayed(delay);

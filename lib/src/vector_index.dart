@@ -3,7 +3,8 @@ import 'dart:typed_data';
 /// Result returned by a vector index search.
 class VectorSearchResult {
   final String id;
-  final double score; // Smaller is better for distance; larger is better for similarity depending on metric
+  final double
+      score; // Smaller is better for distance; larger is better for similarity depending on metric
   const VectorSearchResult({required this.id, required this.score});
 }
 

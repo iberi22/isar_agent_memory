@@ -11,7 +11,8 @@ class ThrowingLocalAdapter implements EmbeddingsAdapter {
   @override
   int get dimension => 0;
   @override
-  Future<List<double>> embed(String text) async => throw Exception('local failed');
+  Future<List<double>> embed(String text) async =>
+      throw Exception('local failed');
 }
 
 bool _shouldSkipGeminiIntegration() {
@@ -28,10 +29,13 @@ class InMemoryVectorIndex implements VectorIndex {
   final VectorMetric _metric;
   final Map<String, Float32List> _store = {};
 
-  InMemoryVectorIndex({String namespace = 'test', bool normalize = true, VectorMetric metric = VectorMetric.cosine})
-      : _namespace = namespace,
-        _normalize = normalize,
-        _metric = metric;
+  InMemoryVectorIndex({
+    String namespace = 'test',
+    bool normalize = true,
+    VectorMetric metric = VectorMetric.cosine,
+  }) : _namespace = namespace,
+       _normalize = normalize,
+       _metric = metric;
 
   @override
   String get provider => 'in-memory';
@@ -43,7 +47,11 @@ class InMemoryVectorIndex implements VectorIndex {
   VectorMetric get metric => _metric;
 
   @override
-  Future<void> addDocument(String id, String content, Float32List vector) async {
+  Future<void> addDocument(
+    String id,
+    String content,
+    Float32List vector,
+  ) async {
     _store[id] = vector;
   }
 
@@ -53,7 +61,10 @@ class InMemoryVectorIndex implements VectorIndex {
   }
 
   @override
-  Future<List<VectorSearchResult>> search(Float32List query, {int topK = 5}) async {
+  Future<List<VectorSearchResult>> search(
+    Float32List query, {
+    int topK = 5,
+  }) async {
     // naive dot-product score
     final scores = <String, double>{};
     _store.forEach((id, vec) {
@@ -66,7 +77,10 @@ class InMemoryVectorIndex implements VectorIndex {
     });
     final sorted = scores.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    return sorted.take(topK).map((e) => VectorSearchResult(id: e.key, score: e.value)).toList();
+    return sorted
+        .take(topK)
+        .map((e) => VectorSearchResult(id: e.key, score: e.value))
+        .toList();
   }
 
   @override
@@ -82,27 +96,42 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Fallback -> Gemini integration (skips without GEMINI_API_KEY)', () {
-    test('falls back to Gemini when primary fails', () async {
-      final apiKey = Platform.environment['GEMINI_API_KEY'] ?? '';
+    test(
+      'falls back to Gemini when primary fails',
+      () async {
+        final apiKey = Platform.environment['GEMINI_API_KEY'] ?? '';
 
-      final dir = Directory('./testdb_fb_gem');
-      await dir.create(recursive: true);
-      final isar = await Isar.open([MemoryNodeSchema, MemoryEdgeSchema], directory: dir.path);
+        final dir = Directory('./testdb_fb_gem');
+        await dir.create(recursive: true);
+        final isar = await Isar.open([
+          MemoryNodeSchema,
+          MemoryEdgeSchema,
+        ], directory: dir.path);
 
-      final adapter = FallbackEmbeddingsAdapter(
-        primary: ThrowingLocalAdapter(),
-        fallback: GeminiEmbeddingsAdapter(apiKey: apiKey),
-      );
-      final graph = MemoryGraph(isar, embeddingsAdapter: adapter, index: InMemoryVectorIndex(namespace: 'fb'));
+        final adapter = FallbackEmbeddingsAdapter(
+          primary: ThrowingLocalAdapter(),
+          fallback: GeminiEmbeddingsAdapter(apiKey: apiKey),
+        );
+        final graph = MemoryGraph(
+          isar,
+          embeddingsAdapter: adapter,
+          index: InMemoryVectorIndex(namespace: 'fb'),
+        );
 
-      final id = await graph.storeNodeWithEmbedding(content: 'fallback to gemini');
-      expect(id, greaterThan(0));
-      final node = await graph.getNode(id);
-      expect(node, isNotNull);
-      expect(node!.embedding, isNotNull);
-      expect(node.embedding!.vector.length, greaterThan(0));
+        final id = await graph.storeNodeWithEmbedding(
+          content: 'fallback to gemini',
+        );
+        expect(id, greaterThan(0));
+        final node = await graph.getNode(id);
+        expect(node, isNotNull);
+        expect(node!.embedding, isNotNull);
+        expect(node.embedding!.vector.length, greaterThan(0));
 
-      await isar.close(deleteFromDisk: true);
-    }, skip: _shouldSkipGeminiIntegration() ? 'Set GEMINI_API_KEY and RUN_GEMINI_TESTS=1 to run this test' : null);
+        await isar.close(deleteFromDisk: true);
+      },
+      skip: _shouldSkipGeminiIntegration()
+          ? 'Set GEMINI_API_KEY and RUN_GEMINI_TESTS=1 to run this test'
+          : null,
+    );
   });
 }

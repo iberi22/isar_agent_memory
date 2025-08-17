@@ -16,7 +16,8 @@ class FallbackEmbeddingsAdapter implements EmbeddingsAdapter {
   });
 
   @override
-  String get providerName => '${primary.providerName}->${fallback.providerName}';
+  String get providerName =>
+      '${primary.providerName}->${fallback.providerName}';
 
   /// The dimension is determined at runtime from the produced vector.
   /// Consumers should not rely on a fixed dimension here; instead, use

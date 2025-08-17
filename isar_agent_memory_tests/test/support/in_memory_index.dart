@@ -9,10 +9,13 @@ class InMemoryVectorIndex implements VectorIndex {
   final VectorMetric _metric;
   final Map<String, Float32List> _store = {};
 
-  InMemoryVectorIndex({String namespace = 'test', bool normalize = true, VectorMetric metric = VectorMetric.cosine})
-      : _namespace = namespace,
-        _normalize = normalize,
-        _metric = metric;
+  InMemoryVectorIndex({
+    String namespace = 'test',
+    bool normalize = true,
+    VectorMetric metric = VectorMetric.cosine,
+  }) : _namespace = namespace,
+       _normalize = normalize,
+       _metric = metric;
 
   @override
   String get provider => 'in-memory';
@@ -24,7 +27,11 @@ class InMemoryVectorIndex implements VectorIndex {
   VectorMetric get metric => _metric;
 
   @override
-  Future<void> addDocument(String id, String content, Float32List vector) async {
+  Future<void> addDocument(
+    String id,
+    String content,
+    Float32List vector,
+  ) async {
     // Optionally store normalized vectors for cosine metric
     if (_metric == VectorMetric.cosine && _normalize) {
       _store[id] = _normalized(vector);
@@ -39,11 +46,16 @@ class InMemoryVectorIndex implements VectorIndex {
   }
 
   @override
-  Future<List<VectorSearchResult>> search(Float32List query, {int topK = 5}) async {
+  Future<List<VectorSearchResult>> search(
+    Float32List query, {
+    int topK = 5,
+  }) async {
     if (_store.isEmpty) return [];
     final scores = <String, double>{};
 
-    final q = (_metric == VectorMetric.cosine && _normalize) ? _normalized(query) : query;
+    final q = (_metric == VectorMetric.cosine && _normalize)
+        ? _normalized(query)
+        : query;
 
     for (final entry in _store.entries) {
       final id = entry.key;
@@ -52,8 +64,12 @@ class InMemoryVectorIndex implements VectorIndex {
       scores[id] = s;
     }
 
-    final sorted = scores.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-    return sorted.take(topK).map((e) => VectorSearchResult(id: e.key, score: e.value)).toList();
+    final sorted = scores.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return sorted
+        .take(topK)
+        .map((e) => VectorSearchResult(id: e.key, score: e.value))
+        .toList();
   }
 
   @override

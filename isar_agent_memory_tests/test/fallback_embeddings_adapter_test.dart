@@ -43,7 +43,10 @@ class FixedAdapter implements EmbeddingsAdapter {
 void main() {
   group('FallbackEmbeddingsAdapter', () {
     test('falls back when primary throws', () async {
-      final fallback = FixedAdapter([1, 2, 3, 4].map((e) => e.toDouble()).toList(), name: 'fallback');
+      final fallback = FixedAdapter(
+        [1, 2, 3, 4].map((e) => e.toDouble()).toList(),
+        name: 'fallback',
+      );
       final adapter = FallbackEmbeddingsAdapter(
         primary: ThrowingAdapter(),
         fallback: fallback,

@@ -90,7 +90,8 @@ class ObjectBoxVectorIndex implements VectorIndex {
   String _key(String id) => '$_namespace:$id';
 
   @override
-  Future<void> addDocument(String id, String content, Float32List vector) async {
+  Future<void> addDocument(
+      String id, String content, Float32List vector) async {
     var vec = vector;
     if (_metric == VectorMetric.cosine && _normalize) {
       vec = _normalizeVec(vec);
@@ -98,7 +99,8 @@ class ObjectBoxVectorIndex implements VectorIndex {
 
     final key = _key(id);
     // Upsert by unique docKey
-    final existing = _box.query(ObxVectorDoc_.docKey.equals(key)).build().findFirst();
+    final existing =
+        _box.query(ObxVectorDoc_.docKey.equals(key)).build().findFirst();
     final entity = ObxVectorDoc(
       docKey: key,
       content: content,
@@ -122,14 +124,16 @@ class ObjectBoxVectorIndex implements VectorIndex {
   }
 
   @override
-  Future<List<VectorSearchResult>> search(Float32List query, {int topK = 5}) async {
+  Future<List<VectorSearchResult>> search(Float32List query,
+      {int topK = 5}) async {
     var q = query;
     if (_metric == VectorMetric.cosine && _normalize) {
       q = _normalizeVec(q);
     }
 
     final qb = _box
-        .query(ObxVectorDoc_.vector.nearestNeighborsF32(q.toList(growable: false), topK))
+        .query(ObxVectorDoc_.vector
+            .nearestNeighborsF32(q.toList(growable: false), topK))
         .build();
     try {
       final results = qb.findWithScores();
