@@ -1,0 +1,44 @@
+name: Publish to pub.dev
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: ${{ secrets.PUB_CREDENTIALS_JSON != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Configure pub.dev credentials
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.pub-cache
+          echo "${{ secrets.PUB_CREDENTIALS_JSON }}" > ~/.pub-cache/credentials.json
+          chmod 600 ~/.pub-cache/credentials.json
+
+      - name: Dry-run publish
+        run: dart pub publish --dry-run
+
+      - name: Publish to pub.dev
+        run: dart pub publish -f
+
+  missing-secret:
+    if: ${{ secrets.PUB_CREDENTIALS_JSON == '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Missing pub.dev secret
+        run: |
+          echo "PUB_CREDENTIALS_JSON no está configurado como secret del repositorio."
+          echo "Por favor, añade el contenido de ~/.pub-cache/credentials.json como un secret llamado PUB_CREDENTIALS_JSON en:"
+          echo "Settings → Secrets and variables → Actions → New repository secret."
+          exit 1
