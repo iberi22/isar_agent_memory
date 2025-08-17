@@ -1,6 +1,5 @@
 import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
-import 'package:isar_agent_memory/src/gemini_embeddings_adapter.dart';
 import 'dart:io';
 
 Future<void> main() async {

@@ -1,31 +1,6 @@
 {
+  "enabled": false,
   "extends": ["config:base"],
-  "platform": "github",
-  "automerge": true,
-  "automergeType": "pr",
-  "labels": ["dependencies", "automerge"],
-  "prHourlyLimit": 4,
-  "prConcurrentLimit": 8,
-  "packageRules": [
-    {
-      "matchManagers": ["pub"],
-      "automerge": true,
-      "labels": ["dependencies", "automerge"]
-    },
-    {
-      "matchManagers": ["github-actions"],
-      "automerge": true,
-      "labels": ["ci", "automerge"]
-    },
-    {
-      "matchDatasources": ["docker"],
-      "automerge": true,
-      "labels": ["docker", "automerge"]
-    },
-    {
-      "matchPackageNames": ["flutter"],
-      "automerge": true,
-      "labels": ["flutter", "automerge"]
-    }
-  ]
+  "note": "Renovate está deshabilitado para evitar duplicidad con Dependabot. Si deseas reactivarlo, elimina 'enabled: false' y desinstala Dependabot o coordina reglas.",
+  "enabledManagers": []
 }

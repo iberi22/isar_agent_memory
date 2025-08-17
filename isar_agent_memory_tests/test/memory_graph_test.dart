@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
-import 'package:isar_agent_memory/src/embeddings_adapter.dart';
+import 'support/in_memory_index.dart';
 import 'dart:convert';
 import 'package:path/path.dart' as p;
 import 'package:flutter_test/flutter_test.dart';
@@ -106,15 +106,20 @@ void main() {
         stderr.writeln('Error opening Isar database: $e');
         rethrow;
       }
-      // Use the mock adapter for tests
-      graph = MemoryGraph(isar, embeddingsAdapter: MockEmbeddingsAdapter());
+      // Use the mock adapter and in-memory vector index to avoid native deps/plugins in tests
+      final vectorIndex = InMemoryVectorIndex(namespace: 'test');
+      graph = MemoryGraph(
+        isar,
+        embeddingsAdapter: MockEmbeddingsAdapter(),
+        index: vectorIndex,
+      );
     });
 
     tearDown(() async {
       await isar.close(deleteFromDisk: true);
-      // Clear the dvdb collection to ensure no state leakage between tests
+      // Clear the in-memory index to ensure no state leakage between tests
       addTearDown(() async {
-        graph.clearVectorCollection();
+        await graph.clearVectorCollection();
       });
     });
 
