@@ -4,13 +4,22 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Release on merge (tag + GitHub Release)"
+    types:
+      - completed
 
 permissions:
   contents: read
 
 jobs:
   publish:
-    if: ${{ secrets.PUB_CREDENTIALS_JSON != '' }}
+    if: >
+      ${{
+        secrets.PUB_CREDENTIALS_JSON != '' &&
+        (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
+      }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
