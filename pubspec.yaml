@@ -1,5 +1,5 @@
 name: isar_agent_memory
-version: 0.2.0
+version: 0.2.1
 description: >-
   Universal, local-first cognitive memory package for LLMs and AI agents. Graph-based, explainable, LLM-agnostic. Inspired by Cognee/Graphiti.
 repository: https://github.com/iberi22/isar_agent_memory
@@ -30,8 +30,7 @@ dependencies:
 dev_dependencies:
   flutter_lints: ^6.0.0
   lints: ^6.0.0
-
-
+  test: ^1.25.0
 
 dart_pre_commit:
   tasks:
