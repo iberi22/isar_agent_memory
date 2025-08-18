@@ -14,7 +14,7 @@
 ### 1) Añadir dependencia (pubspec.yaml)
 
 ```yaml
-isar_agent_memory: ^0.1.20
+isar_agent_memory: ^0.2.1
 ```
 
 ### 2. Basic Usage
@@ -200,7 +200,7 @@ A universal, local-first cognitive memory package for LLMs and AI agents in Dart
 ### 1. Add to your `pubspec.yaml`
 
 ```yaml
-isar_agent_memory: ^0.2.0
+isar_agent_memory: ^0.2.1
 isar: ^3.1.0
 # Si usas Flutter, añade también:
 # isar_flutter_libs: ^3.1.0
