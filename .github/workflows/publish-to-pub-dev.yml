@@ -8,15 +8,10 @@ on:
     types: [published]
   workflow_dispatch:
     inputs:
-      publish:
-        description: "If true, publish to pub.dev; if false, only dry-run"
-        required: false
-        default: "false"
-  workflow_run:
-    workflows:
-      - "Release on merge (tag + GitHub Release)"
-    types:
-      - completed
+      mode:
+        description: "Choose 'dry-run' or 'publish'"
+        required: true
+        default: "dry-run"
 
 permissions:
   contents: read
@@ -30,8 +25,8 @@ jobs:
         run: echo "sanity ok"
 
   dry_run:
-    name: Dry-run (manual or push on fixes branch)
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' }}
+    name: Dry-run
+    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'dry-run') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -42,26 +37,27 @@ jobs:
         run: dart pub publish --dry-run
 
   publish:
-    name: Publish (release/workflow_run)
-    if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true') }}
+    name: Publish
+    if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'publish') }}
     runs-on: ubuntu-latest
     steps:
-      - name: Ensure secret present
-        if: ${{ secrets.PUB_CREDENTIALS_JSON == '' }}
-        run: |
-          echo "PUB_CREDENTIALS_JSON no está configurado como secret del repositorio."
-          echo "Añade ~/.pub-cache/credentials.json como secret PUB_CREDENTIALS_JSON en Settings → Secrets and variables → Actions."
-          exit 1
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
       - name: Configure pub.dev credentials
+        env:
+          PUB_CREDENTIALS_JSON: ${{ secrets.PUB_CREDENTIALS_JSON }}
         shell: bash
         run: |
           set -euo pipefail
+          if [ -z "${PUB_CREDENTIALS_JSON}" ]; then
+            echo "PUB_CREDENTIALS_JSON no está configurado como secret del repositorio."
+            echo "Añádelo desde Settings → Secrets and variables → Actions con el contenido de ~/.pub-cache/credentials.json."
+            exit 1
+          fi
           mkdir -p ~/.pub-cache
-          printf "%s" "${{ secrets.PUB_CREDENTIALS_JSON }}" > ~/.pub-cache/credentials.json
+          printf "%s" "${PUB_CREDENTIALS_JSON}" > ~/.pub-cache/credentials.json
           chmod 600 ~/.pub-cache/credentials.json
       - name: Dry-run publish
         run: dart pub publish --dry-run
