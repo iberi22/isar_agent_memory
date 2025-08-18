@@ -11,8 +11,7 @@ on:
       publish:
         description: "If true, publish to pub.dev; if false, only dry-run"
         required: false
-        type: boolean
-        default: false
+        default: "false"
   workflow_run:
     workflows:
       - "Release on merge (tag + GitHub Release)"
