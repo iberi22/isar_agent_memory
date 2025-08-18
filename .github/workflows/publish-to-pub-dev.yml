@@ -1,6 +1,9 @@
 name: Publish to pub.dev
 
 on:
+  push:
+    branches:
+      - ci/fix-publish-workflow-conditions
   release:
     types: [published]
   workflow_dispatch:
@@ -34,8 +37,8 @@ jobs:
           if [ -n "${{ secrets.PUB_CREDENTIALS_JSON }}" ]; then echo "PUB_CREDENTIALS_JSON: present"; else echo "PUB_CREDENTIALS_JSON: missing"; fi
 
   dry_run:
-    name: Dry-run (manual only)
-    if: github.event_name == 'workflow_dispatch'
+    name: Dry-run (manual or push on fixes branch)
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
