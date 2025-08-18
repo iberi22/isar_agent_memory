@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 - 2025-08-17
+
+- CI/CD: añade workflow `publish-to-pub-dev.yml` para publicación automática en pub.dev al crear un release (`release: published`) o manualmente (`workflow_dispatch`).
+- Credenciales: se documenta y habilita el uso del secret `PUB_CREDENTIALS_JSON` (obtenido con `dart pub login`).
+- Mantenimiento: preparación de release menor y validación local con formato/análisis/tests.
+
 ## 0.2.0 - 2025-08-17
 
 - Sanitización mayor del proyecto para eliminar DVDB como backend vectorial.
