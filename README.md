@@ -11,7 +11,7 @@
 
 ## 🚀 Quickstart
 
-### 1) Añadir dependencia (pubspec.yaml)
+### 1) Add dependency (pubspec.yaml)
 
 ```yaml
 isar_agent_memory: ^0.2.1
@@ -50,8 +50,8 @@ if (results.isNotEmpty) {
 ## 🧬 Features
 
 - Universal graph API: store, recall, relate, search, explain.
-- Fast ANN search via **ObjectBox (HNSW)** — backend por defecto.
-- Pluggable vector index: ObjectBox por defecto; puedes implementar un backend personalizado.
+- Fast ANN search via **ObjectBox (HNSW)** — default backend.
+- Pluggable vector index: ObjectBox by default; you can implement a custom backend.
 - Pluggable embeddings (Gemini, OpenAI, custom).
 - Explainability: semantic distance, activation, path tracing.
 - Robust tests and real-world example.
@@ -92,12 +92,14 @@ This ensures that the tests are self-contained and run reliably across different
 
 ## ⚠️ Known Issues
 
-- Antes de correr tests de integración reales con Gemini, debes exponer tu API key:
+- Gemini integration tests require an API key:
 
 ```bash
 export GEMINI_API_KEY=<YOUR_KEY>
 dart test
 ```
+
+- Windows-only DLL loading in Flutter test runs is automatically handled in the dedicated test project (`isar_agent_memory_tests`). If `isar.dll` fails to load, the test code copies the correct binary into the project root and retries initialization. No manual action is required.
 
 ---
 
@@ -262,15 +264,15 @@ class MyEmbeddingsAdapter implements EmbeddingsAdapter {
 }
 ```
 
-### Fallback a Gemini (cloud)
+### Fallback to Gemini (cloud)
 
-Compón proveedores con `FallbackEmbeddingsAdapter` para priorizar on-device/local y usar Gemini (cloud) sólo si el primario falla o devuelve vector vacío.
+Compose providers with `FallbackEmbeddingsAdapter` to prefer on-device/local and only use Gemini (cloud) if the primary fails or returns an empty vector.
 
 ```dart
 import 'dart:io';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
 
-// Ejemplo de adaptador local (placeholder)
+// Example local adapter (placeholder)
 class MyLocalAdapter implements EmbeddingsAdapter {
   @override
   String get providerName => 'local';
@@ -278,7 +280,7 @@ class MyLocalAdapter implements EmbeddingsAdapter {
   int get dimension => 384;
   @override
   Future<List<double>> embed(String text) async {
-    // Genera embeddings on-device o lanza excepción para simular fallo
+    // Produce on-device embeddings or throw to simulate a failure
     throw Exception('local failed');
   }
 }
@@ -298,17 +300,17 @@ final adapter = FallbackEmbeddingsAdapter(
 final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
 ```
 
-Notas:
+Notes:
 
-- `FallbackEmbeddingsAdapter` intenta `primary` y, si falla o devuelve vacío (opcional), usa `fallback` (Gemini).
-- `GeminiEmbeddingsAdapter` soporta `timeout`, `maxRetries` y `retryBaseDelay` (exponential backoff).
+- `FallbackEmbeddingsAdapter` tries `primary` and, if it fails or returns empty (optional), uses `fallback` (Gemini).
+- `GeminiEmbeddingsAdapter` supports `timeout`, `maxRetries` and `retryBaseDelay` (exponential backoff).
 
-### Variables de entorno (.env)
+### Environment variables (.env)
 
-- Copia `.env.example` a `.env` y coloca tu `GEMINI_API_KEY` (no se publica ni se commitea).
-- Dart/Flutter no carga `.env` automáticamente; usa variables de entorno del sistema, `flutter_dotenv`, o inyección de configuración.
+- Copy `.env.example` to `.env` and set your `GEMINI_API_KEY` (never committed).
+- Dart/Flutter does not load `.env` automatically; use system environment variables, `flutter_dotenv`, or configuration injection.
 
-Ejemplos de uso temporal (no persistente):
+Temporary usage examples (non-persistent):
 
 macOS/Linux (bash/zsh):
 
@@ -328,7 +330,7 @@ flutter test
 
 ## Semantic Search (ANN)
 
-- Usa ObjectBox (HNSW) por defecto.
+- Uses ObjectBox (HNSW) by default.
 - Store nodes with embeddings, then retrieve relevant memories via ANN:
 
 ```dart
@@ -364,7 +366,7 @@ final index = ObjectBoxVectorIndex.open(
 final graph = MemoryGraph(isar, embeddingsAdapter: adapter, index: index);
 ```
 
-Opción B — apertura manual del Store (requiere el archivo generado `objectbox.g.dart`):
+Option B — manually open the Store (requires generated `objectbox.g.dart`):
 
 ```dart
 import 'package:objectbox/objectbox.dart';
@@ -376,17 +378,17 @@ final graph = MemoryGraph(isar, embeddingsAdapter: adapter, index: index);
 ```
 
 
-Notas (ObjectBox):
+ObjectBox Notes:
 
-- La entidad `ObxVectorDoc` usa `@HnswIndex(dimensions: 768, distanceType: VectorDistanceType.cosine)`.
-- Si tus embeddings tienen otra dimensión, crea una variante de la entidad/índice y regenera el código.
-- Para coseno, normalizamos L2 en escritura/búsqueda para consistencia.
+- The `ObxVectorDoc` entity uses `@HnswIndex(dimensions: 768, distanceType: VectorDistanceType.cosine)`.
+- If your embeddings have a different dimensionality, create a variant of the entity/index and regenerate code.
+- For cosine, we L2-normalize at write/search time for consistency.
 
 ---
 
-## ⚙️ Configurar ObjectBox (opcional)
+## ⚙️ Set up ObjectBox (optional)
 
-1. Dependencias en `pubspec.yaml`:
+1. Dependencies in `pubspec.yaml`:
 
 ```yaml
 dependencies:
@@ -396,14 +398,14 @@ dev_dependencies:
   build_runner: ^2.4.13
 ```
 
-1. Generar código:
+1. Generate code:
 
 ```bash
 dart pub get
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-1. Crear índice con `ObjectBoxVectorIndex.open(...)` o manualmente con `openStore(...)` como arriba.
+1. Create an index with `ObjectBoxVectorIndex.open(...)` or manually with `openStore(...)` as shown above.
 
 ---
 
@@ -449,22 +451,24 @@ dart test
 
 ## Roadmap
 
-- [x] Pluggable `VectorIndex` + `ObjectBoxVectorIndex` por defecto
+- [x] Pluggable `VectorIndex` + `ObjectBoxVectorIndex` as default
 - [x] `GeminiEmbeddingsAdapter` + `FallbackEmbeddingsAdapter`
-- [x] `InMemoryVectorIndex` para tests; suite robusta ANN/explainability
-- [ ] `OnDeviceEmbeddingsAdapter` (TFLite/ONNX), INT8, 256–384d (Android foco)
-- [ ] Benchmarks y telemetría: latencia p50/p95, memoria pico, accuracy
-- [ ] Recuperación híbrida: denso + BM25/FTS; fusión de puntajes (MMR)
-- [ ] Re-ranker ligero on-device sobre top-K
-- [ ] Sincronización: cifrado cliente, versionado, deduplicación, background; opción ObjectBox Sync
-- [ ] Explainability 2.0: trazas/ponderaciones y export JSON
-- [ ] Wrapper `VectorStore` para LangChain.dart
-- [ ] App ejemplo Flutter (Android): ingestión, búsqueda, UI de claves
-- [ ] Privacidad/seguridad: cifrado at-rest, gestión de llaves, PII
+- [x] `InMemoryVectorIndex` for tests; robust ANN/explainability suite
+- [ ] `OnDeviceEmbeddingsAdapter` (TFLite/ONNX), INT8, 256–384d (Android focus)
+- [ ] Benchmarks & telemetry: p50/p95 latency, peak memory, accuracy
+- [ ] Hybrid retrieval: dense + BM25/FTS; score fusion (MMR)
+- [ ] Lightweight on-device re-ranker over top-K
+- [ ] Sync: client-side encryption, versioning, deduplication, background; optional ObjectBox Sync
+- [ ] Explainability 2.0: traces/weights and JSON export
+- [ ] `VectorStore` wrapper for LangChain.dart
+- [ ] Example Flutter app (Android): ingestion, search, key management UI
+- [ ] Privacy/security: at-rest encryption, key management, PII
 
 ---
 
 ## Contributing
+
+PRs, issues, and feedback are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
