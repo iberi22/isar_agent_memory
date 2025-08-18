@@ -23,6 +23,13 @@ permissions:
   contents: read
 
 jobs:
+  sanity:
+    name: Sanity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sanity echo
+        run: echo "Workflow parsed and started successfully"
+
   info:
     name: Debug context
     runs-on: ubuntu-latest
@@ -32,9 +39,6 @@ jobs:
       - name: Print workflow_run conclusion (when workflow_run)
         if: github.event_name == 'workflow_run'
         run: echo "workflow_run.conclusion=${{ github.event.workflow_run.conclusion }}"
-      - name: Print PUB_CREDENTIALS_JSON presence
-        run: |
-          if [ -n "${{ secrets.PUB_CREDENTIALS_JSON }}" ]; then echo "PUB_CREDENTIALS_JSON: present"; else echo "PUB_CREDENTIALS_JSON: missing"; fi
 
   dry_run:
     name: Dry-run (manual or push on fixes branch)
@@ -79,16 +83,3 @@ jobs:
         run: dart pub publish --dry-run
       - name: Publish to pub.dev
         run: dart pub publish -f
-
-  missing-secret:
-    name: Missing secret (release/workflow_run)
-    if: >
-      secrets.PUB_CREDENTIALS_JSON == '' &&
-      (github.event_name == 'release' || github.event_name == 'workflow_run')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Missing pub.dev secret
-        run: |
-          echo "PUB_CREDENTIALS_JSON no está configurado como secret del repositorio."
-          echo "Añade ~/.pub-cache/credentials.json como secret PUB_CREDENTIALS_JSON en Settings → Secrets and variables → Actions."
-          exit 1
