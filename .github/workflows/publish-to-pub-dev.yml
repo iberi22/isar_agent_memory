@@ -18,10 +18,13 @@ jobs:
     name: Debug context
     runs-on: ubuntu-latest
     steps:
-      - name: Print context
+      - name: Print event name
+        run: echo "event_name=${{ github.event_name }}"
+      - name: Print workflow_run conclusion (when workflow_run)
+        if: ${{ github.event_name == 'workflow_run' }}
+        run: echo "workflow_run.conclusion=${{ github.event.workflow_run.conclusion }}"
+      - name: Print PUB_CREDENTIALS_JSON presence
         run: |
-          echo "event_name=${{ github.event_name }}"
-          echo "workflow_run.conclusion=${{ github.event.workflow_run.conclusion || 'n/a' }}"
           if [ -n "${{ secrets.PUB_CREDENTIALS_JSON }}" ]; then echo "PUB_CREDENTIALS_JSON: present"; else echo "PUB_CREDENTIALS_JSON: missing"; fi
 
   publish:
