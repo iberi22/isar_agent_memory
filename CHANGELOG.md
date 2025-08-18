@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 - 2025-08-18
+
+- Documentation: README translated to English and Known Issues updated (Gemini API key requirement; Windows `isar.dll` is handled automatically in tests). No functional code changes.
+
 ## 0.2.1 - 2025-08-17
 
 - CI/CD: añade workflow `publish-to-pub-dev.yml` para publicación automática en pub.dev al crear un release (`release: published`) o manualmente (`workflow_dispatch`).
