@@ -4,6 +4,12 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "If true, publish to pub.dev; if false, only dry-run"
+        required: false
+        type: boolean
+        default: false
   workflow_run:
     workflows:
       - "Release on merge (tag + GitHub Release)"
@@ -21,30 +27,42 @@ jobs:
       - name: Print event name
         run: echo "event_name=${{ github.event_name }}"
       - name: Print workflow_run conclusion (when workflow_run)
-        if: ${{ github.event_name == 'workflow_run' }}
+        if: github.event_name == 'workflow_run'
         run: echo "workflow_run.conclusion=${{ github.event.workflow_run.conclusion }}"
       - name: Print PUB_CREDENTIALS_JSON presence
         run: |
           if [ -n "${{ secrets.PUB_CREDENTIALS_JSON }}" ]; then echo "PUB_CREDENTIALS_JSON: present"; else echo "PUB_CREDENTIALS_JSON: missing"; fi
 
-  publish:
-    if: >
-      ${{
-        secrets.PUB_CREDENTIALS_JSON != '' &&
-        (
-          github.event_name == 'release' ||
-          github.event_name == 'workflow_dispatch' ||
-          (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
-        )
-      }}
+  dry_run:
+    name: Dry-run (manual only)
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
+      - name: Dry-run publish
+        run: dart pub publish --dry-run
 
+  publish:
+    name: Publish (release/workflow_run)
+    if: >
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch' && inputs.publish == true)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure secret present
+        if: ${{ secrets.PUB_CREDENTIALS_JSON == '' }}
+        run: |
+          echo "PUB_CREDENTIALS_JSON no está configurado como secret del repositorio."
+          echo "Añade ~/.pub-cache/credentials.json como secret PUB_CREDENTIALS_JSON en Settings → Secrets and variables → Actions."
+          exit 1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
       - name: Configure pub.dev credentials
         shell: bash
         run: |
@@ -54,23 +72,16 @@ jobs:
           ${{ secrets.PUB_CREDENTIALS_JSON }}
           EOF
           chmod 600 ~/.pub-cache/credentials.json
-
       - name: Dry-run publish
         run: dart pub publish --dry-run
-
       - name: Publish to pub.dev
         run: dart pub publish -f
 
   missing-secret:
+    name: Missing secret (release/workflow_run)
     if: >
-      ${{
-        secrets.PUB_CREDENTIALS_JSON == '' &&
-        (
-          github.event_name == 'release' ||
-          github.event_name == 'workflow_dispatch' ||
-          github.event_name == 'workflow_run'
-        )
-      }}
+      secrets.PUB_CREDENTIALS_JSON == '' &&
+      (github.event_name == 'release' || github.event_name == 'workflow_run')
     runs-on: ubuntu-latest
     steps:
       - name: Missing pub.dev secret
