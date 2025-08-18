@@ -68,10 +68,13 @@ Estado general: on-device first. Cloud (Gemini) solo como fallback.
 
 ---
 
-## Publicación 0.2.0 (pendiente de ejecutar)
+## Publicación 0.2.1 (pendiente)
 
 - [ ] Limpiar binarios/artefactos del repo (dejar de trackear): `.dart_tool/`, `isar.dll`, `example/isar.dll`, `*db/`, `isar_agent_memory_tests/testdb/`.
-- [ ] Commit/tag `v0.2.0` y `dart pub publish`.
+- [ ] Confirmar `pubspec.yaml` versión `0.2.1` y `CHANGELOG.md` actualizado.
+- [ ] Ejecutar workflow manual `.github/workflows/publish-to-pub-dev.yml` en `main`.
+- [ ] Verificar publicación en pub.dev (`isar_agent_memory 0.2.1`).
+- [ ] Crear tag/release si faltara (`v0.2.1`).
 
 ---
 
