@@ -1,9 +1,25 @@
-name: Publish to pub.dev (sanity)
+name: Publish to pub.dev
 
 on:
   push:
     branches:
       - ci/fix-publish-workflow-conditions
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "If true, publish to pub.dev; if false, only dry-run"
+        required: false
+        default: "false"
+  workflow_run:
+    workflows:
+      - "Release on merge (tag + GitHub Release)"
+    types:
+      - completed
+
+permissions:
+  contents: read
 
 jobs:
   sanity:
@@ -12,3 +28,42 @@ jobs:
     steps:
       - name: Echo
         run: echo "sanity ok"
+
+  dry_run:
+    name: Dry-run (manual or push on fixes branch)
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+      - name: Dry-run publish
+        run: dart pub publish --dry-run
+
+  publish:
+    name: Publish (release/workflow_run)
+    if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure secret present
+        if: ${{ secrets.PUB_CREDENTIALS_JSON == '' }}
+        run: |
+          echo "PUB_CREDENTIALS_JSON no está configurado como secret del repositorio."
+          echo "Añade ~/.pub-cache/credentials.json como secret PUB_CREDENTIALS_JSON en Settings → Secrets and variables → Actions."
+          exit 1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+      - name: Configure pub.dev credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.pub-cache
+          printf "%s" "${{ secrets.PUB_CREDENTIALS_JSON }}" > ~/.pub-cache/credentials.json
+          chmod 600 ~/.pub-cache/credentials.json
+      - name: Dry-run publish
+        run: dart pub publish --dry-run
+      - name: Publish to pub.dev
+        run: dart pub publish -f
