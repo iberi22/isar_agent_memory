@@ -23,7 +23,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Ensure labels exist (idempotent)
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const ensure = async (name, color, description) => {
@@ -43,7 +43,7 @@ jobs:
             await ensure('automerge','0e8a16','Eligible for automerge');
 
       - name: Label PRs by update type
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const updateType = '${{ steps.metadata.outputs.update-type }}';
