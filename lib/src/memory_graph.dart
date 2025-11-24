@@ -42,14 +42,19 @@ class MemoryGraph {
     final allNodes = await isar.memoryNodes.where().findAll();
     for (final node in allNodes) {
       if (node.embedding != null) {
-        await _index.removeDocument(node.id.toString());
-        // Convert to Float32 for generic interface; index may upcast if needed.
-        await _index.addDocument(
-          node.id.toString(),
-          node.content,
-          Float32List.fromList(
-              node.embedding!.vector.map((e) => e.toDouble()).toList()),
-        );
+        // Safely attempt to add the document to the index.
+        // Errors might occur if dimensions mismatch.
+        try {
+          await _index.removeDocument(node.id.toString());
+          await _index.addDocument(
+            node.id.toString(),
+            node.content,
+            Float32List.fromList(
+                node.embedding!.vector.map((e) => e.toDouble()).toList()),
+          );
+        } catch (e) {
+          print('Warning: Failed to index node ${node.id}: $e');
+        }
       }
     }
   }
@@ -86,13 +91,19 @@ class MemoryGraph {
     final nodeId = await isar.writeTxn(() => isar.memoryNodes.put(node));
     if (node.embedding != null) {
       // Replace any existing vector for this ID to avoid duplicates during tests
-      await _index.removeDocument(nodeId.toString());
-      await _index.addDocument(
-        nodeId.toString(),
-        node.content,
-        Float32List.fromList(
-            node.embedding!.vector.map((e) => e.toDouble()).toList()),
-      );
+      try {
+        await _index.removeDocument(nodeId.toString());
+        await _index.addDocument(
+          nodeId.toString(),
+          node.content,
+          Float32List.fromList(
+              node.embedding!.vector.map((e) => e.toDouble()).toList()),
+        );
+      } catch (e) {
+        print('Warning: Failed to index node $nodeId: $e');
+        // We do not rethrow here because the node is already stored in Isar.
+        // The index inconsistency should be handled by the application (e.g. re-indexing).
+      }
     }
     return nodeId;
   }
@@ -108,7 +119,11 @@ class MemoryGraph {
   ///
   /// Returns `true` if the deletion was successful.
   Future<bool> deleteNode(int id) async {
-    await _index.removeDocument(id.toString());
+    try {
+      await _index.removeDocument(id.toString());
+    } catch (e) {
+      print('Warning: Failed to remove node $id from index: $e');
+    }
     return await isar.writeTxn(() => isar.memoryNodes.delete(id));
   }
 
@@ -146,29 +161,34 @@ class MemoryGraph {
     }
 
     // Use pluggable vector index.
-    final searchResults = await _index.search(
-      Float32List.fromList(queryEmbedding.map((e) => e.toDouble()).toList()),
-      topK: topK,
-    );
+    try {
+      final searchResults = await _index.search(
+        Float32List.fromList(queryEmbedding.map((e) => e.toDouble()).toList()),
+        topK: topK,
+      );
 
-    if (searchResults.isNotEmpty) {
-      final nodeIds = searchResults.map((r) => int.parse(r.id)).toList();
-      final nodes = await isar.memoryNodes.getAll(nodeIds);
-      final results = <({MemoryNode node, double distance, String provider})>[];
-      for (var i = 0; i < searchResults.length; i++) {
-        final node = nodes[i];
-        if (node != null) {
-          results.add((
-            node: node,
-            distance: searchResults[i].score,
-            provider: _index.provider,
-          ));
+      if (searchResults.isNotEmpty) {
+        final nodeIds = searchResults.map((r) => int.parse(r.id)).toList();
+        final nodes = await isar.memoryNodes.getAll(nodeIds);
+        final results =
+            <({MemoryNode node, double distance, String provider})>[];
+        for (var i = 0; i < searchResults.length; i++) {
+          final node = nodes[i];
+          if (node != null) {
+            results.add((
+              node: node,
+              distance: searchResults[i].score,
+              provider: _index.provider,
+            ));
+          }
         }
+        return results;
       }
-      return results;
+    } catch (e) {
+      print('Warning: Vector search failed ($e). Falling back to linear scan.');
     }
 
-    // Fallback to linear scan if the index returns no results.
+    // Fallback to linear scan if the index returns no results or fails.
     final allNodes = await isar.memoryNodes.where().findAll();
 
     final distances = allNodes
