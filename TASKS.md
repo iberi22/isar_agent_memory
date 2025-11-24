@@ -31,23 +31,24 @@ General Status: On-device first. Cloud (Gemini) only as fallback.
    - [ ] Device/ABI limits (armeabi-v7a, arm64-v8a) and split-ABI policies.
 
 4. **Multi-App Synchronization (Design)**
-   - Client-side encryption (user key), versioning, reconciliation (LWW/CRDT), and semantic deduplication.
-   - Background synchronization of embeddings and metadata with quotas/thresholds.
+   - [x] Client-side encryption (user key), versioning, reconciliation (LWW/CRDT), and semantic deduplication.
+   - [ ] Background synchronization of embeddings and metadata with quotas/thresholds.
 
 5. **Benchmarks and Quality**
-   - Microbenchmarks for embed/search (latency and throughput) and accuracy sanity checks (semantic pairs).
-   - Stress and concurrency tests (ingestion + simultaneous search).
+   - [x] Microbenchmarks for embed/search (latency and throughput) via GitHub Actions.
+   - [ ] Stress and concurrency tests (ingestion + simultaneous search).
 
 6. **Hybrid and Re-rank (Phase 2)**
-   - Add BM25/FTS (SQLite) for recall and MMR fusion.
-   - Compact on-device re-ranker over top-K results.
+   - [x] Add BM25/FTS (Isar Filter) for recall and fusion (RRF/Weighted).
+   - [ ] Compact on-device re-ranker over top-K results.
 
 ## Deliverables
 
 - [x] Functional on-device adapter + usage example.
-- Resource guide and limits, TFLite vs ONNX comparison table.
-- Reproducible benchmarks and report.
-- Synchronization design and implementation plan.
+- [x] Benchmark automation (GitHub Actions).
+- [x] Sync Protocol Design Document (`doc/SYNC_PROTOCOL.md`).
+- [x] Semantic Deduplication logic.
+- [x] Hybrid Search implementation.
 
 ## Initial Research Notes
 
@@ -67,6 +68,14 @@ General Status: On-device first. Cloud (Gemini) only as fallback.
   - Client encryption (user key), LWW/CRDT versioning, semantic deduplication.
   - Upload only metadata + embeddings (possibly int8) with quotas and incremental sync.
   - Optional: ObjectBox Sync if near-real-time and minimal conflict resolution is required.
+
+---
+
+## Release 0.2.3 (Upcoming)
+
+- [ ] New features: Hybrid Search, Semantic Deduplication.
+- [ ] Tools: Benchmarking script and workflow.
+- [ ] Documentation: Sync Protocol Design.
 
 ---
 

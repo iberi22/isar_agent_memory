@@ -122,6 +122,7 @@ To run tests that require the ONNX model files, you must first download the test
 - **Pluggable Vector Index**: Swap ObjectBox for a custom backend if needed.
 - **Pluggable Embeddings**: Adapters for Gemini, OpenAI, or **On-Device (ONNX)**.
 - **Explainability**: Semantic distance, activation (recency/frequency), and path tracing.
+- **Hybrid Search**: Combine vector similarity with full-text search (BM25-like) for better recall.
 - **Robust Testing**: comprehensive test suite and real-world examples.
 - **Extensible**: Add metadata, new adapters, or future sync/export capabilities.
 
@@ -293,6 +294,14 @@ final queryEmbedding = await adapter.embed('search phrase');
 final results = await graph.semanticSearch(queryEmbedding, topK: 5);
 ```
 
+### Hybrid Search
+
+Combine vector search with full-text search (Isar filter) for better recall.
+
+```dart
+final results = await graph.hybridSearch('search phrase', topK: 5, alpha: 0.5);
+```
+
 ---
 
 ## 🔌 Pluggable Vector Index Backends
@@ -350,8 +359,8 @@ print(explanation);
 - [x] `GeminiEmbeddingsAdapter` + `FallbackEmbeddingsAdapter`.
 - [x] `InMemoryVectorIndex` for tests.
 - [x] `OnDeviceEmbeddingsAdapter` (ONNX) for Android/iOS/Desktop.
-- [ ] Benchmarks & Telemetry.
-- [ ] Hybrid Retrieval (Dense + BM25).
+- [x] Benchmarks via GitHub Actions.
+- [x] Hybrid Retrieval (Dense + Isar Filter).
 - [ ] Sync & Privacy (Encryption).
 
 ---

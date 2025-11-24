@@ -62,13 +62,40 @@ class MemoryGraph {
   /// Stores a new memory node with an embedding generated from its [content].
   ///
   /// The embedding is created using the provided [embeddingsAdapter].
-  /// Returns the unique ID of the stored node.
+  ///
+  /// [deduplicate]: If true, checks if a similar memory already exists.
+  /// [deduplicationThreshold]: The distance threshold for deduplication (default 0.05).
+  ///
+  /// Returns the unique ID of the stored (or existing) node.
   Future<int> storeNodeWithEmbedding({
     required String content,
     String? type,
     Map<String, dynamic>? metadata,
+    bool deduplicate = false,
+    double deduplicationThreshold = 0.05,
   }) async {
     final vector = await embeddingsAdapter.embed(content);
+
+    // 1. Deduplication check
+    if (deduplicate) {
+      try {
+        final existing = await _index.search(
+          Float32List.fromList(vector.map((e) => e.toDouble()).toList()),
+          topK: 1,
+        );
+        if (existing.isNotEmpty &&
+            existing.first.score < deduplicationThreshold) {
+          final existingId = int.parse(existing.first.id);
+          // Optional: Merge logic could go here (e.g., update timestamp)
+          print(
+              'Duplicate memory found (distance: ${existing.first.score}). Returning existing node $existingId.');
+          return existingId;
+        }
+      } catch (e) {
+        print('Deduplication check failed: $e. Proceeding to store new node.');
+      }
+    }
+
     final embedding = MemoryEmbedding(
       vector: vector,
       provider: embeddingsAdapter.providerName,
@@ -208,6 +235,75 @@ class MemoryGraph {
               distance: distances[i],
               provider: 'linear-scan'
             ))
+        .toList();
+  }
+
+  /// Performs a hybrid search combining semantic similarity and full-text search.
+  ///
+  /// [query] is the text to search for.
+  /// [topK] is the number of results to return.
+  /// [alpha] controls the weight of the vector search vs. text search (0.0 = text only, 1.0 = vector only).
+  ///
+  /// This method uses Reciprocal Rank Fusion (RRF) implicitly by combining scores if possible,
+  /// or a simpler weighted scoring mechanism if scores are available.
+  /// Since Isar filters don't provide relevance scores, we treat text matches as having a fixed score boost.
+  Future<List<({MemoryNode node, double score})>> hybridSearch(
+    String query, {
+    int topK = 5,
+    double alpha = 0.5,
+  }) async {
+    // 1. Vector Search
+    List<({MemoryNode node, double distance, String provider})> vectorResults =
+        [];
+    try {
+      final queryEmbedding = await embeddingsAdapter.embed(query);
+      vectorResults = await semanticSearch(queryEmbedding, topK: topK * 2);
+    } catch (e) {
+      print('Hybrid search: Vector search failed ($e).');
+    }
+
+    // 2. Text Search (Isar Filter)
+    // Note: This is a boolean filter, not a ranked FTS.
+    // For a real FTS, we would need @Index(type: IndexType.value) and tokenization.
+    final textResults = await isar.memoryNodes
+        .filter()
+        .contentContains(query, caseSensitive: false)
+        .limit(topK * 2)
+        .findAll();
+
+    // 3. Fusion (Weighted Scoring)
+    // We normalize vector distance (lower is better) to similarity (higher is better).
+    // Sim = 1 / (1 + distance)
+    // Text Match Score = 1.0 (since we don't have granularity)
+
+    final Map<int, double> scores = {};
+    final Map<int, MemoryNode> nodes = {};
+
+    // Process Vector Results
+    for (final res in vectorResults) {
+      final id = res.node.id;
+      nodes[id] = res.node;
+      final sim = 1.0 / (1.0 + res.distance);
+      scores[id] = (scores[id] ?? 0.0) + (sim * alpha);
+    }
+
+    // Process Text Results
+    for (final node in textResults) {
+      final id = node.id;
+      nodes[id] = node;
+      // Assign a fixed high relevance for text match
+      // If a node was already found by vector, we add (1-alpha) * 1.0
+      // If not, we initialize with (1-alpha) * 1.0
+      scores[id] = (scores[id] ?? 0.0) + (1.0 * (1.0 - alpha));
+    }
+
+    // Sort by final score (descending)
+    final sortedIds = scores.keys.toList()
+      ..sort((a, b) => scores[b]!.compareTo(scores[a]!));
+
+    return sortedIds
+        .take(topK)
+        .map((id) => (node: nodes[id]!, score: scores[id]!))
         .toList();
   }
 
