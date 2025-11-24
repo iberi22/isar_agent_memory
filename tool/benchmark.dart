@@ -9,7 +9,8 @@ Future<void> main() async {
   final vocabPath = 'test_resources/vocab.txt';
 
   if (!File(modelPath).existsSync() || !File(vocabPath).existsSync()) {
-    print('Error: Model files not found. Run tool/setup_on_device_test.dart first.');
+    print(
+        'Error: Model files not found. Run tool/setup_on_device_test.dart first.');
     exit(1);
   }
 
@@ -95,7 +96,7 @@ Future<void> main() async {
 
 ## Throughput
 
-- **Total Time:** ${(toMs(latencies.reduce((a,b)=>a+b)) / 1000).toStringAsFixed(2)} s
+- **Total Time:** ${(toMs(latencies.reduce((a, b) => a + b)) / 1000).toStringAsFixed(2)} s
 - **Est. IPS (Inferences Per Second):** ${(1000000 / avg).toStringAsFixed(1)}
 
 ''';

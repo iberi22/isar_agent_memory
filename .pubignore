@@ -26,3 +26,9 @@ pubspec.lock
 
 # Nested test app (not part of published package)
 isar_agent_memory_tests/
+
+# Test resources (models downloaded on-demand)
+test_resources/
+
+# Development tools
+tool/

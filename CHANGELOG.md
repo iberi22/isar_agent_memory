@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.3 - 2024-11-24
+
+- **Fix**: Critical bug in `OnDeviceEmbeddingsAdapter` - corrected `outputs.values.first` to `outputs.first`.
+- **Fix**: Corrected invalid Mermaid diagram syntax in README (ASCII art → valid Mermaid).
+- **Fix**: Moved `http` from dev_dependencies to dependencies for tool scripts.
+- **Improvement**: Replaced `forEach` with for loops in resource cleanup (better Dart practice).
+- **CI/CD**: Disabled automatic benchmark workflow trigger (manual only) and added Linux desktop support.
+- **Chore**: Added `test_resources/` and `tool/` to `.pubignore` to reduce package size.
+
 ## 0.2.2 - 2025-08-18
 
 - **New Feature**: Added `OnDeviceEmbeddingsAdapter` using `onnxruntime` for privacy-first, local embedding generation.
