@@ -79,14 +79,23 @@ General Status: On-device first. Cloud (Gemini) only as fallback.
 
 ---
 
-## Release 0.2.2 (In Progress)
+## Release 0.2.3 (Completed - 2024-11-24)
+
+- [x] Fix critical bugs from 0.2.2
+- [x] Update CHANGELOG.md with all fixes
+- [x] Optimize package size (exclude test_resources/ and tool/)
+- [x] Update workflow to use Flutter instead of Dart
+- [x] Create tag/release (v0.2.3)
+- [x] Publish to pub.dev (isar_agent_memory 0.2.3)
+
+## Release 0.2.2 (Completed - 2025-08-18)
 
 - [x] Clean repo binaries/artifacts: `.dart_tool/`, `isar.dll`, `example/isar.dll`, `*db/`, `isar_agent_memory_tests/testdb/`.
 - [x] Confirm `pubspec.yaml` version `0.2.2` and updated `CHANGELOG.md`.
 - [x] Implement `OnDeviceEmbeddingsAdapter` using ONNX Runtime.
-- [ ] Execute manual workflow `.github/workflows/publish-to-pub-dev.yml` on `main`.
-- [ ] Verify publication on pub.dev (`isar_agent_memory 0.2.2`).
-- [ ] Create tag/release (`v0.2.2`).
+- [x] Execute manual workflow `.github/workflows/publish-to-pub-dev.yml` on `main`.
+- [x] Verify publication on pub.dev (`isar_agent_memory 0.2.2`).
+- [x] Create tag/release (`v0.2.2`).
 
 ---
 
