@@ -24,6 +24,9 @@ build/
 *.so
 *.dylib
 
+# Test resources (models are downloaded on demand)
+test_resources/
+
 # Other
 .DS_Store
 .dart_tool/

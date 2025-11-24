@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:isar_agent_memory/src/on_device_embeddings_adapter.dart';
 
 Future<void> main() async {

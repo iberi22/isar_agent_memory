@@ -122,7 +122,7 @@ class OnDeviceEmbeddingsAdapter implements EmbeddingsAdapter {
         throw Exception('No output returned from ONNX model.');
       }
 
-      final outputValue = outputs.values.first!;
+      final outputValue = outputs.first!;
       // We expect a tensor
       final outputTensor = outputValue as OrtValueTensor;
       final outputData =

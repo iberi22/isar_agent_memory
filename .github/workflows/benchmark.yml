@@ -18,18 +18,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: stable
+          flutter-version: 'stable'
+          channel: 'stable'
 
       - name: Install Dependencies
-        run: dart pub get
+        run: flutter pub get
 
       - name: Download Test Model
-        run: dart run tool/setup_on_device_test.dart
+        run: flutter pub run tool/setup_on_device_test.dart
 
       - name: Run Benchmark
-        run: dart run tool/benchmark.dart
+        run: flutter pub run tool/benchmark.dart
 
       - name: Create Pull Request with Results
         uses: peter-evans/create-pull-request@v6
