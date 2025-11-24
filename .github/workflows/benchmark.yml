@@ -1,12 +1,13 @@
 name: Benchmark
 
 on:
-  workflow_dispatch:
-  push:
-    paths:
-      - 'lib/**'
-      - 'tool/benchmark.dart'
-      - '.github/workflows/benchmark.yml'
+  workflow_dispatch:  # Only manual trigger, not automatic
+  # Disabled automatic triggers until Flutter test environment is available
+  # push:
+  #   paths:
+  #     - 'lib/**'
+  #     - 'tool/benchmark.dart'
+  #     - '.github/workflows/benchmark.yml'
 
 jobs:
   benchmark:
@@ -22,6 +23,9 @@ jobs:
         with:
           flutter-version: 'stable'
           channel: 'stable'
+
+      - name: Enable Linux Desktop
+        run: flutter config --enable-linux-desktop
 
       - name: Install Dependencies
         run: flutter pub get

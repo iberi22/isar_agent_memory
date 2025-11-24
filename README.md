@@ -205,23 +205,13 @@ MIT
 - **LLM-Agnostic**: Use with any agent, chatbot, or LLM workflow.
 
 ```mermaid
-+-------------------+
-|   Agent / LLM     |
-+-------------------+
-         |
-         v
-+-------------------+
-|  MemoryGraph API  |
-+-------------------+
-         |
-         v
-+-------------------+         +----------------------+
-|  Isar (Graph DB)  | <-----> |  ObjectBox (ANN Vector DB) |
-+-------------------+         +----------------------+
-         |                               |
-         v                               v
-   Nodes, Edges,                 Embeddings, Index
-   Metadata                      (HNSW, fast search)
+graph TD
+    A[Agent / LLM] --> B[MemoryGraph API]
+    B --> C[Isar Graph DB]
+    B --> D[ObjectBox ANN Vector DB]
+    C --> E[Nodes, Edges, Embeddings, Index]
+    D --> E
+    E --> F[Metadata HNSW, fast search]
 ```
 
 - **MemoryGraph**: Main API.
