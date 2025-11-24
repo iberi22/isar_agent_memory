@@ -17,7 +17,7 @@
 isar_agent_memory: ^0.2.2
 isar: ^3.1.0+1
 # ObjectBox is the default vector backend.
-# Add your embedding provider dependencies as needed.
+# onnxruntime is used for on-device embeddings.
 ```
 
 ### 2. Basic Usage
@@ -60,12 +60,42 @@ if (results.isNotEmpty) {
 
 ---
 
+## 🔒 On-Device Embeddings (Local Privacy)
+
+You can run embeddings entirely on-device using ONNX Runtime (e.g., with `all-MiniLM-L6-v2`).
+
+### 1. Download Model and Vocab
+
+- Download the ONNX model (e.g., `model.onnx` or `model_quantized.onnx`) from Hugging Face or similar.
+- Download the `vocab.txt` used by the model (WordPiece vocabulary).
+
+### 2. Usage
+
+```dart
+import 'package:isar_agent_memory/isar_agent_memory.dart';
+
+final adapter = OnDeviceEmbeddingsAdapter(
+  modelPath: 'assets/model.onnx',
+  vocabPath: 'assets/vocab.txt',
+  dimension: 384, // Default for MiniLM-L6-v2
+);
+
+// Initialize (loads model and vocab)
+await adapter.initialize();
+
+final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
+```
+
+> **Note**: For mobile apps (Flutter), ensure you add the `.onnx` and `.txt` files to your `pubspec.yaml` assets.
+
+---
+
 ## 🧬 Features
 
 - **Universal Graph API**: Store, recall, relate, search, and explain memories.
 - **Fast ANN Search**: Uses **ObjectBox (HNSW)** as the default vector backend.
 - **Pluggable Vector Index**: Swap ObjectBox for a custom backend if needed.
-- **Pluggable Embeddings**: Adapters for Gemini, OpenAI, or custom providers.
+- **Pluggable Embeddings**: Adapters for Gemini, OpenAI, or **On-Device (ONNX)**.
 - **Explainability**: Semantic distance, activation (recency/frequency), and path tracing.
 - **Robust Testing**: comprehensive test suite and real-world examples.
 - **Extensible**: Add metadata, new adapters, or future sync/export capabilities.
@@ -78,6 +108,7 @@ if (results.isNotEmpty) {
 - [ObjectBox](https://objectbox.io): On-device vector search (HNSW) with floatVector & HNSW index (default).
 - [LangChain](https://pub.dev/packages/langchain): LLM/agent workflows.
 - [Gemini](https://pub.dev/packages/google_generative_ai): Embeddings provider.
+- [ONNX Runtime](https://onnxruntime.ai): On-device inference.
 
 ---
 
@@ -220,7 +251,7 @@ Compose adapters with `FallbackEmbeddingsAdapter` to prefer on-device/local mode
 import 'dart:io';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
 
-final local = MyLocalAdapter(); // Your local adapter
+final local = OnDeviceEmbeddingsAdapter(modelPath: '...', vocabPath: '...');
 final gemini = GeminiEmbeddingsAdapter(
   apiKey: Platform.environment['GEMINI_API_KEY'] ?? '',
 );
@@ -309,7 +340,7 @@ print(explanation);
 - [x] Pluggable `VectorIndex` + `ObjectBoxVectorIndex` default.
 - [x] `GeminiEmbeddingsAdapter` + `FallbackEmbeddingsAdapter`.
 - [x] `InMemoryVectorIndex` for tests.
-- [ ] `OnDeviceEmbeddingsAdapter` (TFLite/ONNX) for Android.
+- [x] `OnDeviceEmbeddingsAdapter` (ONNX) for Android/iOS/Desktop.
 - [ ] Benchmarks & Telemetry.
 - [ ] Hybrid Retrieval (Dense + BM25).
 - [ ] Sync & Privacy (Encryption).

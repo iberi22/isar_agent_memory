@@ -25,6 +25,7 @@ dependencies:
   graphs: ^2.3.1
   objectbox: ^5.0.0 # Optional: On-device vector search (HNSW) via ObjectBox
   flat_buffers: ^23.5.26 # Required by generated lib/objectbox.g.dart
+  onnxruntime: ^1.4.1 # For on-device embeddings
   # Add your embedding provider dependencies as needed (e.g., google_generative_ai, openai, etc.)
 
 dev_dependencies:

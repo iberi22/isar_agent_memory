@@ -11,5 +11,6 @@ export 'src/memory_graph.dart';
 export 'src/embeddings_adapter.dart';
 export 'src/gemini_embeddings_adapter.dart';
 export 'src/fallback_embeddings_adapter.dart';
+export 'src/on_device_embeddings_adapter.dart';
 export 'src/vector_index.dart';
 export 'src/vector_index_objectbox.dart';

@@ -15,18 +15,20 @@ General Status: On-device first. Cloud (Gemini) only as fallback.
 ## Technical Tasks
 
 1. **On-Device Backend Selection**
-   - Evaluate `tflite_flutter` vs `onnxruntime` (availability, size, EPs: NNAPI, CPU, GPU).
-   - Choose a base model (e.g., MiniLM/E5-small) and prepare export (ONNX/TFLite) + INT8 quantization.
+   - [x] Evaluate `tflite_flutter` vs `onnxruntime` (Selected `onnxruntime`).
+   - [x] Choose a base model (e.g., MiniLM/E5-small) and prepare export (ONNX/TFLite) + INT8 quantization.
 
 2. **Adapter and Utilities**
-   - Create `OnDeviceEmbeddingsAdapter` with lazy initialization and batch embedding.
-   - Handle versions/dimensions per `namespace` and optional L2 normalization.
-   - Telemetry: p50/p95 latencies, peak memory, errors.
+   - [x] Create `OnDeviceEmbeddingsAdapter` with lazy initialization.
+   - [x] Implement WordPiece tokenizer (`WordPieceTokenizer`).
+   - [x] Handle versions/dimensions per `namespace` and optional L2 normalization.
+   - [ ] Telemetry: p50/p95 latencies, peak memory, errors.
 
 3. **Resource Investigation (Document in README)**
-   - Model size (fp32 vs INT8) and RAM required during inference (model + buffers).
-   - Storage cost for N vectors (fp32 vs INT8) and approximate HNSW overhead.
-   - Device/ABI limits (armeabi-v7a, arm64-v8a) and split-ABI policies.
+   - [x] Document model download and usage instructions.
+   - [ ] Model size (fp32 vs INT8) and RAM required during inference (model + buffers).
+   - [ ] Storage cost for N vectors (fp32 vs INT8) and approximate HNSW overhead.
+   - [ ] Device/ABI limits (armeabi-v7a, arm64-v8a) and split-ABI policies.
 
 4. **Multi-App Synchronization (Design)**
    - Client-side encryption (user key), versioning, reconciliation (LWW/CRDT), and semantic deduplication.
@@ -42,7 +44,7 @@ General Status: On-device first. Cloud (Gemini) only as fallback.
 
 ## Deliverables
 
-- Functional on-device adapter + usage example.
+- [x] Functional on-device adapter + usage example.
 - Resource guide and limits, TFLite vs ONNX comparison table.
 - Reproducible benchmarks and report.
 - Synchronization design and implementation plan.
@@ -72,6 +74,7 @@ General Status: On-device first. Cloud (Gemini) only as fallback.
 
 - [x] Clean repo binaries/artifacts: `.dart_tool/`, `isar.dll`, `example/isar.dll`, `*db/`, `isar_agent_memory_tests/testdb/`.
 - [x] Confirm `pubspec.yaml` version `0.2.2` and updated `CHANGELOG.md`.
+- [x] Implement `OnDeviceEmbeddingsAdapter` using ONNX Runtime.
 - [ ] Execute manual workflow `.github/workflows/publish-to-pub-dev.yml` on `main`.
 - [ ] Verify publication on pub.dev (`isar_agent_memory 0.2.2`).
 - [ ] Create tag/release (`v0.2.2`).
@@ -87,3 +90,4 @@ General Status: On-device first. Cloud (Gemini) only as fallback.
 - [x] Version bump 0.2.0, `flat_buffers` and reinforced `.pubignore`.
 - [x] Update dependencies to latest stable versions (LangChain 0.8.0, ObjectBox 5.0.0).
 - [x] Translate documentation to English.
+- [x] Implement On-Device Embeddings with ONNX Runtime.
