@@ -79,13 +79,18 @@ class OnDeviceEmbeddingsAdapter implements EmbeddingsAdapter {
 
     final shape = [1, tokenIds.length];
     final inputIdsInt64 = Int64List.fromList(tokenIds);
-    final attentionMaskInt64 = Int64List.fromList(List.filled(tokenIds.length, 1));
-    final tokenTypeIdsInt64 = Int64List.fromList(List.filled(tokenIds.length, 0));
+    final attentionMaskInt64 =
+        Int64List.fromList(List.filled(tokenIds.length, 1));
+    final tokenTypeIdsInt64 =
+        Int64List.fromList(List.filled(tokenIds.length, 0));
 
     // Create OrtValues
-    final inputIdsOrt = OrtValueTensor.createTensorWithDataList(inputIdsInt64, shape);
-    final attentionMaskOrt = OrtValueTensor.createTensorWithDataList(attentionMaskInt64, shape);
-    final tokenTypeIdsOrt = OrtValueTensor.createTensorWithDataList(tokenTypeIdsInt64, shape);
+    final inputIdsOrt =
+        OrtValueTensor.createTensorWithDataList(inputIdsInt64, shape);
+    final attentionMaskOrt =
+        OrtValueTensor.createTensorWithDataList(attentionMaskInt64, shape);
+    final tokenTypeIdsOrt =
+        OrtValueTensor.createTensorWithDataList(tokenTypeIdsInt64, shape);
 
     final inputs = {
       'input_ids': inputIdsOrt,
@@ -93,68 +98,76 @@ class OnDeviceEmbeddingsAdapter implements EmbeddingsAdapter {
       'token_type_ids': tokenTypeIdsOrt,
     };
 
-    // 3. Run Inference
     final runOptions = OrtRunOptions();
-    final outputs = _session.run(runOptions, inputs);
+    List<OrtValue?>? outputs;
 
-    // 4. Extract Embeddings
-    // Usually the output is 'last_hidden_state' or similar.
-    // For sentence embeddings, we often need Mean Pooling.
-    // However, some exported models (like those from Optimum) might already output the pooled embedding.
-    // Let's assume the standard raw BERT output: [batch, seq_len, hidden_size].
-    // We will perform Mean Pooling here manually if the model doesn't do it.
+    try {
+      // 3. Run Inference
+      outputs = _session.run(runOptions, inputs);
 
-    // Check outputs
-    // Typical output names: 'last_hidden_state', 'pooler_output'
-    // Or if exported specifically for sentence-transformers, it might be just 'embeddings'.
+      // 4. Extract Embeddings
+      // Usually the output is 'last_hidden_state' or similar.
+      // For sentence embeddings, we often need Mean Pooling.
+      // However, some exported models (like those from Optimum) might already output the pooled embedding.
+      // Let's assume the standard raw BERT output: [batch, seq_len, hidden_size].
+      // We will perform Mean Pooling here manually if the model doesn't do it.
 
-    // Let's try to find a valid output tensor.
-    // For now, we assume 'last_hidden_state' exists or we take the first output.
-    final outputValue = outputs.values.first;
-    // We expect a tensor
-    final outputTensor = outputValue as OrtValueTensor;
-    final outputData = outputTensor.value as List; // Should be flattened float list
+      // Check outputs
+      // Typical output names: 'last_hidden_state', 'pooler_output'
+      // Or if exported specifically for sentence-transformers, it might be just 'embeddings'.
 
-    // If output is [1, 384] (already pooled), we are good.
-    // If output is [1, seq_len, 384], we need to pool.
+      // Let's try to find a valid output tensor.
+      // For now, we assume 'last_hidden_state' exists or we take the first output.
+      if (outputs.isEmpty || outputs.first == null) {
+        throw Exception('No output returned from ONNX model.');
+      }
 
-    // Simple heuristic: check total elements
-    if (outputData.length == _dimension) {
-      // Already pooled
+      final outputValue = outputs.values.first!;
+      // We expect a tensor
+      final outputTensor = outputValue as OrtValueTensor;
+      final outputData =
+          outputTensor.value as List; // Should be flattened float list
+
+      // If output is [1, 384] (already pooled), we are good.
+      // If output is [1, seq_len, 384], we need to pool.
+
+      // Simple heuristic: check total elements
+      if (outputData.length == _dimension) {
+        return outputData.map((e) => (e as num).toDouble()).toList();
+      }
+
+      // If larger, assume [1, seq_len, dim] and do Mean Pooling
+      // Logic: Sum vectors for all tokens (respecting mask) and divide by count.
+      // Since we passed a mask of all 1s and batch=1, we just average all vectors.
+
+      final seqLen = tokenIds.length;
+      if (outputData.length == seqLen * _dimension) {
+        final pooled = List<double>.filled(_dimension, 0.0);
+
+        for (var i = 0; i < seqLen; i++) {
+          for (var j = 0; j < _dimension; j++) {
+            // outputData is flattened: index = i * dim + j
+            pooled[j] += (outputData[i * _dimension + j] as num).toDouble();
+          }
+        }
+
+        for (var j = 0; j < _dimension; j++) {
+          pooled[j] /= seqLen;
+        }
+
+        return pooled;
+      }
+
+      throw Exception(
+          'Unexpected output shape from ONNX model. Expected dimension $_dimension or sequence length * $_dimension.');
+    } finally {
+      // Ensure native resources are released even if an exception occurs
       inputs.forEach((k, v) => v.release());
       runOptions.release();
-      outputs.forEach((v) => v?.release());
-      return outputData.map((e) => (e as num).toDouble()).toList();
+      if (outputs != null) {
+        outputs.forEach((v) => v?.release());
+      }
     }
-
-    // If larger, assume [1, seq_len, dim] and do Mean Pooling
-    // Logic: Sum vectors for all tokens (respecting mask) and divide by count.
-    // Since we passed a mask of all 1s and batch=1, we just average all vectors.
-
-    final seqLen = tokenIds.length;
-    if (outputData.length == seqLen * _dimension) {
-       final pooled = List<double>.filled(_dimension, 0.0);
-
-       for (var i = 0; i < seqLen; i++) {
-         for (var j = 0; j < _dimension; j++) {
-           // outputData is flattened: index = i * dim + j
-           pooled[j] += (outputData[i * _dimension + j] as num).toDouble();
-         }
-       }
-
-       for (var j = 0; j < _dimension; j++) {
-         pooled[j] /= seqLen;
-       }
-
-       // Cleanup
-      inputs.forEach((k, v) => v.release());
-      runOptions.release();
-      outputs.forEach((v) => v?.release());
-
-       return pooled;
-    }
-
-    throw Exception('Unexpected output shape from ONNX model. Expected dimension $_dimension or sequence length * $_dimension.');
   }
 
   /// Release native resources.

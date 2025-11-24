@@ -90,6 +90,31 @@ final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
 
 ---
 
+## 🧪 Testing
+
+### Running Unit Tests
+
+```bash
+dart test
+```
+
+### Running On-Device Adapter Tests
+
+To run tests that require the ONNX model files, you must first download the test resources:
+
+1. **Download Test Resources**:
+   ```bash
+   dart run tool/setup_on_device_test.dart
+   ```
+   This will download `model.onnx` and `vocab.txt` to the `test_resources/` directory.
+
+2. **Run the Tests**:
+   ```bash
+   dart test test/on_device_embeddings_adapter_test.dart
+   ```
+
+---
+
 ## 🧬 Features
 
 - **Universal Graph API**: Store, recall, relate, search, and explain memories.
@@ -132,22 +157,6 @@ The test suite (`test/memory_graph_test.dart`) includes a workaround that automa
   dart test
   ```
 - **Windows DLLs**: Handled automatically by the test runner as described above.
-
----
-
-## 🧪 Testing
-
-- Run unit tests:
-
-```sh
-dart test
-```
-
-- Run example:
-
-```sh
-dart run example/main.dart
-```
 
 ---
 
