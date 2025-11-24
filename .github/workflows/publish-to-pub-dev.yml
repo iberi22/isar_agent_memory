@@ -31,10 +31,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@v1
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+          channel: 'stable'
       - name: Dry-run publish
-        run: dart pub publish --dry-run
+        run: flutter pub publish --dry-run
 
   publish:
     name: Publish
@@ -43,8 +46,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@v1
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+          channel: 'stable'
       - name: Configure pub.dev credentials
         env:
           PUB_CREDENTIALS_JSON: ${{ secrets.PUB_CREDENTIALS_JSON }}
@@ -60,6 +66,6 @@ jobs:
           printf "%s" "${PUB_CREDENTIALS_JSON}" > ~/.pub-cache/credentials.json
           chmod 600 ~/.pub-cache/credentials.json
       - name: Dry-run publish
-        run: dart pub publish --dry-run
+        run: flutter pub publish --dry-run
       - name: Publish to pub.dev
-        run: dart pub publish -f
+        run: flutter pub publish -f
