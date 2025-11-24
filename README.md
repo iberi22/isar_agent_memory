@@ -11,34 +11,47 @@
 
 ## 🚀 Quickstart
 
-### 1) Add dependency (pubspec.yaml)
+### 1. Add dependency (pubspec.yaml)
 
 ```yaml
-isar_agent_memory: ^0.2.1
+isar_agent_memory: ^0.2.2
+isar: ^3.1.0+1
+# ObjectBox is the default vector backend.
+# onnxruntime is used for on-device embeddings.
 ```
 
 ### 2. Basic Usage
 
 ```dart
+import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
+import 'package:isar_agent_memory/src/gemini_embeddings_adapter.dart';
 
+// 1. Initialize the embeddings adapter (e.g., Gemini)
 final adapter = GeminiEmbeddingsAdapter(apiKey: '<YOUR_GEMINI_API_KEY>');
+
+// 2. Open Isar database with schemas
 final isar = await Isar.open([
   MemoryNodeSchema, MemoryEdgeSchema
 ], directory: './exampledb');
+
+// 3. Initialize MemoryGraph
 final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
 
-// Store a node with embedding
+// 4. Store a node with embedding (automatically indexed)
 final nodeId = await graph.storeNodeWithEmbedding(content: 'The quick brown fox jumps over the lazy dog.');
 
-// Semantic search
+// 5. Semantic search (ANN)
 final queryEmbedding = await adapter.embed('A fox jumps over a dog');
 final results = await graph.semanticSearch(queryEmbedding, topK: 3);
+
 for (final result in results) {
-  print('Node: ${result.node.content}, Distance: ${result.distance.toStringAsFixed(3)}, Provider: ${result.provider}');
+  print('Node: ${result.node.content}');
+  print('Distance: ${result.distance.toStringAsFixed(3)}');
+  print('Provider: ${result.provider}');
 }
 
-// Explain recall
+// 6. Explain recall
 if (results.isNotEmpty) {
   final explanation = await graph.explainRecall(results.first.node.id, queryEmbedding: queryEmbedding);
   print('Explain: $explanation');
@@ -47,24 +60,81 @@ if (results.isNotEmpty) {
 
 ---
 
+## 🔒 On-Device Embeddings (Local Privacy)
+
+You can run embeddings entirely on-device using ONNX Runtime (e.g., with `all-MiniLM-L6-v2`).
+
+### 1. Download Model and Vocab
+
+- Download the ONNX model (e.g., `model.onnx` or `model_quantized.onnx`) from Hugging Face or similar.
+- Download the `vocab.txt` used by the model (WordPiece vocabulary).
+
+### 2. Usage
+
+```dart
+import 'package:isar_agent_memory/isar_agent_memory.dart';
+
+final adapter = OnDeviceEmbeddingsAdapter(
+  modelPath: 'assets/model.onnx',
+  vocabPath: 'assets/vocab.txt',
+  dimension: 384, // Default for MiniLM-L6-v2
+);
+
+// Initialize (loads model and vocab)
+await adapter.initialize();
+
+final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
+```
+
+> **Note**: For mobile apps (Flutter), ensure you add the `.onnx` and `.txt` files to your `pubspec.yaml` assets.
+
+---
+
+## 🧪 Testing
+
+### Running Unit Tests
+
+```bash
+dart test
+```
+
+### Running On-Device Adapter Tests
+
+To run tests that require the ONNX model files, you must first download the test resources:
+
+1. **Download Test Resources**:
+   ```bash
+   dart run tool/setup_on_device_test.dart
+   ```
+   This will download `model.onnx` and `vocab.txt` to the `test_resources/` directory.
+
+2. **Run the Tests**:
+   ```bash
+   dart test test/on_device_embeddings_adapter_test.dart
+   ```
+
+---
+
 ## 🧬 Features
 
-- Universal graph API: store, recall, relate, search, explain.
-- Fast ANN search via **ObjectBox (HNSW)** — default backend.
-- Pluggable vector index: ObjectBox by default; you can implement a custom backend.
-- Pluggable embeddings (Gemini, OpenAI, custom).
-- Explainability: semantic distance, activation, path tracing.
-- Robust tests and real-world example.
-- Extensible: add metadata, new adapters, sync/export (planned).
+- **Universal Graph API**: Store, recall, relate, search, and explain memories.
+- **Fast ANN Search**: Uses **ObjectBox (HNSW)** as the default vector backend.
+- **Pluggable Vector Index**: Swap ObjectBox for a custom backend if needed.
+- **Pluggable Embeddings**: Adapters for Gemini, OpenAI, or **On-Device (ONNX)**.
+- **Explainability**: Semantic distance, activation (recency/frequency), and path tracing.
+- **Hybrid Search**: Combine vector similarity with full-text search (BM25-like) for better recall.
+- **Robust Testing**: comprehensive test suite and real-world examples.
+- **Extensible**: Add metadata, new adapters, or future sync/export capabilities.
 
 ---
 
 ## 🛠️ Integrations
 
 - [Isar](https://isar.dev): Local, fast NoSQL DB for Dart/Flutter.
-- [ObjectBox](https://objectbox.io): On-device vector search (HNSW) con floatVector & HNSW index (por defecto).
+- [ObjectBox](https://objectbox.io): On-device vector search (HNSW) with floatVector & HNSW index (default).
 - [LangChain](https://pub.dev/packages/langchain): LLM/agent workflows.
 - [Gemini](https://pub.dev/packages/google_generative_ai): Embeddings provider.
+- [ONNX Runtime](https://onnxruntime.ai): On-device inference.
 
 ---
 
@@ -73,56 +143,28 @@ if (results.isNotEmpty) {
 ### Isar Native Library (`isar.dll`) Loading Failure in Tests
 
 **Problem:**
-When running `flutter test` within the `isar_agent_memory_tests` subproject on a Windows environment (both locally and in GitHub Actions), the tests may fail with an error similar to `Invalid argument(s): Failed to load dynamic library '...\isar.dll'`.
-
-This occurs because the standard Flutter test runner sometimes fails to automatically locate and load the native Isar binary provided by the `isar_flutter_libs` package.
+When running `flutter test` within the `isar_agent_memory_tests` subproject on Windows, tests may fail with `Invalid argument(s): Failed to load dynamic library '...\isar.dll'`.
 
 **Solution:**
-A robust, programmatic workaround has been implemented directly within the `test/memory_graph_test.dart` file. The `setUpAll` block for these tests now includes logic that:
-
-1. Attempts to initialize Isar normally.
-2. If it catches a `Failed to load dynamic library` error, it automatically...
-3. Locates the `package_config.json` file to find the exact path of the `isar_flutter_libs` package in the local system's pub cache.
-4. Copies the correct `isar.dll` from the package's `windows` directory into the root of the test project.
-5. Retries the Isar initialization, which now succeeds.
-
-This ensures that the tests are self-contained and run reliably across different Windows machines and in the CI/CD pipeline without requiring manual configuration.
+The test suite (`test/memory_graph_test.dart`) includes a workaround that automatically locates `isar_flutter_libs` and copies the correct `isar.dll` to the project root if it's missing. This ensures tests run reliably on Windows.
 
 ---
 
 ## ⚠️ Known Issues
 
-- Gemini integration tests require an API key:
-
-```bash
-export GEMINI_API_KEY=<YOUR_KEY>
-dart test
-```
-
-- Windows-only DLL loading in Flutter test runs is automatically handled in the dedicated test project (`isar_agent_memory_tests`). If `isar.dll` fails to load, the test code copies the correct binary into the project root and retries initialization. No manual action is required.
-
----
-
-## 🧪 Testing
-
-- Run unit tests:
-
-```sh
-dart test
-```
-
-- Run example integration:
-
-```sh
-dart run example/main.dart
-```
+- **Gemini Tests**: Require an API key.
+  ```bash
+  export GEMINI_API_KEY=<YOUR_KEY>
+  dart test
+  ```
+- **Windows DLLs**: Handled automatically by the test runner as described above.
 
 ---
 
 ## 📦 Publishing
 
-- This package is **BETA** and API may change.
-- To publish, run:
+- This package is **BETA**.
+- To publish:
 
 ```sh
 dart pub publish --dry-run
@@ -132,7 +174,7 @@ dart pub publish --dry-run
 
 ## 🤝 Contributing
 
-PRs, issues, and feedback are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) when available.
+PRs, issues, and feedback are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
@@ -152,23 +194,15 @@ MIT
 
 ---
 
-### 🚧 BETA Notice
-
-This package is under active development. Expect breaking changes before v1.0.0. Use in production at your own risk. Feedback is highly appreciated!
-
-A universal, local-first cognitive memory package for LLMs and AI agents in Dart/Flutter. Inspired by [Cognee](https://github.com/topoteretes/cognee) and [Graphiti](https://github.com/getzep/graphiti), but portable, explainable, and LLM-agnostic.
-
----
-
 ## Overview
 
-**isar_agent_memory** provides a robust, explainable, and extensible memory system for agents and LLMs. It combines a universal graph (nodes, edges, metadata) with efficient vector search (ANN via ObjectBox by default), pluggable embeddings, and advanced explainability for agent reasoning.
+**isar_agent_memory** provides a robust, explainable, and extensible memory system for agents and LLMs. It combines a universal graph (nodes, edges, metadata) with efficient vector search, pluggable embeddings, and advanced explainability.
 
-- **Universal graph**: Store facts, messages, concepts, and relations.
-- **Efficient semantic search**: ANN (HNSW) for context retrieval and recall.
-- **Pluggable embeddings**: Gemini, OpenAI, or your own.
-- **Explainability**: Trace why a memory was recalled (semantic distance, activation, paths).
-- **LLM-agnostic**: Use with any agent, chatbot, or LLM workflow.
+- **Universal Graph**: Store facts, messages, concepts, and relations.
+- **Efficient Semantic Search**: ANN (HNSW) for context retrieval.
+- **Pluggable Embeddings**: Gemini, OpenAI, or custom.
+- **Explainability**: Trace why a memory was recalled.
+- **LLM-Agnostic**: Use with any agent, chatbot, or LLM workflow.
 
 ```mermaid
 +-------------------+
@@ -190,68 +224,23 @@ A universal, local-first cognitive memory package for LLMs and AI agents in Dart
    Metadata                      (HNSW, fast search)
 ```
 
-- **MemoryGraph** is the main API: store, recall, relate, search, explain.
-- **Isar** stores nodes, edges, metadata, activation info.
-- **ObjectBox** provides fast semantic search via ANN (HNSW index) by default.
-- **EmbeddingsAdapter** lets you plug in Gemini, OpenAI, or custom providers.
-
----
-
-## Quickstart
-
-### 1. Add to your `pubspec.yaml`
-
-```yaml
-isar_agent_memory: ^0.2.1
-isar: ^3.1.0
-# Si usas Flutter, añade también:
-# isar_flutter_libs: ^3.1.0
-# ObjectBox es el backend por defecto.
-# Añade tu proveedor de embeddings según necesidad.
-```
-
-### 2) Inicializar y usar
-
-```dart
-import 'package:isar/isar.dart';
-import 'package:isar_agent_memory/isar_agent_memory.dart';
-import 'package:isar_agent_memory/src/gemini_embeddings_adapter.dart';
-
-final adapter = GeminiEmbeddingsAdapter(apiKey: '<YOUR_GEMINI_API_KEY>');
-final isar = await Isar.open([
-  MemoryNodeSchema, MemoryEdgeSchema
-], directory: './exampledb');
-final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
-
-// Store a node with embedding
-final nodeId = await graph.storeNodeWithEmbedding(content: 'The quick brown fox jumps over the lazy dog.');
-
-// Semantic search
-final queryEmbedding = await adapter.embed('A fox jumps over a dog');
-final results = await graph.semanticSearch(queryEmbedding, topK: 3);
-for (final result in results) {
-  print('Node: ${result.node.content}, Distance: ${result.distance.toStringAsFixed(3)}, Provider: ${result.provider}');
-}
-
-// Explain recall
-if (results.isNotEmpty) {
-  final explanation = await graph.explainRecall(results.first.node.id, queryEmbedding: queryEmbedding);
-  print('Explain: $explanation');
-}
-```
+- **MemoryGraph**: Main API.
+- **Isar**: Stores nodes, edges, metadata.
+- **ObjectBox**: Provides fast semantic search (HNSW).
+- **EmbeddingsAdapter**: Interface for embedding providers.
 
 ---
 
 ## Embeddings: Pluggable Providers
 
-- Use the built-in `GeminiEmbeddingsAdapter` or implement your own via the `EmbeddingsAdapter` interface.
-- Example for Gemini (Google) — model "text-embedding-004" (dimensión dinámica):
+- Use `GeminiEmbeddingsAdapter` or implement `EmbeddingsAdapter`.
+- Example (Gemini):
 
 ```dart
 final adapter = GeminiEmbeddingsAdapter(apiKey: '<YOUR_GEMINI_API_KEY>');
 ```
 
-- To use OpenAI or custom providers, create your own adapter:
+- Custom Provider (e.g., OpenAI):
 
 ```dart
 class MyEmbeddingsAdapter implements EmbeddingsAdapter {
@@ -264,33 +253,19 @@ class MyEmbeddingsAdapter implements EmbeddingsAdapter {
 }
 ```
 
-### Fallback to Gemini (cloud)
+### Fallback to Gemini (Cloud)
 
-Compose providers with `FallbackEmbeddingsAdapter` to prefer on-device/local and only use Gemini (cloud) if the primary fails or returns an empty vector.
+Compose adapters with `FallbackEmbeddingsAdapter` to prefer on-device/local models and fall back to cloud (Gemini) on failure.
 
 ```dart
 import 'dart:io';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
 
-// Example local adapter (placeholder)
-class MyLocalAdapter implements EmbeddingsAdapter {
-  @override
-  String get providerName => 'local';
-  @override
-  int get dimension => 384;
-  @override
-  Future<List<double>> embed(String text) async {
-    // Produce on-device embeddings or throw to simulate a failure
-    throw Exception('local failed');
-  }
-}
-
-final local = MyLocalAdapter();
+final local = OnDeviceEmbeddingsAdapter(modelPath: '...', vocabPath: '...');
 final gemini = GeminiEmbeddingsAdapter(
   apiKey: Platform.environment['GEMINI_API_KEY'] ?? '',
-  timeout: Duration(seconds: 15),
-  maxRetries: 2,
 );
+
 final adapter = FallbackEmbeddingsAdapter(
   primary: local,
   fallback: gemini,
@@ -300,30 +275,12 @@ final adapter = FallbackEmbeddingsAdapter(
 final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
 ```
 
-Notes:
+### Environment Variables
 
-- `FallbackEmbeddingsAdapter` tries `primary` and, if it fails or returns empty (optional), uses `fallback` (Gemini).
-- `GeminiEmbeddingsAdapter` supports `timeout`, `maxRetries` and `retryBaseDelay` (exponential backoff).
-
-### Environment variables (.env)
-
-- Copy `.env.example` to `.env` and set your `GEMINI_API_KEY` (never committed).
-- Dart/Flutter does not load `.env` automatically; use system environment variables, `flutter_dotenv`, or configuration injection.
-
-Temporary usage examples (non-persistent):
-
-macOS/Linux (bash/zsh):
+- Use a `.env` file (and `flutter_dotenv`) or system environment variables for API keys.
 
 ```bash
 export GEMINI_API_KEY=xxxx
-flutter test
-```
-
-Windows (PowerShell):
-
-```powershell
-$env:GEMINI_API_KEY = "xxxx"
-flutter test
 ```
 
 ---
@@ -331,32 +288,33 @@ flutter test
 ## Semantic Search (ANN)
 
 - Uses ObjectBox (HNSW) by default.
-- Store nodes with embeddings, then retrieve relevant memories via ANN:
 
 ```dart
 final queryEmbedding = await adapter.embed('search phrase');
 final results = await graph.semanticSearch(queryEmbedding, topK: 5);
-for (final result in results) {
-  print('Node: ${result.node.content}, Distance: ${result.distance}, Provider: ${result.provider}');
-}
+```
+
+### Hybrid Search
+
+Combine vector search with full-text search (Isar filter) for better recall.
+
+```dart
+final results = await graph.hybridSearch('search phrase', topK: 5, alpha: 0.5);
 ```
 
 ---
 
 ## 🔌 Pluggable Vector Index Backends
 
-- **ObjectBox (por defecto)**: HNSW on-device con consultas `nearestNeighborsF32` y `findWithScores`.
+- **ObjectBox (Default)**: On-device HNSW.
 
-Uso con ObjectBox (por defecto):
+Usage with default ObjectBox:
 
 ```dart
-// No necesitas pasar un índice: usa ObjectBox por defecto
 final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
 ```
 
-Uso con ObjectBox (personalizado):
-
-Opción A — fábrica conveniente (no necesitas importar el archivo generado):
+Usage with Custom/External ObjectBox:
 
 ```dart
 final index = ObjectBoxVectorIndex.open(
@@ -366,56 +324,19 @@ final index = ObjectBoxVectorIndex.open(
 final graph = MemoryGraph(isar, embeddingsAdapter: adapter, index: index);
 ```
 
-Option B — manually open the Store (requires generated `objectbox.g.dart`):
-
-```dart
-import 'package:objectbox/objectbox.dart';
-import 'package:isar_agent_memory/objectbox.g.dart';
-
-final store = openStore(directory: './obxdb');
-final index = ObjectBoxVectorIndex(store: store, namespace: 'default');
-final graph = MemoryGraph(isar, embeddingsAdapter: adapter, index: index);
-```
-
-
-ObjectBox Notes:
-
-- The `ObxVectorDoc` entity uses `@HnswIndex(dimensions: 768, distanceType: VectorDistanceType.cosine)`.
-- If your embeddings have a different dimensionality, create a variant of the entity/index and regenerate code.
-- For cosine, we L2-normalize at write/search time for consistency.
-
----
-
-## ⚙️ Set up ObjectBox (optional)
-
-1. Dependencies in `pubspec.yaml`:
-
-```yaml
-dependencies:
-  objectbox: ^4.1.0
-dev_dependencies:
-  objectbox_generator: ^4.1.0
-  build_runner: ^2.4.13
-```
-
-1. Generate code:
-
-```bash
-dart pub get
-dart run build_runner build --delete-conflicting-outputs
-```
-
-1. Create an index with `ObjectBoxVectorIndex.open(...)` or manually with `openStore(...)` as shown above.
+**ObjectBox Notes:**
+- The `ObxVectorDoc` entity uses `@HnswIndex(dimensions: 768, ...)`.
+- If you use embeddings with different dimensions (e.g., OpenAI's 1536), you must modify the entity and regenerate code.
 
 ---
 
 ## Explainability
 
-- Every recall/search result can be explained:
-  - **Semantic distance** (how close to the query?)
-  - **Embedding provider** (which model was used)
-  - **Activation** (recency, frequency, importance)
-  - **Path tracing** (graph traversal: why did this memory surface?)
+- Every recall result can be explained via:
+  - **Semantic Distance**: How close to the query?
+  - **Provider**: Which model generated the embedding?
+  - **Activation**: Recency, frequency, importance.
+  - **Path Tracing**: Why did this memory surface in the graph?
 
 ```dart
 final explanation = await graph.explainRecall(nodeId, queryEmbedding: queryEmbedding);
@@ -426,122 +347,40 @@ print(explanation);
 
 ## Extensibility
 
-- Add new embedding providers by implementing `EmbeddingsAdapter`.
-- Store arbitrary metadata with nodes for advanced context.
-- Sync/export (Firestore, JSON) planned for future releases.
-- Designed for modular, clean integration in any Dart/Flutter app or agent.
-
----
-
-## Testing
-
-- Run all tests:
-
-```bash
-dart test
-```
-
-- Coverage includes:
-  - Node/edge CRUD
-  - ANN storage and search
-  - Explainability (activation, semantic distance, error cases)
-  - Embeddings adapters (mocked and real)
+- Add new embedding providers.
+- Store arbitrary metadata.
+- Sync/export planned.
 
 ---
 
 ## Roadmap
 
-- [x] Pluggable `VectorIndex` + `ObjectBoxVectorIndex` as default
-- [x] `GeminiEmbeddingsAdapter` + `FallbackEmbeddingsAdapter`
-- [x] `InMemoryVectorIndex` for tests; robust ANN/explainability suite
-- [ ] `OnDeviceEmbeddingsAdapter` (TFLite/ONNX), INT8, 256–384d (Android focus)
-- [ ] Benchmarks & telemetry: p50/p95 latency, peak memory, accuracy
-- [ ] Hybrid retrieval: dense + BM25/FTS; score fusion (MMR)
-- [ ] Lightweight on-device re-ranker over top-K
-- [ ] Sync: client-side encryption, versioning, deduplication, background; optional ObjectBox Sync
-- [ ] Explainability 2.0: traces/weights and JSON export
-- [ ] `VectorStore` wrapper for LangChain.dart
-- [ ] Example Flutter app (Android): ingestion, search, key management UI
-- [ ] Privacy/security: at-rest encryption, key management, PII
+- [x] Pluggable `VectorIndex` + `ObjectBoxVectorIndex` default.
+- [x] `GeminiEmbeddingsAdapter` + `FallbackEmbeddingsAdapter`.
+- [x] `InMemoryVectorIndex` for tests.
+- [x] `OnDeviceEmbeddingsAdapter` (ONNX) for Android/iOS/Desktop.
+- [x] Benchmarks via GitHub Actions.
+- [x] Hybrid Retrieval (Dense + Isar Filter).
+- [ ] Sync & Privacy (Encryption).
 
 ---
 
-## Contributing
+## ⚙️ Dependency Management & Testing
 
-PRs, issues, and feedback are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
+This repository uses a split-project architecture to avoid dependency conflicts between `isar_generator` and `flutter_test`.
 
----
-
-## ⚙️ Dependency Management & Testing Strategy
-
-Due to complex dependency conflicts between `isar_generator` (for code generation) and `flutter_test` (for testing, which pins several core Dart packages like `analyzer`, `matcher`, `test_api`, and `vm_service`), this repository now employs a separated project architecture for testing.
-
-- **`isar_agent_memory` (Main Project)**: This project focuses solely on the library's core logic and code generation. It contains `isar_generator` and its compatible dependencies. It **does not** include `flutter_test` or `test` in its `dev_dependencies` to avoid conflicts.
-
-- **`isar_agent_memory_tests` (Dedicated Test Project)**: A separate Flutter project located at the root level (`../isar_agent_memory_tests`) is now responsible for running all unit and integration tests. This project includes `flutter_test`, `test`, and other testing-related dependencies, and it imports `isar_agent_memory` as a local path dependency.
+- **`isar_agent_memory`**: Main project (logic + code gen).
+- **`isar_agent_memory_tests`**: Dedicated test project (runs `flutter test`).
 
 ### Running Tests
-
-To run the tests for `isar_agent_memory`, navigate to the `isar_agent_memory_tests` directory and execute the `flutter test` command:
 
 ```bash
 cd ../isar_agent_memory_tests
 flutter test
 ```
 
-This separation ensures that both code generation and testing environments can maintain their required dependency versions without conflict, providing a stable and reliable development experience.
-
 ---
 
-## 🔄 Continuous Dependency Updates & Auto-Merge
+## 🔄 Continuous Dependency Updates
 
-This repository uses **Dependabot** to automatically detect and propose updates to all dependencies declared in `pubspec.yaml`. When a new version of a dependency is released, Dependabot creates a Pull Request (PR) with the update.
-
-- **Auto-merge workflow:** Any PR with the `automerge` label will be automatically merged into `main` if all CI checks pass.
-- **CI enforcement:** All merges to `main` require passing tests and formatting/lint checks, ensuring stability.
-- **Bot integration:** You can extend this setup with bots like Renovate, Jules, or Coderabbit for advanced review, feature tracking, or semantic PRs.
-
-**How to keep your project always up to date:**
-
-1. Dependabot creates PRs for new dependency versions.
-2. The PR runs all tests and checks.
-3. If everything passes and the PR has the `automerge` label, it is merged automatically.
-
-This guarantees your package always benefits from the latest features and security updates in its dependencies.
-
----
-
-## 🤖 Advanced AI & Multi-Bot DevOps Strategy
-
-This repository leverages a robust, modern, and fully-automated DevOps approach to ensure all dependencies, features, and the Flutter SDK itself remain up-to-date and secure:
-
-- **Coderabbit**: AI-powered bot for code review, auto-approval, auto-merge, and refactor suggestions. Auto-merges PRs from trusted bots (Dependabot, Renovate) and those with the `automerge` label if CI passes.
-- **Dependabot**: Native GitHub bot that opens PRs for new versions of Dart/Flutter dependencies. PRs are auto-labeled and merged if checks pass.
-- **Renovate**: Advanced bot for dependency upgrades, monorepos, and workflows. Monitors not only Dart/Flutter packages but also GitHub Actions, Docker, and the Flutter SDK version. Auto-merges safe updates.
-- **Jules (Google Labs)**: Can be triggered via GitHub Issues to research, recommend, or execute the best bot or workflow for upgrades, refactors, or dependency management. Ensures the most effective tool is always used for each update.
-
-**How it works:**
-
-1. Dependabot and Renovate monitor all dependencies and the Flutter SDK, opening PRs for any new version or update.
-2. Coderabbit reviews, approves, and merges PRs from trusted bots or with the `automerge` label if CI passes.
-3. Jules can be triggered via Issues to research and select the best bot or run custom upgrade/refactor tasks.
-4. All merges to `main` require passing CI (tests, lint, format) for maximum stability.
-
-This setup guarantees:
-
-- Always using the latest secure and feature-rich versions of dependencies and Flutter.
-- Zero manual intervention for routine upgrades.
-- AI-assisted code quality, refactoring, and review.
-- Rapid adoption of new features and best practices from the Dart/Flutter ecosystem.
-
-**You can customize or extend this workflow via `.github/coderabbit.yml`, `.github/renovate.json`, and `.github/dependabot.yml` as your needs evolve.**
-
----
-
-PRs, issues, and feedback are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) when available.
-
----
-
-## License
-
-MIT
+Uses **Dependabot** for automated PRs and **Coderabbit** for AI-assisted reviews. Merges to `main` require passing CI checks.

@@ -18,6 +18,9 @@ class ObxVectorDoc {
   String? content;
 
   /// Float vector with HNSW index. The dimension must match your embeddings.
+  /// We default to 768 (Gemini text-embedding-004), but ObjectBox requires
+  /// fixed dimensions at compile time. If you need 1536 (OpenAI), change this
+  /// and regenerate code.
   @HnswIndex(dimensions: 768, distanceType: VectorDistanceType.cosine)
   @Property(type: PropertyType.floatVector)
   List<double>? vector;
@@ -92,6 +95,18 @@ class ObjectBoxVectorIndex implements VectorIndex {
   @override
   Future<void> addDocument(
       String id, String content, Float32List vector) async {
+    // Check dimension
+    if (vector.length != 768) {
+      // Warning or throw? For now we throw to avoid crashes deep in ObjectBox
+      // or silent failures.
+      // Ideally, we should support multiple dimensions, but ObjectBox requires
+      // fixed dimensions per @HnswIndex.
+      throw ArgumentError(
+        'ObjectBoxVectorIndex requires vectors of dimension 768. '
+        'Received ${vector.length}. Change the @HnswIndex annotation and regenerate if needed.',
+      );
+    }
+
     var vec = vector;
     if (_metric == VectorMetric.cosine && _normalize) {
       vec = _normalizeVec(vec);
@@ -126,6 +141,13 @@ class ObjectBoxVectorIndex implements VectorIndex {
   @override
   Future<List<VectorSearchResult>> search(Float32List query,
       {int topK = 5}) async {
+    if (query.length != 768) {
+       throw ArgumentError(
+        'ObjectBoxVectorIndex requires query vectors of dimension 768. '
+        'Received ${query.length}.',
+      );
+    }
+
     var q = query;
     if (_metric == VectorMetric.cosine && _normalize) {
       q = _normalizeVec(q);
