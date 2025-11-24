@@ -162,10 +162,14 @@ class OnDeviceEmbeddingsAdapter implements EmbeddingsAdapter {
           'Unexpected output shape from ONNX model. Expected dimension $_dimension or sequence length * $_dimension.');
     } finally {
       // Ensure native resources are released even if an exception occurs
-      inputs.forEach((k, v) => v.release());
+      for (final entry in inputs.entries) {
+        entry.value.release();
+      }
       runOptions.release();
       if (outputs != null) {
-        outputs.forEach((v) => v?.release());
+        for (final v in outputs) {
+          v?.release();
+        }
       }
     }
   }
