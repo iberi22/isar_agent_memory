@@ -34,7 +34,6 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
           channel: 'stable'
       - name: Dry-run publish
         run: flutter pub publish --dry-run
@@ -49,7 +48,6 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
           channel: 'stable'
       - name: Configure pub.dev credentials
         env:
