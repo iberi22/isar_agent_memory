@@ -27,6 +27,7 @@ dependencies:
   flat_buffers: ^23.5.26 # Required by generated lib/objectbox.g.dart
   onnxruntime: ^1.4.1 # For on-device embeddings
   http: ^1.1.0 # Required for tool scripts
+  cryptography: ^2.9.0
   # Add your embedding provider dependencies as needed (e.g., google_generative_ai, openai, etc.)
 
 dev_dependencies:

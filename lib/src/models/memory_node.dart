@@ -22,8 +22,13 @@ class MemoryNode {
     this.embedding,
     Degree? degree,
     this.metadata,
+    this.version,
+    this.deviceId,
+    this.isDeleted = false,
+    DateTime? modifiedAt,
   }) : createdAt = DateTime.now() {
     this.degree = degree ?? Degree();
+    this.modifiedAt = modifiedAt ?? DateTime.now();
   }
 
   /// Unique identifier for this node, managed by Isar.
@@ -44,10 +49,24 @@ class MemoryNode {
   /// Automatically set to the current time upon creation.
   late DateTime createdAt;
 
-  /// The timestamp of the last update or access.
+  /// The timestamp of the last update or access (business logic update).
   ///
   /// Can be used to track recency and relevance.
   DateTime? updatedAt;
+
+  /// The timestamp when this record was last modified (system-level sync).
+  ///
+  /// Used for Last-Write-Wins (LWW) conflict resolution.
+  late DateTime modifiedAt;
+
+  /// Version identifier (e.g., hash or monotonic counter) for synchronization.
+  String? version;
+
+  /// ID of the device that last modified this record.
+  String? deviceId;
+
+  /// Soft delete flag (tombstone) for synchronization.
+  bool isDeleted;
 
   /// The embedding vector representing the semantic meaning of the [content].
   ///
