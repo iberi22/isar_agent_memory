@@ -22,7 +22,8 @@ class EncryptionService {
   /// Encrypts a string using AES-256-GCM.
   /// Returns a concatenation of nonce + ciphertext + mac for storage.
   Future<List<int>> encrypt(String plainText) async {
-    if (_secretKey == null) throw StateError('EncryptionService not initialized');
+    if (_secretKey == null)
+      throw StateError('EncryptionService not initialized');
 
     final secretBox = await _algorithm.encrypt(
       plainText.codeUnits,
@@ -34,7 +35,8 @@ class EncryptionService {
 
   /// Decrypts a byte list (nonce + ciphertext + mac) back to string.
   Future<String> decrypt(List<int> data) async {
-    if (_secretKey == null) throw StateError('EncryptionService not initialized');
+    if (_secretKey == null)
+      throw StateError('EncryptionService not initialized');
 
     // AES-GCM in cryptography package:
     // Nonce: 12 bytes (default for AesGcm)

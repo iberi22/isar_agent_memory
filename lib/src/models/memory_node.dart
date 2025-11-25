@@ -35,12 +35,8 @@ class MemoryNode {
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now() {
     this.degree = degree ?? Degree();
-    if (modifiedAt == null) {
-      modifiedAt = DateTime.now();
-    }
-    if (uuid == null) {
-      uuid = const Uuid().v4();
-    }
+    modifiedAt ??= DateTime.now();
+    uuid ??= const Uuid().v4();
   }
 
   /// Unique identifier for this node, managed by Isar.

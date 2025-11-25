@@ -21,7 +21,8 @@ void main() {
 
     test('initializes and embeds if files exist', () async {
       if (!File(modelPath).existsSync() || !File(vocabPath).existsSync()) {
-        markTestSkipped('Model files not found. Run tool/setup_on_device_test.dart to download them.');
+        markTestSkipped(
+            'Model files not found. Run tool/setup_on_device_test.dart to download them.');
       }
 
       final adapter = OnDeviceEmbeddingsAdapter(

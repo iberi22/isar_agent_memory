@@ -49,14 +49,14 @@ void main() {
   // Mock path_provider for tests
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(
-        const MethodChannel('plugins.flutter.io/path_provider'),
-        (MethodCall methodCall) async {
-          if (methodCall.method == 'getApplicationDocumentsDirectory') {
-            return './test_app_documents'; // Return a dummy path for testing
-          }
-          return null;
-        },
-      );
+    const MethodChannel('plugins.flutter.io/path_provider'),
+    (MethodCall methodCall) async {
+      if (methodCall.method == 'getApplicationDocumentsDirectory') {
+        return './test_app_documents'; // Return a dummy path for testing
+      }
+      return null;
+    },
+  );
   group(
     'MemoryGraph Tests',
     () {

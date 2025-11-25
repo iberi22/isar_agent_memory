@@ -26,7 +26,8 @@ class SyncManager {
   /// Returns a list of integers (the encrypted payload).
   Future<List<int>> exportEncryptedSnapshot() async {
     if (!_encryptionService.isInitialized) {
-      throw StateError('EncryptionService not initialized. Call initialize() first.');
+      throw StateError(
+          'EncryptionService not initialized. Call initialize() first.');
     }
 
     // 1. Fetch all data
@@ -57,7 +58,8 @@ class SyncManager {
   /// and matches records using the `uuid` field.
   Future<void> importEncryptedSnapshot(List<int> encryptedData) async {
     if (!_encryptionService.isInitialized) {
-      throw StateError('EncryptionService not initialized. Call initialize() first.');
+      throw StateError(
+          'EncryptionService not initialized. Call initialize() first.');
     }
 
     // 1. Decrypt
@@ -98,13 +100,15 @@ class SyncManager {
         } else {
           // Existing node found by UUID. Update it.
           // LWW Check
-          final incomingTime = incomingNode.modifiedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-          final existingTime = existingNode.modifiedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final incomingTime =
+              incomingNode.modifiedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final existingTime =
+              existingNode.modifiedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
 
           if (incomingTime.isAfter(existingTime)) {
-             // Preserve local ID to update the correct record
-             incomingNode.id = existingNode.id;
-             await _memoryGraph.isar.memoryNodes.put(incomingNode);
+            // Preserve local ID to update the correct record
+            incomingNode.id = existingNode.id;
+            await _memoryGraph.isar.memoryNodes.put(incomingNode);
           }
         }
       }
@@ -124,8 +128,10 @@ class SyncManager {
           incomingEdge.id = Isar.autoIncrement;
           await _memoryGraph.isar.memoryEdges.put(incomingEdge);
         } else {
-          final incomingTime = incomingEdge.modifiedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-          final existingTime = existingEdge.modifiedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final incomingTime =
+              incomingEdge.modifiedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final existingTime =
+              existingEdge.modifiedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
 
           if (incomingTime.isAfter(existingTime)) {
             incomingEdge.id = existingEdge.id;

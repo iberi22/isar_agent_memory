@@ -26,12 +26,8 @@ class MemoryEdge {
     this.modifiedAt,
     this.uuid,
   }) : createdAt = DateTime.now() {
-    if (modifiedAt == null) {
-      modifiedAt = DateTime.now();
-    }
-    if (uuid == null) {
-      uuid = const Uuid().v4();
-    }
+    modifiedAt ??= DateTime.now();
+    uuid ??= const Uuid().v4();
   }
 
   /// Unique identifier for this edge, managed by Isar.
@@ -89,6 +85,7 @@ class MemoryEdge {
   Map<String, dynamic>? metadata;
 
   // JSON serialization helpers
-  factory MemoryEdge.fromJson(Map<String, dynamic> json) => _$MemoryEdgeFromJson(json);
+  factory MemoryEdge.fromJson(Map<String, dynamic> json) =>
+      _$MemoryEdgeFromJson(json);
   Map<String, dynamic> toJson() => _$MemoryEdgeToJson(this);
 }

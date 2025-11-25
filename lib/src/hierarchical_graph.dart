@@ -1,6 +1,5 @@
 import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
-import 'llm_adapter.dart';
 
 /// Extension for HiRAG (Hierarchical RAG) capabilities.
 ///
@@ -122,8 +121,7 @@ extension HierarchicalMemoryGraph on MemoryGraph {
     final initialResults =
         await semanticSearch(queryEmbedding, topK: topK, layer: 0);
 
-    final enrichedResults =
-        <({MemoryNode node, List<MemoryNode> context})>[];
+    final enrichedResults = <({MemoryNode node, List<MemoryNode> context})>[];
 
     // 2. Traverse upwards for each result
     for (final result in initialResults) {

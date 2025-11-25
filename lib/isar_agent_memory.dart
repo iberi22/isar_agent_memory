@@ -21,8 +21,19 @@ export 'src/rerankers/bm25_reranker.dart';
 export 'src/rerankers/diversity_reranker.dart';
 export 'src/rerankers/mmr_reranker.dart';
 export 'src/rerankers/recency_reranker.dart';
+// export 'src/rerankers/cross_encoder_reranker.dart'; // TODO: Fix type issues
 export 'src/sync/sync_manager.dart';
 export 'src/sync/sync_backend.dart';
 export 'src/sync/firebase_sync_backend.dart';
 export 'src/sync/websocket_sync_backend.dart';
 export 'src/sync/cross_device_sync_manager.dart';
+
+// Advanced features (v0.5.0) - Work in progress
+export 'src/memory_consolidation.dart';
+export 'src/embeddings_cache.dart';
+// export 'src/quality_metrics.dart'; // TODO: Fix Isar collection access
+// export 'src/forgetting_mechanism.dart'; // TODO: Fix Isar collection access
+export 'src/dynamic_layers.dart';
+export 'src/multi_modal_adapter.dart';
+// export 'src/agent_memory_types.dart'; // TODO: Fix MemoryEdge instantiation
+// export 'src/privacy_features.dart'; // Dependencies on other TODO files

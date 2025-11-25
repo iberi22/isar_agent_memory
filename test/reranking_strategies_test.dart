@@ -1,9 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
-import 'package:isar_agent_memory/src/rerankers/bm25_reranker.dart';
-import 'package:isar_agent_memory/src/rerankers/diversity_reranker.dart';
-import 'package:isar_agent_memory/src/rerankers/mmr_reranker.dart';
-import 'package:isar_agent_memory/src/rerankers/recency_reranker.dart';
 
 void main() {
   group('ReRankingStrategy', () {
@@ -13,13 +9,11 @@ void main() {
       final results = [
         (
           node: MemoryNode(
-              content: 'older', createdAt: now.subtract(const Duration(days: 1))),
+              content: 'older',
+              createdAt: now.subtract(const Duration(days: 1))),
           score: 0.8
         ),
-        (
-          node: MemoryNode(content: 'newer', createdAt: now),
-          score: 0.7
-        ),
+        (node: MemoryNode(content: 'newer', createdAt: now), score: 0.7),
       ];
 
       final reranked = reranker.reRank(results);

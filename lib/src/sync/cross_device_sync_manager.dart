@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
-import 'package:isar_agent_memory/src/sync/sync_backend.dart';
-import 'package:isar_agent_memory/src/sync/firebase_sync_backend.dart';
-import 'package:isar_agent_memory/src/sync/websocket_sync_backend.dart';
 
 /// Manages cross-device synchronization of the memory graph.
 ///
@@ -13,7 +10,7 @@ class CrossDeviceSyncManager extends SyncManager {
   StreamSubscription? _subscription;
 
   /// Creates a [CrossDeviceSyncManager] for the given [memoryGraph].
-  CrossDeviceSyncManager(MemoryGraph memoryGraph) : super(memoryGraph);
+  CrossDeviceSyncManager(super.memoryGraph);
 
   /// Initializes the sync manager with a specific backend.
   ///

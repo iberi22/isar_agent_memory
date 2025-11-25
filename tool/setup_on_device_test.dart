@@ -22,8 +22,10 @@ void main() async {
   // model_quantized.onnx (~23MB)
   // vocab.txt
 
-  final modelUrl = 'https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/onnx/model_quantized.onnx';
-  final vocabUrl = 'https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/vocab.txt';
+  final modelUrl =
+      'https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/onnx/model_quantized.onnx';
+  final vocabUrl =
+      'https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/vocab.txt';
 
   print('Downloading test resources to ${targetDir.path}...');
 

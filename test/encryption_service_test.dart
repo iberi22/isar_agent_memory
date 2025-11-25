@@ -37,7 +37,9 @@ void main() {
       expect(decrypted, equals(plainText));
     });
 
-    test('should produce different ciphertexts for same plaintext (due to nonce)', () async {
+    test(
+        'should produce different ciphertexts for same plaintext (due to nonce)',
+        () async {
       await service.initialize();
       const plainText = 'Secret Data';
 

@@ -27,6 +27,7 @@ class MemoryEmbedding {
     this.dimension = 0,
   });
 
-  factory MemoryEmbedding.fromJson(Map<String, dynamic> json) => _$MemoryEmbeddingFromJson(json);
+  factory MemoryEmbedding.fromJson(Map<String, dynamic> json) =>
+      _$MemoryEmbeddingFromJson(json);
   Map<String, dynamic> toJson() => _$MemoryEmbeddingToJson(this);
 }

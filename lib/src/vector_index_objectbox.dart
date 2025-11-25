@@ -1,8 +1,5 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
-import 'package:objectbox/objectbox.dart'; // REQUIRED for annotations
-// import '../objectbox.g.dart'; // Removing this temporarily to see if it fixes the cycle or if I need it for the Store class.
-// Actually I need objectbox.g.dart for ObxVectorDoc_ and openStore.
 import '../objectbox.g.dart';
 import 'vector_index.dart';
 
@@ -145,7 +142,7 @@ class ObjectBoxVectorIndex implements VectorIndex {
   Future<List<VectorSearchResult>> search(Float32List query,
       {int topK = 5}) async {
     if (query.length != 768) {
-       throw ArgumentError(
+      throw ArgumentError(
         'ObjectBoxVectorIndex requires query vectors of dimension 768. '
         'Received ${query.length}.',
       );
