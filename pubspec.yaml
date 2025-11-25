@@ -1,5 +1,5 @@
 name: isar_agent_memory
-version: 0.4.0
+version: 0.5.0-beta
 description: >-
   Universal, local-first cognitive memory package for LLMs and AI agents. Graph-based, explainable, LLM-agnostic. Inspired by Cognee/Graphiti.
 repository: https://github.com/iberi22/isar_agent_memory

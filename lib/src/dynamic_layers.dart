@@ -35,7 +35,7 @@ extension DynamicLayerCreation on MemoryGraph {
 
     while (currentLayer < maxLayers && currentNodes.length > maxNodesPerLayer) {
       // Cluster nodes in current layer
-      final _ = await _clusterNodes(
+      final clusters = await _clusterNodes(
         currentNodes,
         maxClusterSize: maxNodesPerLayer,
         similarityThreshold: similarityThreshold,
@@ -48,7 +48,7 @@ extension DynamicLayerCreation on MemoryGraph {
       // Create summary nodes for each cluster
       final nextLayerNodes = <MemoryNode>[];
 
-      for (final cluster in clusters) {
+      for (final _ in clusters) {
         final summaryId = await autoSummarizeLayer(
           layerIndex: currentLayer,
           llmAdapter: llmAdapter,

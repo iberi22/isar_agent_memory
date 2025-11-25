@@ -150,7 +150,6 @@ class CodeEmbeddingsAdapter implements EmbeddingsAdapter {
     throw UnimplementedError('Code embedding requires model integration');
   }
 
-  @override
   Future<List<List<double>>> embedBatch(List<String> texts) async {
     return Future.wait(texts.map((t) => embed(t)));
   }

@@ -54,18 +54,16 @@ class MemoryConsolidation {
       );
 
       // Find similar nodes
-      final similar = await memoryGraph.searchSimilarNodes(
-        vector,
+      final similar = await memoryGraph.semanticSearch(
+        vector.toList(),
         topK: 50,
       );
 
       for (final result in similar) {
-        final similarNode = await memoryGraph.getNode(result.nodeId);
-        if (similarNode != null &&
-            !processed.contains(similarNode.id) &&
+        if (!processed.contains(result.node.id) &&
             result.distance < similarityThreshold) {
-          cluster.add(similarNode.id);
-          processed.add(similarNode.id);
+          cluster.add(result.node.id);
+          processed.add(result.node.id);
         }
       }
 
@@ -225,18 +223,18 @@ CONSOLIDATED MEMORY:''';
         node.embedding!.vector.map((e) => e.toDouble()).toList(),
       );
 
-      final similar = await memoryGraph.searchSimilarNodes(
-        vector,
+      final similar = await memoryGraph.semanticSearch(
+        vector.toList(),
         topK: 10,
       );
 
       for (final result in similar) {
-        if (result.nodeId != node.id &&
-            !toDelete.contains(result.nodeId) &&
+        if (result.node.id != node.id &&
+            !toDelete.contains(result.node.id) &&
             result.distance < threshold) {
           // Keep the older memory (lower ID), delete the newer one
-          if (result.nodeId > node.id) {
-            toDelete.add(result.nodeId);
+          if (result.node.id > node.id) {
+            toDelete.add(result.node.id);
           }
         }
       }

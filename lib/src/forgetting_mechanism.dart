@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:isar/isar.dart';
 import 'memory_graph.dart';
 import 'models/memory_node.dart';
+import 'models/memory_edge.dart';
 
 /// Service for forgetting (removing) irrelevant or outdated memories.
 ///
@@ -24,15 +25,16 @@ class ForgettingMechanism {
 
     // Factor 2: Access frequency (how often was it retrieved)
     final accessCount = node.metadata?['access_count'] ?? 0;
-    final accessScore = math.min(1.0, accessCount / 10.0);
+    final accessScore =
+        math.min<double>(1.0, (accessCount as num).toDouble() / 10.0);
     score += accessScore * 0.3;
 
     // Factor 3: Connection strength (well-connected nodes are important)
-    final incomingEdges = await memoryGraph.isar.collection<MemoryEdge>()
+    final incomingEdges = await memoryGraph.isar.memoryEdges
         .filter()
         .toNodeIdEqualTo(node.id)
         .count();
-    final outgoingEdges = await memoryGraph.isar.collection<MemoryEdge>()
+    final outgoingEdges = await memoryGraph.isar.memoryEdges
         .filter()
         .fromNodeIdEqualTo(node.id)
         .count();

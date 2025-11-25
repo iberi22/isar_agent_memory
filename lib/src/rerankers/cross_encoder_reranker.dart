@@ -1,9 +1,5 @@
 import 'dart:typed_data';
-import 'dart:math';
-import 'package:isar/isar.dart';
-import '../memory_graph.dart';
 import '../models/memory_node.dart';
-import '../embeddings_adapter.dart';
 
 /// Result with score.
 typedef ScoredNode = ({MemoryNode node, double score, double distance});
@@ -21,7 +17,6 @@ class CrossEncoderReranker {
     this.minScore = 0.0,
   });
 
-  @override
   Future<List<ScoredNode>> rerank({
     required String query,
     required List<ScoredNode> candidates,
@@ -45,7 +40,7 @@ class CrossEncoderReranker {
     }
 
     // Sort by score (descending)
-    scoredResults.sort((a, b) => b.score!.compareTo(a.score!));
+    scoredResults.sort((a, b) => b.score.compareTo(a.score));
 
     return topK != null ? scoredResults.take(topK).toList() : scoredResults;
   }
@@ -140,7 +135,6 @@ class HybridReranker {
     this.normalizeScores = true,
   });
 
-  @override
   Future<List<ScoredNode>> rerank({
     required String query,
     required List<ScoredNode> candidates,
@@ -183,7 +177,7 @@ class HybridReranker {
     }
 
     // Sort by combined score
-    combined.sort((a, b) => b.score!.compareTo(a.score!));
+    combined.sort((a, b) => b.score.compareTo(a.score));
 
     return topK != null ? combined.take(topK).toList() : combined;
   }
@@ -215,7 +209,6 @@ class MMRReranker {
     this.distanceFunction = cosineDistance,
   });
 
-  @override
   Future<List<ScoredNode>> rerank({
     required String query,
     required List<ScoredNode> candidates,

@@ -1,5 +1,7 @@
 import 'dart:math';
+import 'package:isar/isar.dart';
 import 'memory_graph.dart';
+import 'models/memory_node.dart';
 
 /// Service for measuring and tracking memory quality metrics.
 ///
@@ -130,8 +132,8 @@ class QualityMetrics {
     final recentQueries =
         _queryHistory.where((q) => q.timestamp.isAfter(cutoff));
 
-    final totalNodes = await memoryGraph.isar.collection<MemoryNode>().count();
-    final nodesWithEmbeddings = await memoryGraph.isar.collection<MemoryNode>()
+    final totalNodes = await memoryGraph.isar.memoryNodes.count();
+    final nodesWithEmbeddings = await memoryGraph.isar.memoryNodes
         .filter()
         .embeddingIsNotNull()
         .count();

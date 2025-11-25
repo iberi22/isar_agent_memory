@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 import 'memory_graph.dart';
 import 'models/memory_node.dart';
+import 'models/memory_edge.dart';
 
 /// Agent memory system with episodic, semantic, and procedural memory types.
 ///
@@ -133,11 +134,6 @@ class AgentMemoryTypes {
     List<String>? participants,
   }) async {
     var query = memoryGraph.isar.memoryNodes.filter().typeEqualTo(typeEpisodic);
-
-    // Filter by time range if provided
-    if (startTime != null || endTime != null) {
-      query = query.filter().metadataIsNotNull();
-    }
 
     final memories = await query.findAll();
 
