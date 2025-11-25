@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.3.0 - 2024-11-24
+
+### Major Features
+
+- **Sync Protocol**: Implemented secure synchronization with Last-Write-Wins (LWW) conflict resolution using UUIDs.
+  - Added `SyncManager` class for encrypted export/import of memory graphs.
+  - Added `EncryptionService` using AES-256-GCM for client-side encryption.
+  - Extended `MemoryNode` and `MemoryEdge` with sync fields: `uuid`, `modifiedAt`, `version`, `deviceId`, `isDeleted`.
+  - Documentation: Added `doc/SYNC_PROTOCOL.md` describing architecture and reconciliation strategy.
+
+- **HiRAG (Hierarchical RAG)**: Foundation for hierarchical knowledge management.
+  - Added `HierarchicalMemoryGraph` extension with `createSummaryNode` and `getNodesByLayer` methods.
+  - Added `layer` field to `MemoryNode` for multi-level knowledge organization.
+  - Support for summary and part-of relationships between nodes.
+
+### Improvements
+
+- **Model Updates**: Regenerated Isar and ObjectBox models to support new sync and HiRAG fields.
+- **Testing**: Added integration test for sync functionality (`isar_agent_memory_tests/test/sync_integration_test.dart`).
+- **Testing**: Added unit tests for `EncryptionService` and `SyncManager`.
+
+### Dependencies
+
+- Added `cryptography: ^2.9.0` for encryption support.
+- Added `json_annotation: ^4.9.0` for JSON serialization.
+
+### Documentation
+
+- Updated `TASKS.md` to mark release 0.2.3 as completed.
+- Added comprehensive sync protocol documentation.
+
 ## 0.2.3 - 2024-11-24
 
 - **Fix**: Critical bug in `OnDeviceEmbeddingsAdapter` - corrected `outputs.values.first` to `outputs.first`.
