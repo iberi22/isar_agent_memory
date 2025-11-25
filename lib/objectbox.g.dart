@@ -19,40 +19,42 @@ export 'package:objectbox/objectbox.dart'; // so that callers only have to impor
 
 final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
-      id: const obx_int.IdUid(1, 1718053728221939704),
-      name: 'ObxVectorDoc',
-      lastPropertyId: const obx_int.IdUid(4, 9089606705394925499),
-      flags: 0,
-      properties: <obx_int.ModelProperty>[
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(1, 722458666947821368),
-            name: 'id',
-            type: 6,
-            flags: 1),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(2, 1442387009774653075),
-            name: 'docKey',
-            type: 9,
-            flags: 2080,
-            indexId: const obx_int.IdUid(1, 8701917581695520620)),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(3, 1210557137860714142),
-            name: 'content',
-            type: 9,
-            flags: 0),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(4, 9089606705394925499),
-            name: 'vector',
-            type: 28,
-            flags: 8,
-            indexId: const obx_int.IdUid(2, 7396986783401268781),
-            hnswParams: obx_int.ModelHnswParams(
-              dimensions: 768,
-              distanceType: 2,
-            ))
-      ],
-      relations: <obx_int.ModelRelation>[],
-      backlinks: <obx_int.ModelBacklink>[])
+    id: const obx_int.IdUid(1, 1718053728221939704),
+    name: 'ObxVectorDoc',
+    lastPropertyId: const obx_int.IdUid(4, 9089606705394925499),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 722458666947821368),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 1442387009774653075),
+        name: 'docKey',
+        type: 9,
+        flags: 2080,
+        indexId: const obx_int.IdUid(1, 8701917581695520620),
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 1210557137860714142),
+        name: 'content',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 9089606705394925499),
+        name: 'vector',
+        type: 28,
+        flags: 8,
+        indexId: const obx_int.IdUid(2, 7396986783401268781),
+        hnswParams: obx_int.ModelHnswParams(dimensions: 768, distanceType: 2),
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -66,81 +68,92 @@ final _entities = <obx_int.ModelEntity>[
 /// For Flutter apps, also calls `loadObjectBoxLibraryAndroidCompat()` from
 /// the ObjectBox Flutter library to fix loading the native ObjectBox library
 /// on Android 6 and older.
-obx.Store openStore(
-    {String? directory,
-    int? maxDBSizeInKB,
-    int? maxDataSizeInKB,
-    int? fileMode,
-    int? maxReaders,
-    bool queriesCaseSensitiveDefault = true,
-    String? macosApplicationGroup}) {
-  return obx.Store(getObjectBoxModel(),
-      directory: directory,
-      maxDBSizeInKB: maxDBSizeInKB,
-      maxDataSizeInKB: maxDataSizeInKB,
-      fileMode: fileMode,
-      maxReaders: maxReaders,
-      queriesCaseSensitiveDefault: queriesCaseSensitiveDefault,
-      macosApplicationGroup: macosApplicationGroup);
+obx.Store openStore({
+  String? directory,
+  int? maxDBSizeInKB,
+  int? maxDataSizeInKB,
+  int? fileMode,
+  int? maxReaders,
+  bool queriesCaseSensitiveDefault = true,
+  String? macosApplicationGroup,
+}) {
+  return obx.Store(
+    getObjectBoxModel(),
+    directory: directory,
+    maxDBSizeInKB: maxDBSizeInKB,
+    maxDataSizeInKB: maxDataSizeInKB,
+    fileMode: fileMode,
+    maxReaders: maxReaders,
+    queriesCaseSensitiveDefault: queriesCaseSensitiveDefault,
+    macosApplicationGroup: macosApplicationGroup,
+  );
 }
 
 /// Returns the ObjectBox model definition for this project for use with
 /// [obx.Store.new].
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
-      entities: _entities,
-      lastEntityId: const obx_int.IdUid(1, 1718053728221939704),
-      lastIndexId: const obx_int.IdUid(2, 7396986783401268781),
-      lastRelationId: const obx_int.IdUid(0, 0),
-      lastSequenceId: const obx_int.IdUid(0, 0),
-      retiredEntityUids: const [],
-      retiredIndexUids: const [],
-      retiredPropertyUids: const [],
-      retiredRelationUids: const [],
-      modelVersion: 5,
-      modelVersionParserMinimum: 5,
-      version: 1);
+    entities: _entities,
+    lastEntityId: const obx_int.IdUid(1, 1718053728221939704),
+    lastIndexId: const obx_int.IdUid(2, 7396986783401268781),
+    lastRelationId: const obx_int.IdUid(0, 0),
+    lastSequenceId: const obx_int.IdUid(0, 0),
+    retiredEntityUids: const [],
+    retiredIndexUids: const [],
+    retiredPropertyUids: const [],
+    retiredRelationUids: const [],
+    modelVersion: 5,
+    modelVersionParserMinimum: 5,
+    version: 1,
+  );
 
   final bindings = <Type, obx_int.EntityDefinition>{
     ObxVectorDoc: obx_int.EntityDefinition<ObxVectorDoc>(
-        model: _entities[0],
-        toOneRelations: (ObxVectorDoc object) => [],
-        toManyRelations: (ObxVectorDoc object) => {},
-        getId: (ObxVectorDoc object) => object.id,
-        setId: (ObxVectorDoc object, int id) {
-          object.id = id;
-        },
-        objectToFB: (ObxVectorDoc object, fb.Builder fbb) {
-          final docKeyOffset = fbb.writeString(object.docKey);
-          final contentOffset =
-              object.content == null ? null : fbb.writeString(object.content!);
-          final vectorOffset = object.vector == null
-              ? null
-              : fbb.writeListFloat32(object.vector!);
-          fbb.startTable(5);
-          fbb.addInt64(0, object.id);
-          fbb.addOffset(1, docKeyOffset);
-          fbb.addOffset(2, contentOffset);
-          fbb.addOffset(3, vectorOffset);
-          fbb.finish(fbb.endTable());
-          return object.id;
-        },
-        objectFromFB: (obx.Store store, ByteData fbData) {
-          final buffer = fb.BufferContext(fbData);
-          final rootOffset = buffer.derefObject(0);
-          final docKeyParam = const fb.StringReader(asciiOptimization: true)
-              .vTableGet(buffer, rootOffset, 6, '');
-          final contentParam = const fb.StringReader(asciiOptimization: true)
-              .vTableGetNullable(buffer, rootOffset, 8);
-          final vectorParam =
-              const fb.ListReader<double>(fb.Float32Reader(), lazy: false)
-                  .vTableGetNullable(buffer, rootOffset, 10);
-          final object = ObxVectorDoc(
-              docKey: docKeyParam, content: contentParam, vector: vectorParam)
-            ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+      model: _entities[0],
+      toOneRelations: (ObxVectorDoc object) => [],
+      toManyRelations: (ObxVectorDoc object) => {},
+      getId: (ObxVectorDoc object) => object.id,
+      setId: (ObxVectorDoc object, int id) {
+        object.id = id;
+      },
+      objectToFB: (ObxVectorDoc object, fb.Builder fbb) {
+        final docKeyOffset = fbb.writeString(object.docKey);
+        final contentOffset = object.content == null
+            ? null
+            : fbb.writeString(object.content!);
+        final vectorOffset = object.vector == null
+            ? null
+            : fbb.writeListFloat32(object.vector!);
+        fbb.startTable(5);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, docKeyOffset);
+        fbb.addOffset(2, contentOffset);
+        fbb.addOffset(3, vectorOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final docKeyParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final contentParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGetNullable(buffer, rootOffset, 8);
+        final vectorParam = const fb.ListReader<double>(
+          fb.Float32Reader(),
+          lazy: false,
+        ).vTableGetNullable(buffer, rootOffset, 10);
+        final object = ObxVectorDoc(
+          docKey: docKeyParam,
+          content: contentParam,
+          vector: vectorParam,
+        )..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
 
-          return object;
-        })
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -149,18 +162,22 @@ obx_int.ModelDefinition getObjectBoxModel() {
 /// [ObxVectorDoc] entity fields to define ObjectBox queries.
 class ObxVectorDoc_ {
   /// See [ObxVectorDoc.id].
-  static final id =
-      obx.QueryIntegerProperty<ObxVectorDoc>(_entities[0].properties[0]);
+  static final id = obx.QueryIntegerProperty<ObxVectorDoc>(
+    _entities[0].properties[0],
+  );
 
   /// See [ObxVectorDoc.docKey].
-  static final docKey =
-      obx.QueryStringProperty<ObxVectorDoc>(_entities[0].properties[1]);
+  static final docKey = obx.QueryStringProperty<ObxVectorDoc>(
+    _entities[0].properties[1],
+  );
 
   /// See [ObxVectorDoc.content].
-  static final content =
-      obx.QueryStringProperty<ObxVectorDoc>(_entities[0].properties[2]);
+  static final content = obx.QueryStringProperty<ObxVectorDoc>(
+    _entities[0].properties[2],
+  );
 
   /// See [ObxVectorDoc.vector].
-  static final vector =
-      obx.QueryHnswProperty<ObxVectorDoc>(_entities[0].properties[3]);
+  static final vector = obx.QueryHnswProperty<ObxVectorDoc>(
+    _entities[0].properties[3],
+  );
 }

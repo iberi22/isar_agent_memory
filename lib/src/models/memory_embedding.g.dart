@@ -13,23 +13,18 @@ const MemoryEmbeddingSchema = Schema(
   name: r'MemoryEmbedding',
   id: -4127158395713779796,
   properties: {
-    r'createdAt': PropertySchema(
-      id: 0,
-      name: r'createdAt',
-      type: IsarType.dateTime,
-    ),
     r'dimension': PropertySchema(
-      id: 1,
+      id: 0,
       name: r'dimension',
       type: IsarType.long,
     ),
     r'provider': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'provider',
       type: IsarType.string,
     ),
     r'vector': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'vector',
       type: IsarType.doubleList,
     )
@@ -46,12 +41,7 @@ int _memoryEmbeddingEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  {
-    final value = object.provider;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.provider.length * 3;
   bytesCount += 3 + object.vector.length * 8;
   return bytesCount;
 }
@@ -62,10 +52,9 @@ void _memoryEmbeddingSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.createdAt);
-  writer.writeLong(offsets[1], object.dimension);
-  writer.writeString(offsets[2], object.provider);
-  writer.writeDoubleList(offsets[3], object.vector);
+  writer.writeLong(offsets[0], object.dimension);
+  writer.writeString(offsets[1], object.provider);
+  writer.writeDoubleList(offsets[2], object.vector);
 }
 
 MemoryEmbedding _memoryEmbeddingDeserialize(
@@ -75,11 +64,10 @@ MemoryEmbedding _memoryEmbeddingDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = MemoryEmbedding(
-    dimension: reader.readLongOrNull(offsets[1]),
-    provider: reader.readStringOrNull(offsets[2]),
-    vector: reader.readDoubleList(offsets[3]) ?? const [],
+    dimension: reader.readLongOrNull(offsets[0]) ?? 0,
+    provider: reader.readStringOrNull(offsets[1]) ?? 'unknown',
+    vector: reader.readDoubleList(offsets[2]) ?? const [],
   );
-  object.createdAt = reader.readDateTime(offsets[0]);
   return object;
 }
 
@@ -91,12 +79,10 @@ P _memoryEmbeddingDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 1:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? 'unknown') as P;
     case 2:
-      return (reader.readStringOrNull(offset)) as P;
-    case 3:
       return (reader.readDoubleList(offset) ?? const []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -106,81 +92,7 @@ P _memoryEmbeddingDeserializeProp<P>(
 extension MemoryEmbeddingQueryFilter
     on QueryBuilder<MemoryEmbedding, MemoryEmbedding, QFilterCondition> {
   QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
-      createdAtEqualTo(DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'createdAt',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
-      createdAtGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'createdAt',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
-      createdAtLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'createdAt',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
-      createdAtBetween(
-    DateTime lower,
-    DateTime upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'createdAt',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
-      dimensionIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'dimension',
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
-      dimensionIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'dimension',
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
-      dimensionEqualTo(int? value) {
+      dimensionEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'dimension',
@@ -191,7 +103,7 @@ extension MemoryEmbeddingQueryFilter
 
   QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
       dimensionGreaterThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -205,7 +117,7 @@ extension MemoryEmbeddingQueryFilter
 
   QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
       dimensionLessThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -219,8 +131,8 @@ extension MemoryEmbeddingQueryFilter
 
   QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
       dimensionBetween(
-    int? lower,
-    int? upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -236,26 +148,8 @@ extension MemoryEmbeddingQueryFilter
   }
 
   QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
-      providerIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'provider',
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
-      providerIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'provider',
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
       providerEqualTo(
-    String? value, {
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -269,7 +163,7 @@ extension MemoryEmbeddingQueryFilter
 
   QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
       providerGreaterThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -285,7 +179,7 @@ extension MemoryEmbeddingQueryFilter
 
   QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
       providerLessThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -301,8 +195,8 @@ extension MemoryEmbeddingQueryFilter
 
   QueryBuilder<MemoryEmbedding, MemoryEmbedding, QAfterFilterCondition>
       providerBetween(
-    String? lower,
-    String? upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -547,3 +441,24 @@ extension MemoryEmbeddingQueryFilter
 
 extension MemoryEmbeddingQueryObject
     on QueryBuilder<MemoryEmbedding, MemoryEmbedding, QFilterCondition> {}
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+MemoryEmbedding _$MemoryEmbeddingFromJson(Map<String, dynamic> json) =>
+    MemoryEmbedding(
+      vector: (json['vector'] as List<dynamic>?)
+              ?.map((e) => (e as num).toDouble())
+              .toList() ??
+          const [],
+      provider: json['provider'] as String? ?? 'unknown',
+      dimension: (json['dimension'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$MemoryEmbeddingToJson(MemoryEmbedding instance) =>
+    <String, dynamic>{
+      'vector': instance.vector,
+      'provider': instance.provider,
+      'dimension': instance.dimension,
+    };

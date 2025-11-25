@@ -18,6 +18,7 @@ isar_agent_memory: ^0.2.3
 isar: ^3.1.0+1
 # ObjectBox is the default vector backend.
 # onnxruntime is used for on-device embeddings.
+# cryptography is used for sync encryption.
 ```
 
 ### 2. Basic Usage
@@ -56,6 +57,58 @@ if (results.isNotEmpty) {
   final explanation = await graph.explainRecall(results.first.node.id, queryEmbedding: queryEmbedding);
   print('Explain: $explanation');
 }
+```
+
+---
+
+## 🔄 Sync & Privacy (Beta)
+
+This package supports an encrypted, offline-first synchronization protocol (LWW - Last Write Wins).
+
+### Export Encrypted Data
+
+```dart
+import 'package:isar_agent_memory/isar_agent_memory.dart';
+import 'package:isar_agent_memory/src/sync/sync_manager.dart';
+
+final syncManager = SyncManager(graph);
+// Initialize with a 32-byte key (or generate one)
+final key = List<int>.generate(32, (i) => i);
+await syncManager.initialize(encryptionKey: key);
+
+// Export encrypted snapshot
+final encryptedData = await syncManager.exportEncryptedSnapshot();
+// Upload 'encryptedData' to your cloud storage or peer.
+```
+
+### Import Encrypted Data
+
+```dart
+// Download 'encryptedData' from cloud...
+await syncManager.importEncryptedSnapshot(encryptedData);
+// Local DB is now merged with remote data.
+```
+
+**Note:** Data is encrypted using AES-256-GCM (via `cryptography` package). The server only sees encrypted blobs.
+
+---
+
+## 🧠 HiRAG (Hierarchical RAG) Support
+
+We are laying the foundation for HiRAG. You can currently create summary nodes and organize memory into layers.
+
+```dart
+import 'package:isar_agent_memory/isar_agent_memory.dart';
+
+// Create a summary node for a set of child nodes (Layer 1)
+await graph.createSummaryNode(
+  summaryContent: 'Summary of recent events...',
+  childNodeIds: [nodeId1, nodeId2],
+  layer: 1,
+);
+
+// Retrieve nodes by layer
+final summaries = await graph.getNodesByLayer(1);
 ```
 
 ---
@@ -125,6 +178,7 @@ To run tests that require the ONNX model files, you must first download the test
 - **Hybrid Search**: Combine vector similarity with full-text search (BM25-like) for better recall.
 - **Robust Testing**: comprehensive test suite and real-world examples.
 - **Extensible**: Add metadata, new adapters, or future sync/export capabilities.
+- **Sync & Privacy**: Client-side AES-GCM encryption, LWW conflict resolution.
 
 ---
 
@@ -351,7 +405,8 @@ print(explanation);
 - [x] `OnDeviceEmbeddingsAdapter` (ONNX) for Android/iOS/Desktop.
 - [x] Benchmarks via GitHub Actions.
 - [x] Hybrid Retrieval (Dense + Isar Filter).
-- [ ] Sync & Privacy (Encryption).
+- [x] Sync & Privacy (Encryption).
+- [ ] HiRAG (Hierarchical RAG) - In Progress.
 
 ---
 
