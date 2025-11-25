@@ -1,5 +1,8 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
+import 'package:objectbox/objectbox.dart'; // REQUIRED for annotations
+// import '../objectbox.g.dart'; // Removing this temporarily to see if it fixes the cycle or if I need it for the Store class.
+// Actually I need objectbox.g.dart for ObxVectorDoc_ and openStore.
 import '../objectbox.g.dart';
 import 'vector_index.dart';
 

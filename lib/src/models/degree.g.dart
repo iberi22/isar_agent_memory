@@ -62,8 +62,8 @@ Degree _degreeDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Degree(
-    frequency: reader.readLongOrNull(offsets[0]) ?? 1,
-    importance: reader.readDoubleOrNull(offsets[1]) ?? 1.0,
+    frequency: reader.readLongOrNull(offsets[0]) ?? 0,
+    importance: reader.readDoubleOrNull(offsets[1]) ?? 0.5,
     lastAccessed: reader.readDateTimeOrNull(offsets[2]),
   );
   return object;
@@ -77,9 +77,9 @@ P _degreeDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLongOrNull(offset) ?? 1) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 1:
-      return (reader.readDoubleOrNull(offset) ?? 1.0) as P;
+      return (reader.readDoubleOrNull(offset) ?? 0.5) as P;
     case 2:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
@@ -274,3 +274,21 @@ extension DegreeQueryFilter on QueryBuilder<Degree, Degree, QFilterCondition> {
 }
 
 extension DegreeQueryObject on QueryBuilder<Degree, Degree, QFilterCondition> {}
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+Degree _$DegreeFromJson(Map<String, dynamic> json) => Degree(
+      lastAccessed: json['lastAccessed'] == null
+          ? null
+          : DateTime.parse(json['lastAccessed'] as String),
+      frequency: (json['frequency'] as num?)?.toInt() ?? 0,
+      importance: (json['importance'] as num?)?.toDouble() ?? 0.5,
+    );
+
+Map<String, dynamic> _$DegreeToJson(Degree instance) => <String, dynamic>{
+      'lastAccessed': instance.lastAccessed?.toIso8601String(),
+      'frequency': instance.frequency,
+      'importance': instance.importance,
+    };

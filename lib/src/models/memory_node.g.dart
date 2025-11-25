@@ -33,21 +33,51 @@ const MemoryNodeSchema = CollectionSchema(
       type: IsarType.object,
       target: r'Degree',
     ),
-    r'embedding': PropertySchema(
+    r'deviceId': PropertySchema(
       id: 3,
+      name: r'deviceId',
+      type: IsarType.string,
+    ),
+    r'embedding': PropertySchema(
+      id: 4,
       name: r'embedding',
       type: IsarType.object,
       target: r'MemoryEmbedding',
     ),
+    r'isDeleted': PropertySchema(
+      id: 5,
+      name: r'isDeleted',
+      type: IsarType.bool,
+    ),
+    r'layer': PropertySchema(
+      id: 6,
+      name: r'layer',
+      type: IsarType.long,
+    ),
+    r'modifiedAt': PropertySchema(
+      id: 7,
+      name: r'modifiedAt',
+      type: IsarType.dateTime,
+    ),
     r'type': PropertySchema(
-      id: 4,
+      id: 8,
       name: r'type',
       type: IsarType.string,
     ),
     r'updatedAt': PropertySchema(
-      id: 5,
+      id: 9,
       name: r'updatedAt',
       type: IsarType.dateTime,
+    ),
+    r'uuid': PropertySchema(
+      id: 10,
+      name: r'uuid',
+      type: IsarType.string,
+    ),
+    r'version': PropertySchema(
+      id: 11,
+      name: r'version',
+      type: IsarType.string,
     )
   },
   estimateSize: _memoryNodeEstimateSize,
@@ -55,7 +85,21 @@ const MemoryNodeSchema = CollectionSchema(
   deserialize: _memoryNodeDeserialize,
   deserializeProp: _memoryNodeDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'uuid': IndexSchema(
+      id: 2134397340427724972,
+      name: r'uuid',
+      unique: true,
+      replace: true,
+      properties: [
+        IndexPropertySchema(
+          name: r'uuid',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {
     r'MemoryEmbedding': MemoryEmbeddingSchema,
@@ -82,6 +126,12 @@ int _memoryNodeEstimateSize(
     }
   }
   {
+    final value = object.deviceId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.embedding;
     if (value != null) {
       bytesCount += 3 +
@@ -91,6 +141,18 @@ int _memoryNodeEstimateSize(
   }
   {
     final value = object.type;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.uuid;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.version;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -112,14 +174,20 @@ void _memoryNodeSerialize(
     DegreeSchema.serialize,
     object.degree,
   );
+  writer.writeString(offsets[3], object.deviceId);
   writer.writeObject<MemoryEmbedding>(
-    offsets[3],
+    offsets[4],
     allOffsets,
     MemoryEmbeddingSchema.serialize,
     object.embedding,
   );
-  writer.writeString(offsets[4], object.type);
-  writer.writeDateTime(offsets[5], object.updatedAt);
+  writer.writeBool(offsets[5], object.isDeleted);
+  writer.writeLong(offsets[6], object.layer);
+  writer.writeDateTime(offsets[7], object.modifiedAt);
+  writer.writeString(offsets[8], object.type);
+  writer.writeDateTime(offsets[9], object.updatedAt);
+  writer.writeString(offsets[10], object.uuid);
+  writer.writeString(offsets[11], object.version);
 }
 
 MemoryNode _memoryNodeDeserialize(
@@ -135,13 +203,19 @@ MemoryNode _memoryNodeDeserialize(
       DegreeSchema.deserialize,
       allOffsets,
     ),
+    deviceId: reader.readStringOrNull(offsets[3]),
     embedding: reader.readObjectOrNull<MemoryEmbedding>(
-      offsets[3],
+      offsets[4],
       MemoryEmbeddingSchema.deserialize,
       allOffsets,
     ),
-    type: reader.readStringOrNull(offsets[4]),
-    updatedAt: reader.readDateTimeOrNull(offsets[5]),
+    isDeleted: reader.readBoolOrNull(offsets[5]) ?? false,
+    layer: reader.readLongOrNull(offsets[6]) ?? 0,
+    modifiedAt: reader.readDateTimeOrNull(offsets[7]),
+    type: reader.readStringOrNull(offsets[8]),
+    updatedAt: reader.readDateTimeOrNull(offsets[9]),
+    uuid: reader.readStringOrNull(offsets[10]),
+    version: reader.readStringOrNull(offsets[11]),
   );
   object.createdAt = reader.readDateTime(offsets[1]);
   object.id = id;
@@ -166,15 +240,27 @@ P _memoryNodeDeserializeProp<P>(
         allOffsets,
       )) as P;
     case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readObjectOrNull<MemoryEmbedding>(
         offset,
         MemoryEmbeddingSchema.deserialize,
         allOffsets,
       )) as P;
-    case 4:
-      return (reader.readStringOrNull(offset)) as P;
     case 5:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 6:
+      return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 7:
       return (reader.readDateTimeOrNull(offset)) as P;
+    case 8:
+      return (reader.readStringOrNull(offset)) as P;
+    case 9:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 10:
+      return (reader.readStringOrNull(offset)) as P;
+    case 11:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -190,6 +276,60 @@ List<IsarLinkBase<dynamic>> _memoryNodeGetLinks(MemoryNode object) {
 
 void _memoryNodeAttach(IsarCollection<dynamic> col, Id id, MemoryNode object) {
   object.id = id;
+}
+
+extension MemoryNodeByIndex on IsarCollection<MemoryNode> {
+  Future<MemoryNode?> getByUuid(String? uuid) {
+    return getByIndex(r'uuid', [uuid]);
+  }
+
+  MemoryNode? getByUuidSync(String? uuid) {
+    return getByIndexSync(r'uuid', [uuid]);
+  }
+
+  Future<bool> deleteByUuid(String? uuid) {
+    return deleteByIndex(r'uuid', [uuid]);
+  }
+
+  bool deleteByUuidSync(String? uuid) {
+    return deleteByIndexSync(r'uuid', [uuid]);
+  }
+
+  Future<List<MemoryNode?>> getAllByUuid(List<String?> uuidValues) {
+    final values = uuidValues.map((e) => [e]).toList();
+    return getAllByIndex(r'uuid', values);
+  }
+
+  List<MemoryNode?> getAllByUuidSync(List<String?> uuidValues) {
+    final values = uuidValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'uuid', values);
+  }
+
+  Future<int> deleteAllByUuid(List<String?> uuidValues) {
+    final values = uuidValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'uuid', values);
+  }
+
+  int deleteAllByUuidSync(List<String?> uuidValues) {
+    final values = uuidValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'uuid', values);
+  }
+
+  Future<Id> putByUuid(MemoryNode object) {
+    return putByIndex(r'uuid', object);
+  }
+
+  Id putByUuidSync(MemoryNode object, {bool saveLinks = true}) {
+    return putByIndexSync(r'uuid', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByUuid(List<MemoryNode> objects) {
+    return putAllByIndex(r'uuid', objects);
+  }
+
+  List<Id> putAllByUuidSync(List<MemoryNode> objects, {bool saveLinks = true}) {
+    return putAllByIndexSync(r'uuid', objects, saveLinks: saveLinks);
+  }
 }
 
 extension MemoryNodeQueryWhereSort
@@ -265,6 +405,71 @@ extension MemoryNodeQueryWhere
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> uuidIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'uuid',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> uuidIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'uuid',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> uuidEqualTo(
+      String? uuid) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'uuid',
+        value: [uuid],
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> uuidNotEqualTo(
+      String? uuid) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uuid',
+              lower: [],
+              upper: [uuid],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uuid',
+              lower: [uuid],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uuid',
+              lower: [uuid],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uuid',
+              lower: [],
+              upper: [uuid],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }
@@ -474,6 +679,157 @@ extension MemoryNodeQueryFilter
     });
   }
 
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'deviceId',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      deviceIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'deviceId',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'deviceId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      deviceIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'deviceId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'deviceId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'deviceId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      deviceIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'deviceId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'deviceId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'deviceId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'deviceId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      deviceIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'deviceId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      deviceIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'deviceId',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       embeddingIsNull() {
     return QueryBuilder.apply(this, (query) {
@@ -537,6 +893,142 @@ extension MemoryNodeQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> isDeletedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isDeleted',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> layerEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'layer',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> layerGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'layer',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> layerLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'layer',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> layerBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'layer',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      modifiedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'modifiedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      modifiedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'modifiedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> modifiedAtEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'modifiedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      modifiedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'modifiedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      modifiedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'modifiedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> modifiedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'modifiedAt',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -762,6 +1254,301 @@ extension MemoryNodeQueryFilter
       ));
     });
   }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'uuid',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'uuid',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'uuid',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'uuid',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'uuid',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'uuid',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'version',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      versionIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'version',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'version',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      versionGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'version',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'version',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'version',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'version',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'version',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'version',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'version',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'version',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      versionIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'version',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension MemoryNodeQueryObject
@@ -810,6 +1597,54 @@ extension MemoryNodeQuerySortBy
     });
   }
 
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByDeviceId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deviceId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByDeviceIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deviceId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByIsDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByLayer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'layer', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByLayerDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'layer', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByModifiedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'modifiedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByModifiedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'modifiedAt', Sort.desc);
+    });
+  }
+
   QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
@@ -831,6 +1666,30 @@ extension MemoryNodeQuerySortBy
   QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByUuid() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'uuid', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByUuidDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'uuid', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByVersion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'version', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByVersionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'version', Sort.desc);
     });
   }
 }
@@ -861,6 +1720,18 @@ extension MemoryNodeQuerySortThenBy
     });
   }
 
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByDeviceId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deviceId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByDeviceIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deviceId', Sort.desc);
+    });
+  }
+
   QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -870,6 +1741,42 @@ extension MemoryNodeQuerySortThenBy
   QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByIsDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByLayer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'layer', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByLayerDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'layer', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByModifiedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'modifiedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByModifiedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'modifiedAt', Sort.desc);
     });
   }
 
@@ -896,6 +1803,30 @@ extension MemoryNodeQuerySortThenBy
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByUuid() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'uuid', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByUuidDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'uuid', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByVersion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'version', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByVersionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'version', Sort.desc);
+    });
+  }
 }
 
 extension MemoryNodeQueryWhereDistinct
@@ -913,6 +1844,31 @@ extension MemoryNodeQueryWhereDistinct
     });
   }
 
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByDeviceId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'deviceId', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isDeleted');
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByLayer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'layer');
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByModifiedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'modifiedAt');
+    });
+  }
+
   QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByType(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -923,6 +1879,20 @@ extension MemoryNodeQueryWhereDistinct
   QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updatedAt');
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByUuid(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'uuid', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByVersion(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'version', caseSensitive: caseSensitive);
     });
   }
 }
@@ -953,10 +1923,34 @@ extension MemoryNodeQueryProperty
     });
   }
 
+  QueryBuilder<MemoryNode, String?, QQueryOperations> deviceIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'deviceId');
+    });
+  }
+
   QueryBuilder<MemoryNode, MemoryEmbedding?, QQueryOperations>
       embeddingProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'embedding');
+    });
+  }
+
+  QueryBuilder<MemoryNode, bool, QQueryOperations> isDeletedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isDeleted');
+    });
+  }
+
+  QueryBuilder<MemoryNode, int, QQueryOperations> layerProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'layer');
+    });
+  }
+
+  QueryBuilder<MemoryNode, DateTime?, QQueryOperations> modifiedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'modifiedAt');
     });
   }
 
@@ -971,4 +1965,58 @@ extension MemoryNodeQueryProperty
       return query.addPropertyName(r'updatedAt');
     });
   }
+
+  QueryBuilder<MemoryNode, String?, QQueryOperations> uuidProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'uuid');
+    });
+  }
+
+  QueryBuilder<MemoryNode, String?, QQueryOperations> versionProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'version');
+    });
+  }
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+MemoryNode _$MemoryNodeFromJson(Map<String, dynamic> json) => MemoryNode(
+      content: json['content'] as String,
+      type: json['type'] as String?,
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+      embedding: json['embedding'] == null
+          ? null
+          : MemoryEmbedding.fromJson(json['embedding'] as Map<String, dynamic>),
+      degree: json['degree'] == null
+          ? null
+          : Degree.fromJson(json['degree'] as Map<String, dynamic>),
+      version: json['version'] as String?,
+      deviceId: json['deviceId'] as String?,
+      isDeleted: json['isDeleted'] as bool? ?? false,
+      modifiedAt: json['modifiedAt'] == null
+          ? null
+          : DateTime.parse(json['modifiedAt'] as String),
+      layer: (json['layer'] as num?)?.toInt() ?? 0,
+      uuid: json['uuid'] as String?,
+    )..createdAt = DateTime.parse(json['createdAt'] as String);
+
+Map<String, dynamic> _$MemoryNodeToJson(MemoryNode instance) =>
+    <String, dynamic>{
+      'uuid': instance.uuid,
+      'content': instance.content,
+      'type': instance.type,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'modifiedAt': instance.modifiedAt?.toIso8601String(),
+      'version': instance.version,
+      'deviceId': instance.deviceId,
+      'isDeleted': instance.isDeleted,
+      'layer': instance.layer,
+      'embedding': instance.embedding?.toJson(),
+      'degree': instance.degree?.toJson(),
+    };

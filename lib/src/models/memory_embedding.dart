@@ -1,35 +1,32 @@
 import 'package:isar/isar.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'memory_embedding.g.dart';
 
-/// Represents a semantic embedding vector for a `MemoryNode`.
+/// Represents a vector embedding for a [MemoryNode].
 ///
-/// This class stores the numerical representation of a node's content, which
-/// is used for semantic search and similarity calculations.
+/// Wraps the raw vector data along with metadata about the provider and dimension.
 @embedded
+@JsonSerializable()
 class MemoryEmbedding {
-  /// Creates a new instance of [MemoryEmbedding].
+  /// The raw floating-point vector data.
   ///
-  /// The [vector] defaults to an empty list.
+  /// Isar stores `List<double>` efficiently.
+  final List<double> vector;
+
+  /// The name of the provider or model that generated this embedding (e.g., 'gemini', 'openai').
+  final String provider;
+
+  /// The dimension of the vector (e.g., 768, 1536).
+  final int dimension;
+
+  /// Creates a [MemoryEmbedding].
   MemoryEmbedding({
     this.vector = const [],
-    this.provider,
-    this.dimension,
-  }) : createdAt = DateTime.now();
+    this.provider = 'unknown',
+    this.dimension = 0,
+  });
 
-  /// The list of floating-point numbers that constitutes the embedding vector.
-  late List<double> vector;
-
-  /// The provider or model that generated this embedding (e.g., 'openai', 'gemini').
-  ///
-  /// Useful for tracking the source of different embeddings.
-  String? provider;
-
-  /// The dimensionality of the embedding vector (i.e., the length of the [vector] list).
-  int? dimension;
-
-  /// The timestamp when this embedding was created.
-  ///
-  /// Automatically set to the current time upon creation.
-  late DateTime createdAt;
+  factory MemoryEmbedding.fromJson(Map<String, dynamic> json) => _$MemoryEmbeddingFromJson(json);
+  Map<String, dynamic> toJson() => _$MemoryEmbeddingToJson(this);
 }
