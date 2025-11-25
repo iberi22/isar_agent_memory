@@ -6,6 +6,7 @@ import 'models/memory_edge.dart';
 import 'models/memory_embedding.dart';
 import 'vector_index.dart';
 import 'vector_index_objectbox.dart';
+import 'reranking_strategy.dart';
 
 /// Main API for interacting with the universal agent memory graph.
 ///
@@ -181,6 +182,7 @@ class MemoryGraph {
       semanticSearch(
     List<double> queryEmbedding, {
     int topK = 5,
+    int? layer,
   }) async {
     // Gracefully return empty list if dimensions mismatch, as tests expect.
     if (queryEmbedding.length != embeddingsAdapter.dimension) {
@@ -216,7 +218,11 @@ class MemoryGraph {
     }
 
     // Fallback to linear scan if the index returns no results or fails.
-    final allNodes = await isar.memoryNodes.where().findAll();
+    var query = isar.memoryNodes.where();
+    if (layer != null) {
+      query = query.filter().layerEqualTo(layer);
+    }
+    final allNodes = await query.findAll();
 
     final distances = allNodes
         .map((n) => (n.embedding != null)
@@ -418,5 +424,38 @@ class MemoryGraph {
   /// This is primarily for testing purposes to ensure a clean state between tests.
   Future<void> clearVectorCollection() async {
     await _index.clear();
+  }
+  /// Performs a semantic search with a re-ranking strategy.
+  ///
+  /// [queryEmbedding] is the embedding of the search query.
+  /// [reranker] is the re-ranking strategy to apply.
+  /// [topK] is the number of results to return.
+  Future<List<({MemoryNode node, double score})>> semanticSearchWithReRanking(
+    List<double> queryEmbedding, {
+    required ReRankingStrategy reranker,
+    int topK = 5,
+  }) async {
+    final searchResults = await semanticSearch(queryEmbedding, topK: topK * 2);
+    final resultsWithScore = searchResults
+        .map((r) => (node: r.node, score: 1.0 - r.distance))
+        .toList();
+    return reranker.reRank(resultsWithScore).take(topK).toList();
+  }
+
+  /// Performs a hybrid search with a re-ranking strategy.
+  ///
+  /// [query] is the text to search for.
+  /// [reranker] is the re-ranking strategy to apply.
+  /// [alpha] controls the weight of the vector search vs. text search.
+  /// [topK] is the number of results to return.
+  Future<List<({MemoryNode node, double score})>> hybridSearchWithReRanking(
+    String query, {
+    required ReRankingStrategy reranker,
+    int topK = 5,
+    double alpha = 0.5,
+  }) async {
+    final searchResults =
+        await hybridSearch(query, topK: topK * 2, alpha: alpha);
+    return reranker.reRank(searchResults, query: query).take(topK).toList();
   }
 }

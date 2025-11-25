@@ -31,6 +31,7 @@ class MemoryNode {
     this.modifiedAt,
     this.layer = 0,
     this.uuid,
+    this.accessCount = 0,
   }) : createdAt = DateTime.now() {
     this.degree = degree ?? Degree();
     if (modifiedAt == null) {
@@ -70,6 +71,9 @@ class MemoryNode {
   ///
   /// Can be used to track recency and relevance.
   DateTime? updatedAt;
+
+  /// The number of times this node has been accessed.
+  int accessCount;
 
   /// The timestamp when this record was last modified (system-level sync).
   ///

@@ -447,9 +447,9 @@ print(explanation);
 - [x] Hybrid Retrieval (Dense + Isar Filter).
 - [x] Sync & Privacy (Encryption with AES-256-GCM, LWW conflict resolution).
 - [x] HiRAG Phase 1 (Layer-based organization, summary nodes, relationship types).
-- [ ] HiRAG Phase 2 (Automatic LLM-based summarization, multi-hop retrieval).
-- [ ] Cross-device sync backend (Firebase/WebSocket integration).
-- [ ] Re-ranking and advanced retrieval strategies.
+- [x] HiRAG Phase 2 (Automatic LLM-based summarization, multi-hop retrieval).
+- [x] Cross-device sync backend (Firebase/WebSocket integration).
+- [x] Re-ranking and advanced retrieval strategies.
 
 ---
 
