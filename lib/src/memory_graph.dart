@@ -218,11 +218,12 @@ class MemoryGraph {
     }
 
     // Fallback to linear scan if the index returns no results or fails.
-    var query = isar.memoryNodes.where();
+    final List<MemoryNode> allNodes;
     if (layer != null) {
-      query = query.filter().layerEqualTo(layer);
+      allNodes = await isar.memoryNodes.filter().layerEqualTo(layer).findAll();
+    } else {
+      allNodes = await isar.memoryNodes.where().findAll();
     }
-    final allNodes = await query.findAll();
 
     final distances = allNodes
         .map((n) => (n.embedding != null)

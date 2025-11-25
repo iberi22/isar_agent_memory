@@ -146,14 +146,183 @@ HiRAG implementation includes:
 
 ### Future Enhancements
 
-Planned improvements:
-- Automatic summarization using LLMs
-- Multi-hop retrieval (search across layers)
+**Phase 2 (Completed):**
+- ✅ Automatic summarization using LLMs via `LLMAdapter` interface
+- ✅ Multi-hop retrieval (search across layers with context enrichment)
+- ✅ Re-ranking strategies (BM25, MMR, Diversity, Recency)
+
+**Future Improvements:**
 - Layer-aware semantic search with configurable depth
+- Query routing optimization
+- Advanced result fusion algorithms
 
 ---
 
-## 🔒 On-Device Embeddings (Local Privacy)
+## 🔄 Cross-Device Sync (Beta)
+
+This package now supports real-time cross-device synchronization with multiple backend options.
+
+### Sync Backends
+
+```dart
+import 'package:isar_agent_memory/isar_agent_memory.dart';
+
+final syncManager = CrossDeviceSyncManager(memoryGraph);
+
+// Option 1: Firebase Realtime Database
+await syncManager.initializeBackend(
+  firebaseConfig: {
+    'apiKey': 'YOUR_API_KEY',
+    'projectId': 'your-project-id',
+    'databaseURL': 'https://your-project.firebaseio.com',
+    'userId': 'user123',
+  },
+  encryptionKey: yourEncryptionKey,
+);
+
+// Option 2: WebSocket (custom server)
+await syncManager.initializeBackend(
+  websocketConfig: {
+    'url': 'wss://your-sync-server.com',
+    'channel': yourWebSocketChannel,
+  },
+  encryptionKey: yourEncryptionKey,
+);
+
+// Publish snapshot to other devices
+await syncManager.publishSnapshot();
+
+// Remote changes are automatically synced via stream
+// Conflicts are resolved using Last-Write-Wins (LWW)
+```
+
+**Features:**
+- End-to-end encryption (AES-256-GCM)
+- Automatic conflict resolution (LWW)
+- Firebase or WebSocket backends
+- Real-time synchronization streams
+- Automatic reconnection handling
+
+---
+
+## 🎯 Re-ranking Strategies
+
+Improve search relevance with advanced re-ranking algorithms:
+
+```dart
+import 'package:isar_agent_memory/isar_agent_memory.dart';
+
+// BM25: Term frequency-based ranking
+final results1 = await graph.semanticSearchWithReRanking(
+  queryEmbedding,
+  reranker: BM25ReRanker(k1: 1.5, b: 0.75),
+  topK: 10,
+);
+
+// MMR: Balance relevance and diversity
+final results2 = await graph.semanticSearchWithReRanking(
+  queryEmbedding,
+  reranker: MMRReRanker(lambda: 0.5),
+  topK: 10,
+);
+
+// Diversity: Maximize result variety
+final results3 = await graph.semanticSearchWithReRanking(
+  queryEmbedding,
+  reranker: DiversityReRanker(),
+  topK: 10,
+);
+
+// Recency: Prioritize recent nodes
+final results4 = await graph.semanticSearchWithReRanking(
+  queryEmbedding,
+  reranker: RecencyReRanker(),
+  topK: 10,
+);
+```
+
+**Available Strategies:**
+- **BM25ReRanker**: Classic information retrieval algorithm
+- **MMRReRanker**: Maximal Marginal Relevance for diversity
+- **DiversityReRanker**: Maximize variety in results
+- **RecencyReRanker**: Favor recently created/updated nodes
+
+---
+
+## 🧠 HiRAG Phase 2: Advanced Features
+
+### Automatic Summarization
+
+```dart
+import 'package:isar_agent_memory/isar_agent_memory.dart';
+
+// Create a custom LLM adapter (e.g., using Gemini)
+class GeminiLLMAdapter implements LLMAdapter {
+  final GenerativeModel model;
+  
+  GeminiLLMAdapter(String apiKey) 
+    : model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
+  
+  @override
+  Future<String> generate(String prompt) async {
+    final response = await model.generateContent([Content.text(prompt)]);
+    return response.text ?? '';
+  }
+}
+
+// Automatically summarize a layer
+final llmAdapter = GeminiLLMAdapter('YOUR_API_KEY');
+final summaryNodeId = await graph.autoSummarizeLayer(
+  layerIndex: 0,
+  llmAdapter: llmAdapter,
+  promptTemplate: (content) => 'Summarize: $content',
+);
+```
+
+### Multi-Hop Retrieval
+
+Search across hierarchical layers to get enriched context:
+
+```dart
+// Search base layer with automatic context from summary layers
+final results = await graph.multiHopSearch(
+  queryEmbedding: queryEmbedding,
+  maxHops: 2,  // Traverse up to 2 layers
+  topK: 5,
+);
+
+// Each result includes base node + hierarchical context
+for (final result in results) {
+  print('Node: ${result.node.content}');
+  print('Context nodes: ${result.context.length}');
+  for (final contextNode in result.context) {
+    print('  - ${contextNode.content}');
+  }
+}
+```
+
+**Benefits:**
+- Retrieve facts with their summarized context
+- Navigate knowledge hierarchies automatically
+- Understand relationships between concrete and abstract information
+
+---
+
+## 🧬 Features
+
+- **Universal Graph API**: Store, recall, relate, search, and explain memories.
+- **Fast ANN Search**: Uses **ObjectBox (HNSW)** as the default vector backend.
+- **Pluggable Vector Index**: Swap ObjectBox for a custom backend if needed.
+- **Pluggable Embeddings**: Adapters for Gemini, OpenAI, or **On-Device (ONNX)**.
+- **HiRAG Support**: Hierarchical knowledge organization with automatic summarization and multi-hop retrieval.
+- **Advanced Re-ranking**: BM25, MMR, Diversity, and Recency strategies.
+- **Cross-Device Sync**: Firebase and WebSocket backends with E2E encryption.
+- **Explainability**: Semantic distance, activation (recency/frequency), and path tracing.
+- **Hybrid Search**: Combine vector similarity with full-text search (BM25-like) for better recall.
+- **Robust Testing**: Comprehensive test suite and real-world examples.
+- **Extensible**: Add metadata, new adapters, or custom backends.
+
+---
 
 You can run embeddings entirely on-device using ONNX Runtime (e.g., with `all-MiniLM-L6-v2`).
 
@@ -450,6 +619,8 @@ print(explanation);
 - [x] HiRAG Phase 2 (Automatic LLM-based summarization, multi-hop retrieval).
 - [x] Cross-device sync backend (Firebase/WebSocket integration).
 - [x] Re-ranking and advanced retrieval strategies.
+- [ ] Production-ready sync server implementation.
+- [ ] Enhanced query routing and result fusion.
 
 ---
 

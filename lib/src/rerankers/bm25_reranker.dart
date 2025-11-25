@@ -20,17 +20,16 @@ class BM25ReRanker implements ReRankingStrategy {
     }
 
     final queryTerms = _tokenize(query);
-    final documents =
-        results.map((r) => _tokenize(r.node.content)).toList();
+    final documents = results.map((r) => _tokenize(r.node.content)).toList();
     final idf = _calculateIdf(queryTerms, documents);
-    final avgdl =
-        documents.map((d) => d.length).reduce((a, b) => a + b) / documents.length;
+    final avgdl = documents.map((d) => d.length).reduce((a, b) => a + b) /
+        documents.length;
 
     results.sort((a, b) {
-      final scoreA =
-          _calculateBm25(queryTerms, _tokenize(a.node.content), documents, idf, avgdl);
-      final scoreB =
-          _calculateBm25(queryTerms, _tokenize(b.node.content), documents, idf, avgdl);
+      final scoreA = _calculateBm25(
+          queryTerms, _tokenize(a.node.content), documents, idf, avgdl);
+      final scoreB = _calculateBm25(
+          queryTerms, _tokenize(b.node.content), documents, idf, avgdl);
       return scoreB.compareTo(scoreA);
     });
 
@@ -46,7 +45,8 @@ class BM25ReRanker implements ReRankingStrategy {
     final idf = <String, double>{};
     for (final term in queryTerms) {
       final docCount = documents.where((d) => d.contains(term)).length;
-      idf[term] = log((documents.length - docCount + 0.5) / (docCount + 0.5) + 1);
+      idf[term] =
+          log((documents.length - docCount + 0.5) / (docCount + 0.5) + 1);
     }
     return idf;
   }

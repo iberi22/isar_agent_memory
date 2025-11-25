@@ -32,3 +32,7 @@ test_resources/
 
 # Development tools
 tool/
+
+# Analysis output files (temporary)
+analyze_output.txt
+analyze_final.txt

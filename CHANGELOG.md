@@ -1,5 +1,80 @@
 # Changelog
 
+## 0.4.0 - 2025-11-25
+
+### Major Features
+
+- **HiRAG Phase 2**: Complete implementation of advanced hierarchical RAG capabilities.
+  - Added `LLMAdapter` interface for LLM integration.
+  - Implemented `autoSummarizeLayer()` for automatic layer summarization using LLMs.
+  - Implemented `multiHopSearch()` for hierarchical context-aware retrieval.
+  - Support for configurable prompt templates and search depth.
+
+- **Cross-Device Sync Backends**: Real-time synchronization infrastructure.
+  - Added `SyncBackend` interface with pluggable backend architecture.
+  - Implemented `FirebaseSyncBackend` for Firebase Realtime Database.
+  - Implemented `WebSocketSyncBackend` for custom WebSocket servers.
+  - Added `CrossDeviceSyncManager` for managing sync lifecycle.
+  - Factory pattern for automatic backend selection.
+  - Stream-based real-time change propagation.
+
+- **Advanced Re-ranking Strategies**: Improve search relevance with multiple algorithms.
+  - Added `ReRankingStrategy` interface for extensible re-ranking.
+  - Implemented `BM25ReRanker` for term frequency-based ranking.
+  - Implemented `MMRReRanker` for Maximal Marginal Relevance (diversity + relevance).
+  - Implemented `DiversityReRanker` for maximizing result variety.
+  - Implemented `RecencyReRanker` for time-based relevance.
+  - Integrated re-ranking into `semanticSearchWithReRanking()` and `hybridSearchWithReRanking()`.
+
+### Improvements
+
+- **API Enhancements**:
+  - Extended `MemoryGraph` with `semanticSearchWithReRanking()` method.
+  - Extended `MemoryGraph` with `hybridSearchWithReRanking()` method.
+  - Added `createdAt` as optional parameter in `MemoryNode` constructor.
+  - Improved query handling in `semanticSearch()` for layer filtering.
+
+- **Architecture**:
+  - All new classes properly exported in `isar_agent_memory.dart`.
+  - Clean separation between interfaces and implementations.
+  - Factory patterns for extensibility.
+
+- **Testing**:
+  - Added `hirag_phase2_integration_test.dart` for LLM-based summarization.
+  - Added `multi_hop_retrieval_test.dart` for hierarchical search.
+  - Added `reranking_strategies_test.dart` for all re-ranking algorithms.
+  - Added `advanced_retrieval_test.dart` for combined features.
+  - Added `cross_device_sync_firebase_test.dart` for Firebase backend.
+  - Added `cross_device_sync_websocket_test.dart` for WebSocket backend.
+  - Added `sync_conflict_resolution_test.dart` for LWW conflict handling.
+  - All core tests passing (13/13 ✅).
+
+### Dependencies
+
+- Added `firebase_core` and `firebase_database` for Firebase backend.
+- Added `web_socket_channel` for WebSocket backend.
+- Updated `mockito` to ^5.4.4 for improved testing.
+
+### Documentation
+
+- Updated README.md with comprehensive documentation for all new features.
+- Added usage examples for HiRAG Phase 2, sync backends, and re-ranking.
+- Updated TASKS.md with completed sprint and new priorities.
+- Documented `LLMAdapter` interface with implementation examples.
+
+### Breaking Changes
+
+None. All changes are backward compatible with v0.3.0.
+
+### Notes
+
+- WebSocket tests require mock generation via `build_runner`.
+- Firebase backend requires valid Firebase configuration.
+- LLM adapter implementations require external API keys (e.g., Gemini).
+- All sync operations use AES-256-GCM encryption from v0.3.0.
+
+---
+
 ## 0.3.0 - 2024-11-24
 
 ### Major Features

@@ -1,8 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
-import 'package:isar_agent_memory/src/sync/cross_device_sync_manager.dart';
 import 'package:firebase_database_mocks/firebase_database_mocks.dart';
+
+// Simple mock embeddings adapter
+class MockEmbeddingsAdapter implements EmbeddingsAdapter {
+  @override
+  String get providerName => 'mock';
+  
+  @override
+  int get dimension => 384;
+  
+  @override
+  Future<List<double>> embed(String text) async {
+    return List.generate(384, (i) => (text.length + i) / 1000.0);
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +39,7 @@ void main() {
       name: 'device_a_db',
     );
     memoryGraphA =
-        MemoryGraph(isarA, embeddingsAdapter: FallbackEmbeddingsAdapter());
+        MemoryGraph(isarA, embeddingsAdapter: MockEmbeddingsAdapter());
     syncManagerA = CrossDeviceSyncManager(memoryGraphA);
 
     // Setup for Device B
@@ -36,7 +49,7 @@ void main() {
       name: 'device_b_db',
     );
     memoryGraphB =
-        MemoryGraph(isarB, embeddingsAdapter: FallbackEmbeddingsAdapter());
+        MemoryGraph(isarB, embeddingsAdapter: MockEmbeddingsAdapter());
     syncManagerB = CrossDeviceSyncManager(memoryGraphB);
 
     await isarA.writeTxn(() async => await isarA.clear());

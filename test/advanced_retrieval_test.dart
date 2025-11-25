@@ -1,8 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package.isar/isar.dart';
+import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
-import 'package:isar_agent_memory/src/rerankers/bm25_reranker.dart';
-import 'package:isar_agent_memory/src/rerankers/recency_reranker.dart';
+
+// Simple mock for testing without API calls
+class MockEmbeddingsAdapter implements EmbeddingsAdapter {
+  @override
+  String get providerName => 'mock';
+  
+  @override
+  int get dimension => 384;
+  
+  @override
+  Future<List<double>> embed(String text) async {
+    // Return a simple vector based on text length
+    return List.generate(384, (i) => (text.length + i) / 1000.0);
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +31,7 @@ void main() {
       name: 'test_db',
     );
     memoryGraph =
-        MemoryGraph(isar, embeddingsAdapter: FallbackEmbeddingsAdapter());
+        MemoryGraph(isar, embeddingsAdapter: MockEmbeddingsAdapter());
     await isar.writeTxn(() async => await isar.clear());
   });
 

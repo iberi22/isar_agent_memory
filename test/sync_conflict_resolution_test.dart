@@ -1,7 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
-import 'package:isar_agent_memory/src/sync/sync_manager.dart';
+
+// Simple mock for testing without API calls
+class MockEmbeddingsAdapter implements EmbeddingsAdapter {
+  @override
+  String get providerName => 'mock';
+  
+  @override
+  int get dimension => 384;
+  
+  @override
+  Future<List<double>> embed(String text) async {
+    return List.generate(384, (i) => (text.length + i) / 1000.0);
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +31,7 @@ void main() {
       name: 'test_db',
     );
     memoryGraph =
-        MemoryGraph(isar, embeddingsAdapter: FallbackEmbeddingsAdapter());
+        MemoryGraph(isar, embeddingsAdapter: MockEmbeddingsAdapter());
     syncManager = SyncManager(memoryGraph);
     await syncManager.initialize(encryptionKey: List<int>.filled(32, 1));
   });

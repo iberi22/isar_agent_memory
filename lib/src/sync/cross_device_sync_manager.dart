@@ -65,8 +65,7 @@ class SyncBackendFactory {
     if (firebaseConfig != null) {
       return FirebaseSyncBackend();
     } else {
-      return WebSocketSyncBackend(
-          channel: websocketConfig?['channel']);
+      return WebSocketSyncBackend(channel: websocketConfig?['channel']);
     }
   }
 }

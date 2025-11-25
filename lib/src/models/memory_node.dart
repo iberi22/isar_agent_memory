@@ -32,7 +32,8 @@ class MemoryNode {
     this.layer = 0,
     this.uuid,
     this.accessCount = 0,
-  }) : createdAt = DateTime.now() {
+    DateTime? createdAt,
+  }) : createdAt = createdAt ?? DateTime.now() {
     this.degree = degree ?? Degree();
     if (modifiedAt == null) {
       modifiedAt = DateTime.now();

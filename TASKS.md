@@ -2,34 +2,107 @@
 Description: Implementation plan and priority improvements
 ---
 
-# Current Status: v0.3.0 Released
+# Current Status: v0.4.0 In Development
 
-**Release v0.3.0 (2024-11-24)** includes:
-- ✅ Sync Protocol with AES-256-GCM encryption
-- ✅ HiRAG Phase 1 (Hierarchical RAG foundation)
-- ✅ LWW conflict resolution with UUIDs
-- ✅ On-device embeddings with ONNX Runtime
+**Release v0.4.0 (2025-11-25)** includes:
+- ✅ HiRAG Phase 2 (Automatic LLM-based summarization, multi-hop retrieval)
+- ✅ Cross-device sync backends (Firebase/WebSocket integration)
+- ✅ Re-ranking strategies (BM25, MMR, Diversity, Recency)
+- ✅ Advanced retrieval methods
 
-## Next Sprint: HiRAG Phase 2 & Performance Optimization
+## Completed Sprint: HiRAG Phase 2 & Advanced Retrieval
 
-### HiRAG Phase 2 Goals
+### HiRAG Phase 2 - COMPLETED ✅
 
-1. **Automatic Summarization**
-   - [ ] Integrate LLM-based automatic summarization
-   - [ ] Configurable summarization strategies (extractive vs abstractive)
-   - [ ] Batch summarization for efficient processing
-   - [ ] Summary quality metrics and validation
+1. **Automatic Summarization** ✅
+   - [x] Integrate LLM-based automatic summarization via `LLMAdapter` interface
+   - [x] Configurable prompt templates for custom summarization
+   - [x] Automatic relationship creation (`summary_of` and `part_of`)
+   - [x] Layer-based aggregation and node grouping
 
-2. **Multi-Hop Retrieval**
-   - [ ] Layer-aware semantic search
-   - [ ] Configurable search depth (single layer vs multi-layer)
-   - [ ] Query routing (which layer to start from)
-   - [ ] Result fusion across layers
+2. **Multi-Hop Retrieval** ✅
+   - [x] Layer-aware semantic search with context enrichment
+   - [x] Configurable search depth (maxHops parameter)
+   - [x] Hierarchical traversal following `summary_of` relationships
+   - [x] Result enrichment with parent context nodes
 
-3. **Advanced Relationships**
-   - [ ] Support for custom relation types beyond `summary_of` and `part_of`
-   - [ ] Bidirectional relationship queries
-   - [ ] Relationship strength/weight calculation
+3. **Advanced Relationships** ✅
+   - [x] Support for `summary_of` and `part_of` relation types
+   - [x] Bidirectional relationship traversal
+   - [x] Integration with multi-hop search
+
+### Cross-Device Sync - COMPLETED ✅
+
+1. **Backend Abstraction** ✅
+   - [x] `SyncBackend` interface for pluggable backends
+   - [x] Factory pattern for backend selection
+   - [x] Stream-based real-time synchronization
+
+2. **Firebase Backend** ✅
+   - [x] Firebase Realtime Database integration
+   - [x] Anonymous and API key authentication
+   - [x] Encrypted snapshot publishing
+   - [x] Real-time change subscriptions
+
+3. **WebSocket Backend** ✅
+   - [x] Custom WebSocket server integration
+   - [x] Heartbeat/keep-alive mechanism
+   - [x] Bidirectional synchronization
+   - [x] Automatic fallback from Firebase
+
+4. **Sync Management** ✅
+   - [x] `CrossDeviceSyncManager` extending `SyncManager`
+   - [x] Automatic backend initialization
+   - [x] LWW (Last-Write-Wins) conflict resolution
+   - [x] Encrypted snapshot merge
+
+### Re-ranking & Advanced Retrieval - COMPLETED ✅
+
+1. **Re-ranking Strategies** ✅
+   - [x] `ReRankingStrategy` interface
+   - [x] BM25 re-ranker (term frequency-based)
+   - [x] MMR re-ranker (Maximal Marginal Relevance)
+   - [x] Diversity re-ranker (maximize variety)
+   - [x] Recency re-ranker (favor recent nodes)
+
+2. **Integration** ✅
+   - [x] `semanticSearchWithReRanking()` in `MemoryGraph`
+   - [x] `hybridSearchWithReRanking()` in `MemoryGraph`
+   - [x] Flexible re-ranker composition
+
+3. **Testing** ✅
+   - [x] Unit tests for all re-ranking strategies
+   - [x] Integration tests for HiRAG Phase 2
+   - [x] Sync conflict resolution tests
+   - [x] Multi-hop retrieval tests
+
+## Next Sprint: Production Hardening & Performance
+
+### Priority Tasks
+
+1. **Performance Optimization**
+   - [ ] Implement caching for multi-hop search intermediate results
+   - [ ] Optimize BM25 IDF calculation with memoization
+   - [ ] Add batch operations for large-scale summarization
+   - [ ] Profile and optimize vector search performance
+
+2. **Production Sync Server**
+   - [ ] Reference WebSocket server implementation
+   - [ ] Docker deployment configuration
+   - [ ] Load balancing and scaling guidelines
+   - [ ] Monitoring and health checks
+
+3. **Enhanced Testing**
+   - [ ] Generate mocks for WebSocket tests (build_runner)
+   - [ ] Increase test coverage to >80%
+   - [ ] Add integration tests for Firebase backend
+   - [ ] Performance benchmarks for re-ranking strategies
+
+4. **Documentation**
+   - [ ] Migration guide from v0.3.0 to v0.4.0
+   - [ ] Best practices for LLM adapter implementation
+   - [ ] Sync backend deployment guide
+   - [ ] Performance tuning recommendations
 
 ## Technical Tasks
 
