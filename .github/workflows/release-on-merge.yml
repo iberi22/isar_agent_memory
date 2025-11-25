@@ -48,13 +48,39 @@ jobs:
             git push origin "$TAG"
           fi
 
+      - name: Extract release notes from CHANGELOG
+        if: steps.ver.outputs.previous != steps.ver.outputs.current
+        id: notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.ver.outputs.current }}"
+          
+          # Extract section for this version from CHANGELOG.md
+          awk -v ver="$VERSION" '
+            /^## / {
+              if (found) exit;
+              if ($0 ~ ver) found=1;
+              next;
+            }
+            found { print }
+          ' CHANGELOG.md > release_notes.md
+          
+          # Add link to full changelog if notes are empty
+          if [ ! -s release_notes.md ]; then
+            echo "See [CHANGELOG.md](https://github.com/iberi22/isar_agent_memory/blob/main/CHANGELOG.md) for details." > release_notes.md
+          fi
+          
+          echo "Release notes extracted for version $VERSION"
+
       - name: Create GitHub Release
         if: steps.ver.outputs.previous != steps.ver.outputs.current
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.ver.outputs.current }}
           name: v${{ steps.ver.outputs.current }}
-          body: |
-            See CHANGELOG.md for details.
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ contains(steps.ver.outputs.current, 'beta') || contains(steps.ver.outputs.current, 'alpha') || contains(steps.ver.outputs.current, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
