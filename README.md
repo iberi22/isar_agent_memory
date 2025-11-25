@@ -259,10 +259,10 @@ import 'package:isar_agent_memory/isar_agent_memory.dart';
 // Create a custom LLM adapter (e.g., using Gemini)
 class GeminiLLMAdapter implements LLMAdapter {
   final GenerativeModel model;
-  
-  GeminiLLMAdapter(String apiKey) 
+
+  GeminiLLMAdapter(String apiKey)
     : model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
-  
+
   @override
   Future<String> generate(String prompt) async {
     final response = await model.generateContent([Content.text(prompt)]);

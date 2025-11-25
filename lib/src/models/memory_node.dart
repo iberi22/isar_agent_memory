@@ -115,6 +115,7 @@ class MemoryNode {
   Map<String, dynamic>? metadata;
 
   // JSON serialization helpers
-  factory MemoryNode.fromJson(Map<String, dynamic> json) => _$MemoryNodeFromJson(json);
+  factory MemoryNode.fromJson(Map<String, dynamic> json) =>
+      _$MemoryNodeFromJson(json);
   Map<String, dynamic> toJson() => _$MemoryNodeToJson(this);
 }

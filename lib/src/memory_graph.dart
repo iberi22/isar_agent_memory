@@ -426,6 +426,7 @@ class MemoryGraph {
   Future<void> clearVectorCollection() async {
     await _index.clear();
   }
+
   /// Performs a semantic search with a re-ranking strategy.
   ///
   /// [queryEmbedding] is the embedding of the search query.

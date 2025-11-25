@@ -14,10 +14,10 @@ class MockLLMAdapter implements LLMAdapter {
 class MockEmbeddingsAdapter implements EmbeddingsAdapter {
   @override
   String get providerName => 'mock';
-  
+
   @override
   int get dimension => 384;
-  
+
   @override
   Future<List<double>> embed(String text) async {
     return List.generate(384, (i) => (text.length + i) / 1000.0);
@@ -55,8 +55,8 @@ void main() {
   test('autoSummarizeLayer creates a summary node and correct relationships',
       () async {
     // 1. Setup: Create some nodes in layer 0
-    final node1Id = await memoryGraph.storeNodeWithEmbedding(
-        content: 'The sky is blue.');
+    final node1Id =
+        await memoryGraph.storeNodeWithEmbedding(content: 'The sky is blue.');
     final node2Id = await memoryGraph.storeNodeWithEmbedding(
         content: 'The grass is green.');
 

@@ -7,10 +7,10 @@ import 'package:firebase_database_mocks/firebase_database_mocks.dart';
 class MockEmbeddingsAdapter implements EmbeddingsAdapter {
   @override
   String get providerName => 'mock';
-  
+
   @override
   int get dimension => 384;
-  
+
   @override
   Future<List<double>> embed(String text) async {
     return List.generate(384, (i) => (text.length + i) / 1000.0);

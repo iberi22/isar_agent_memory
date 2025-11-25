@@ -6,10 +6,10 @@ import 'package:isar_agent_memory/isar_agent_memory.dart';
 class MockEmbeddingsAdapter implements EmbeddingsAdapter {
   @override
   String get providerName => 'mock';
-  
+
   @override
   int get dimension => 384;
-  
+
   @override
   Future<List<double>> embed(String text) async {
     // Return a simple vector based on text length
@@ -30,8 +30,7 @@ void main() {
       directory: '.',
       name: 'test_db',
     );
-    memoryGraph =
-        MemoryGraph(isar, embeddingsAdapter: MockEmbeddingsAdapter());
+    memoryGraph = MemoryGraph(isar, embeddingsAdapter: MockEmbeddingsAdapter());
     await isar.writeTxn(() async => await isar.clear());
   });
 
@@ -55,11 +54,10 @@ void main() {
   });
 
   test('Hybrid search with BM25ReRanker test', () async {
-    await memoryGraph
-        .storeNode(MemoryNode(content: 'the quick brown fox'));
+    await memoryGraph.storeNode(MemoryNode(content: 'the quick brown fox'));
     await memoryGraph.storeNode(MemoryNode(content: 'a lazy dog'));
-    await memoryGraph.storeNode(MemoryNode(
-        content: 'the quick brown fox jumps over the lazy dog'));
+    await memoryGraph.storeNode(
+        MemoryNode(content: 'the quick brown fox jumps over the lazy dog'));
 
     final results = await memoryGraph.hybridSearchWithReRanking(
       'quick fox',
@@ -68,7 +66,7 @@ void main() {
     );
 
     expect(results[0].node.content, 'the quick brown fox');
-    expect(results[1].node.content,
-        'the quick brown fox jumps over the lazy dog');
+    expect(
+        results[1].node.content, 'the quick brown fox jumps over the lazy dog');
   });
 }

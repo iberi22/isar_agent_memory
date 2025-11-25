@@ -6,10 +6,10 @@ import 'package:isar_agent_memory/isar_agent_memory.dart';
 class MockEmbeddingsAdapter implements EmbeddingsAdapter {
   @override
   String get providerName => 'mock';
-  
+
   @override
   int get dimension => 384;
-  
+
   @override
   Future<List<double>> embed(String text) async {
     return List.generate(384, (i) => (text.length + i) / 1000.0);
@@ -30,8 +30,7 @@ void main() {
       directory: '.',
       name: 'test_db',
     );
-    memoryGraph =
-        MemoryGraph(isar, embeddingsAdapter: MockEmbeddingsAdapter());
+    memoryGraph = MemoryGraph(isar, embeddingsAdapter: MockEmbeddingsAdapter());
     syncManager = SyncManager(memoryGraph);
     await syncManager.initialize(encryptionKey: List<int>.filled(32, 1));
   });
