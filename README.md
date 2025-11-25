@@ -14,7 +14,7 @@
 ### 1. Add dependency (pubspec.yaml)
 
 ```yaml
-isar_agent_memory: ^0.2.3
+isar_agent_memory: ^0.3.0
 isar: ^3.1.0+1
 # ObjectBox is the default vector backend.
 # onnxruntime is used for on-device embeddings.
@@ -95,21 +95,61 @@ await syncManager.importEncryptedSnapshot(encryptedData);
 
 ## 🧠 HiRAG (Hierarchical RAG) Support
 
-We are laying the foundation for HiRAG. You can currently create summary nodes and organize memory into layers.
+**HiRAG** (Hierarchical Retrieval-Augmented Generation) enables multi-level knowledge organization. The foundation is complete with layer-based node organization and summary relationships.
+
+### Features
+
+- **Layer-based Organization**: Organize nodes in hierarchical layers (0 = base facts, 1+ = summaries/abstractions)
+- **Summary Nodes**: Create aggregated summaries of multiple child nodes
+- **Relationship Types**: Built-in `summary_of` and `part_of` relation types
+- **Layer Queries**: Efficiently retrieve all nodes at a specific layer
+
+### Usage Example
 
 ```dart
 import 'package:isar_agent_memory/isar_agent_memory.dart';
 
-// Create a summary node for a set of child nodes (Layer 1)
-await graph.createSummaryNode(
-  summaryContent: 'Summary of recent events...',
-  childNodeIds: [nodeId1, nodeId2],
-  layer: 1,
+// Store base-layer facts (layer 0 is default)
+final fact1Id = await graph.storeNodeWithEmbedding(
+  content: 'The user prefers dark mode in the evening.',
+);
+final fact2Id = await graph.storeNodeWithEmbedding(
+  content: 'The user typically works from 9 AM to 5 PM.',
 );
 
-// Retrieve nodes by layer
+// Create a summary node at layer 1
+final summaryId = await graph.createSummaryNode(
+  summaryContent: 'User has established work schedule and UI preferences.',
+  childNodeIds: [fact1Id, fact2Id],
+  layer: 1,
+  type: 'user_profile_summary',
+);
+
+// Retrieve all summaries at layer 1
 final summaries = await graph.getNodesByLayer(1);
+for (final summary in summaries) {
+  print('Layer 1 Summary: ${summary.content}');
+}
+
+// Retrieve base facts at layer 0
+final baseFacts = await graph.getNodesByLayer(0);
+print('Total base facts: ${baseFacts.length}');
 ```
+
+### Architecture
+
+HiRAG implementation includes:
+- `HierarchicalMemoryGraph` extension on `MemoryGraph`
+- `layer` field on `MemoryNode` for hierarchical positioning
+- Automatic edge creation between child nodes and summaries
+- Support for multi-level abstraction hierarchies
+
+### Future Enhancements
+
+Planned improvements:
+- Automatic summarization using LLMs
+- Multi-hop retrieval (search across layers)
+- Layer-aware semantic search with configurable depth
 
 ---
 
@@ -405,8 +445,11 @@ print(explanation);
 - [x] `OnDeviceEmbeddingsAdapter` (ONNX) for Android/iOS/Desktop.
 - [x] Benchmarks via GitHub Actions.
 - [x] Hybrid Retrieval (Dense + Isar Filter).
-- [x] Sync & Privacy (Encryption).
-- [ ] HiRAG (Hierarchical RAG) - In Progress.
+- [x] Sync & Privacy (Encryption with AES-256-GCM, LWW conflict resolution).
+- [x] HiRAG Phase 1 (Layer-based organization, summary nodes, relationship types).
+- [ ] HiRAG Phase 2 (Automatic LLM-based summarization, multi-hop retrieval).
+- [ ] Cross-device sync backend (Firebase/WebSocket integration).
+- [ ] Re-ranking and advanced retrieval strategies.
 
 ---
 

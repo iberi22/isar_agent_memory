@@ -2,15 +2,34 @@
 Description: Implementation plan and priority improvements
 ---
 
-# Current Sprint: 100% On-Device Embeddings Adapter (Top Priority)
+# Current Status: v0.3.0 Released
 
-General Status: On-device first. Cloud (Gemini) only as fallback.
+**Release v0.3.0 (2024-11-24)** includes:
+- ✅ Sync Protocol with AES-256-GCM encryption
+- ✅ HiRAG Phase 1 (Hierarchical RAG foundation)
+- ✅ LWW conflict resolution with UUIDs
+- ✅ On-device embeddings with ONNX Runtime
 
-## Sprint Objectives
+## Next Sprint: HiRAG Phase 2 & Performance Optimization
 
-- Implement `OnDeviceEmbeddingsAdapter` (TFLite or ONNX Runtime) with a compact model (256–384 dims) and INT8 support.
-- Investigate and document: memory consumption, inference times, compatibility by device/ABI, and multi-app synchronization.
-- Maintain ObjectBox Vector Search (HNSW) as the ANN backend and validate end-to-end performance.
+### HiRAG Phase 2 Goals
+
+1. **Automatic Summarization**
+   - [ ] Integrate LLM-based automatic summarization
+   - [ ] Configurable summarization strategies (extractive vs abstractive)
+   - [ ] Batch summarization for efficient processing
+   - [ ] Summary quality metrics and validation
+
+2. **Multi-Hop Retrieval**
+   - [ ] Layer-aware semantic search
+   - [ ] Configurable search depth (single layer vs multi-layer)
+   - [ ] Query routing (which layer to start from)
+   - [ ] Result fusion across layers
+
+3. **Advanced Relationships**
+   - [ ] Support for custom relation types beyond `summary_of` and `part_of`
+   - [ ] Bidirectional relationship queries
+   - [ ] Relationship strength/weight calculation
 
 ## Technical Tasks
 
@@ -49,8 +68,30 @@ General Status: On-device first. Cloud (Gemini) only as fallback.
 - [x] Sync Protocol Design Document (`doc/SYNC_PROTOCOL.md`).
 - [x] Semantic Deduplication logic.
 - [x] Hybrid Search implementation.
+- [x] HiRAG Phase 1 (Layer-based organization, summary nodes, basic queries).
 
-## Initial Research Notes
+## Completed Releases
+
+### Release 0.3.0 (2024-11-24) ✅
+
+**Major Features:**
+- Sync Protocol with AES-256-GCM encryption and LWW conflict resolution
+- HiRAG Phase 1: Hierarchical knowledge organization
+- Extended data models with UUID-based sync fields
+- Integration tests for sync functionality
+
+**Deliverables:**
+- [x] `SyncManager` with encrypted export/import
+- [x] `EncryptionService` for client-side encryption
+- [x] `HierarchicalMemoryGraph` extension
+- [x] Layer-based node organization
+- [x] Summary node creation and queries
+- [x] Documentation: `doc/SYNC_PROTOCOL.md`
+- [x] Published to pub.dev
+
+---
+
+### Historical Research Notes
 
 - **Model Memory**:
   - MiniLM/E5-small fp32: ~60–90 MB; INT8: ~15–25 MB.
