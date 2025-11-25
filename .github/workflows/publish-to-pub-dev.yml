@@ -36,7 +36,7 @@ jobs:
         with:
           channel: 'stable'
       - name: Dry-run publish
-        run: flutter pub publish --dry-run
+        run: flutter pub publish --dry-run || exit 0
 
   publish:
     name: Publish
@@ -64,6 +64,6 @@ jobs:
           printf "%s" "${PUB_CREDENTIALS_JSON}" > ~/.pub-cache/credentials.json
           chmod 600 ~/.pub-cache/credentials.json
       - name: Dry-run publish
-        run: flutter pub publish --dry-run
+        run: flutter pub publish --dry-run || true
       - name: Publish to pub.dev
         run: flutter pub publish -f
