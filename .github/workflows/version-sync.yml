@@ -1,0 +1,69 @@
+name: Version Sync Check
+
+on:
+  pull_request:
+    paths:
+      - 'pubspec.yaml'
+      - 'README.md'
+  push:
+    branches:
+      - main
+    paths:
+      - 'pubspec.yaml'
+      - 'README.md'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check-version-sync:
+    name: Check Version Consistency
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      
+      - name: Extract versions
+        id: versions
+        shell: bash
+        run: |
+          # Extract version from pubspec.yaml
+          PUBSPEC_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          echo "pubspec=$PUBSPEC_VERSION" >> $GITHUB_OUTPUT
+          echo "📦 pubspec.yaml version: $PUBSPEC_VERSION"
+          
+          # Extract version from README.md (dependency line)
+          README_VERSION=$(grep -E 'isar_agent_memory:\s*\^' README.md | head -n 1 | sed -E 's/.*\^([0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?).*/\1/')
+          echo "readme=$README_VERSION" >> $GITHUB_OUTPUT
+          echo "📄 README.md version: $README_VERSION"
+          
+          # Check if versions match
+          if [ "$PUBSPEC_VERSION" == "$README_VERSION" ]; then
+            echo "synced=true" >> $GITHUB_OUTPUT
+            echo "✅ Versions are in sync"
+          else
+            echo "synced=false" >> $GITHUB_OUTPUT
+            echo "⚠️  Versions are OUT OF SYNC"
+          fi
+      
+      - name: Report sync status
+        if: steps.versions.outputs.synced == 'false'
+        run: |
+          echo "::warning::Version mismatch detected!"
+          echo "::warning::pubspec.yaml: ${{ steps.versions.outputs.pubspec }}"
+          echo "::warning::README.md: ${{ steps.versions.outputs.readme }}"
+          echo ""
+          echo "💡 Run this command to sync versions:"
+          echo "   pwsh tool/update_version.ps1 -NewVersion \"${{ steps.versions.outputs.pubspec }}\""
+          exit 1
+      
+      - name: Success summary
+        if: steps.versions.outputs.synced == 'true'
+        run: |
+          echo "### ✅ Version Consistency Check Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All version references are synchronized:" >> $GITHUB_STEP_SUMMARY
+          echo "- **pubspec.yaml**: ${{ steps.versions.outputs.pubspec }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **README.md**: ${{ steps.versions.outputs.readme }}" >> $GITHUB_STEP_SUMMARY

@@ -14,7 +14,7 @@
 ### 1. Add dependency (pubspec.yaml)
 
 ```yaml
-isar_agent_memory: ^0.4.0
+isar_agent_memory: ^0.5.0-beta
 isar: ^3.1.0+1
 # ObjectBox is the default vector backend.
 # onnxruntime is used for on-device embeddings.
