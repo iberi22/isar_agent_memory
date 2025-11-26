@@ -23,22 +23,22 @@ jobs:
     runs-on: ubuntu-latest
     # Only run for published releases (not drafts) or manual workflow dispatch
     if: ${{ (github.event_name == 'release' && github.event.action == 'published') || github.event_name == 'workflow_dispatch' }}
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        
+
       - name: Setup Dart SDK
         uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
-          
+
       - name: Install dependencies
         run: dart pub get
-        
+
       - name: Verify package
         run: dart pub publish --dry-run
-        
+
       - name: Check if publish should proceed
         id: should_publish
         run: |
@@ -59,7 +59,7 @@ jobs:
             echo "publish=true" >> $GITHUB_OUTPUT
             echo "✅ Manual publish requested"
           fi
-      
+
       - name: Publish to pub.dev
         if: steps.should_publish.outputs.publish == 'true'
         env:
@@ -70,15 +70,23 @@ jobs:
             mkdir -p ~/.config/dart
             # Write credentials to file
             echo "$PUB_CREDENTIALS_JSON" > ~/.config/dart/pub-credentials.json
+            chmod 600 ~/.config/dart/pub-credentials.json
             echo "✅ Using stored pub.dev credentials"
             dart pub publish --force
           else
-            echo "⚠️  PUB_CREDENTIALS_JSON secret not found"
-            echo "ℹ️  For first-time publish, run this workflow manually and complete OAuth"
-            echo "ℹ️  See .github/PUB_CREDENTIALS_SETUP.md for credential setup"
-            dart pub publish --force
+            echo "❌ ERROR: PUB_CREDENTIALS_JSON secret not configured"
+            echo ""
+            echo "To publish to pub.dev, you need to set up credentials:"
+            echo "1. Run locally: dart pub login"
+            echo "2. Copy contents of ~/.config/dart/pub-credentials.json"
+            echo "3. Add as GitHub secret: PUB_CREDENTIALS_JSON"
+            echo ""
+            echo "See .github/PUB_CREDENTIALS_SETUP.md for detailed instructions"
+            echo ""
+            echo "⚠️  Skipping publish to avoid hanging on OAuth prompt"
+            exit 1
           fi
-      
+
       - name: Publish summary
         if: steps.should_publish.outputs.publish == 'true'
         run: |
@@ -88,7 +96,7 @@ jobs:
           echo "**Version**: $(grep '^version:' pubspec.yaml | awk '{print $2}')" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "View on pub.dev: https://pub.dev/packages/isar_agent_memory" >> $GITHUB_STEP_SUMMARY
-      
+
       - name: Dry-run summary
         if: steps.should_publish.outputs.publish == 'false'
         run: |

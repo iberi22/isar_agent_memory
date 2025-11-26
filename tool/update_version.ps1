@@ -38,16 +38,16 @@ $errors = @()
 
 foreach ($update in $updates) {
     $filePath = Join-Path $PSScriptRoot ".." $update.File
-    
+
     if (!(Test-Path $filePath)) {
         Write-Host "⚠️  File not found: $($update.File)" -ForegroundColor Yellow
         continue
     }
-    
+
     try {
         $content = Get-Content $filePath -Raw
         $newContent = $content -replace $update.Pattern, $update.Replacement
-        
+
         if ($content -ne $newContent) {
             Set-Content $filePath -Value $newContent -NoNewline
             Write-Host "✅ Updated: $($update.Description)" -ForegroundColor Green
@@ -68,7 +68,7 @@ Write-Host "Errors: $($errors.Count)" -ForegroundColor White
 if ($updatedFiles.Count -gt 0) {
     Write-Host "`n📋 Files modified:" -ForegroundColor Yellow
     $updatedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
-    
+
     Write-Host "`n💡 Next steps:" -ForegroundColor Cyan
     Write-Host "1. Review changes: git diff" -ForegroundColor White
     Write-Host "2. Update CHANGELOG.md manually" -ForegroundColor White

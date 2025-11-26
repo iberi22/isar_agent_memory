@@ -33,7 +33,7 @@ try {
         --notes-file $releaseNotesFile `
         --prerelease `
         --title "v0.5.0-beta - Advanced RAG Capabilities"
-    
+
     Write-Host "✅ Release updated successfully!" -ForegroundColor Green
     Write-Host "🔗 View at: https://github.com/$owner/$repo/releases/tag/$tag" -ForegroundColor Blue
 } catch {

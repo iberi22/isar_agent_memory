@@ -242,10 +242,10 @@ void main() {
     test('should add node successfully', () async {
       // Arrange
       final node = MemoryNode(content: 'test');
-      
+
       // Act
       await graph.addNode(node);
-      
+
       // Assert
       expect(graph.nodeCount, equals(1));
     });

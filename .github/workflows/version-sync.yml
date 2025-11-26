@@ -20,11 +20,11 @@ jobs:
   check-version-sync:
     name: Check Version Consistency
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-      
+
       - name: Extract versions
         id: versions
         shell: bash
@@ -33,12 +33,12 @@ jobs:
           PUBSPEC_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
           echo "pubspec=$PUBSPEC_VERSION" >> $GITHUB_OUTPUT
           echo "📦 pubspec.yaml version: $PUBSPEC_VERSION"
-          
+
           # Extract version from README.md (dependency line)
           README_VERSION=$(grep -E 'isar_agent_memory:\s*\^' README.md | head -n 1 | sed -E 's/.*\^([0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?).*/\1/')
           echo "readme=$README_VERSION" >> $GITHUB_OUTPUT
           echo "📄 README.md version: $README_VERSION"
-          
+
           # Check if versions match
           if [ "$PUBSPEC_VERSION" == "$README_VERSION" ]; then
             echo "synced=true" >> $GITHUB_OUTPUT
@@ -47,7 +47,7 @@ jobs:
             echo "synced=false" >> $GITHUB_OUTPUT
             echo "⚠️  Versions are OUT OF SYNC"
           fi
-      
+
       - name: Report sync status
         if: steps.versions.outputs.synced == 'false'
         run: |
@@ -58,7 +58,7 @@ jobs:
           echo "💡 Run this command to sync versions:"
           echo "   pwsh tool/update_version.ps1 -NewVersion \"${{ steps.versions.outputs.pubspec }}\""
           exit 1
-      
+
       - name: Success summary
         if: steps.versions.outputs.synced == 'true'
         run: |

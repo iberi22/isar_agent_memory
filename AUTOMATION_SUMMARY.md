@@ -155,7 +155,7 @@ For the first publication or after credentials expire:
    ```powershell
    # Extract credentials
    .\tool\setup_pub_credentials.ps1
-   
+
    # Add as GitHub secret: PUB_CREDENTIALS_JSON
    # Repository → Settings → Secrets → New secret
    ```

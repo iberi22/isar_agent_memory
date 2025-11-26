@@ -34,10 +34,10 @@ void main() {
     test('should do something', () async {
       // Arrange
       final input = createTestInput();
-      
+
       // Act
       final result = await graph.method(input);
-      
+
       // Assert
       expect(result, isNotNull);
       expect(result.property, equals(expected));

@@ -8,42 +8,42 @@ This is a **major feature release** that introduces 8 powerful new capabilities 
 
 ## 🚀 New Features
 
-### 1. **Memory Consolidation** 
+### 1. **Memory Consolidation**
 Automatically merge and deduplicate similar memories using LLM-powered clustering.
 - `findSimilarMemoryClusters()` - Group related memories
 - `consolidateCluster()` - Merge memories intelligently
 - `autoConsolidate()` - Automatic memory optimization
 - `deduplicateMemories()` - Remove redundant content
 
-### 2. **Embeddings Cache** 
+### 2. **Embeddings Cache**
 LRU cache providing **10-100x performance improvement** for repeated queries.
 - Hit/miss rate tracking
 - Automatic expiration
 - Configurable size and TTL
 - Access frequency analytics
 
-### 3. **Quality Metrics** 
+### 3. **Quality Metrics**
 Comprehensive RAG quality measurement and tracking.
 - Relevance scoring
-- Coverage analysis  
+- Coverage analysis
 - Latency tracking (avg, p95, p99)
 - Query history and reports
 
-### 4. **Forgetting Mechanism** 
+### 4. **Forgetting Mechanism**
 Intelligent memory cleanup based on importance and recency.
 - Multi-factor importance scoring
 - Age-based, LRU, and importance-based strategies
 - Temporal decay with configurable half-life
 - Memory protection for critical nodes
 
-### 5. **Dynamic Layer Creation** 
+### 5. **Dynamic Layer Creation**
 Automatic hierarchical memory organization.
 - Adaptive clustering
 - Layer optimization
 - Graph structure analysis
 - Automatic recommendations
 
-### 6. **Multi-Modal Support** 
+### 6. **Multi-Modal Support**
 Support for multiple data modalities beyond text.
 - CLIP adapter (text + images)
 - ImageBind adapter (all modalities)
@@ -51,7 +51,7 @@ Support for multiple data modalities beyond text.
 - Structured data processing
 - Hybrid multi-modal adapter
 
-### 7. **Agent Memory Types** 
+### 7. **Agent Memory Types**
 Cognitive memory systems inspired by human memory.
 - **Episodic**: Events/experiences with temporal context
 - **Semantic**: Facts and knowledge
@@ -59,7 +59,7 @@ Cognitive memory systems inspired by human memory.
 - **Working**: Short-term memory with TTL
 - Automatic episodic → semantic consolidation
 
-### 8. **Cross-Encoder Re-ranking** 
+### 8. **Cross-Encoder Re-ranking**
 Advanced re-ranking for better search relevance.
 - Cross-encoder models
 - Hybrid reranker (multiple strategies)
