@@ -37,7 +37,7 @@ jobs:
         run: flutter pub run tool/benchmark.dart
 
       - name: Create Pull Request with Results
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: update benchmark report"
