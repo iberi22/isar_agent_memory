@@ -35,10 +35,43 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "2:2169742263646582653",
+      "lastPropertyId": "4:1185249969430114870",
+      "name": "ObxVectorDoc384",
+      "properties": [
+        {
+          "id": "1:7133141375241171069",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6827526586863241570",
+          "name": "docKey",
+          "indexId": "3:3090916281736609899",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:2609265675110662092",
+          "name": "content",
+          "type": 9
+        },
+        {
+          "id": "4:1185249969430114870",
+          "name": "vector",
+          "indexId": "4:6260708321276907025",
+          "type": 28,
+          "flags": 8
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "1:1718053728221939704",
-  "lastIndexId": "2:7396986783401268781",
+  "lastEntityId": "2:2169742263646582653",
+  "lastIndexId": "4:6260708321276907025",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,

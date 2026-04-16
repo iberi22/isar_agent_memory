@@ -55,6 +55,43 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(2, 2169742263646582653),
+    name: 'ObxVectorDoc384',
+    lastPropertyId: const obx_int.IdUid(4, 1185249969430114870),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 7133141375241171069),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 6827526586863241570),
+        name: 'docKey',
+        type: 9,
+        flags: 2080,
+        indexId: const obx_int.IdUid(3, 3090916281736609899),
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 2609265675110662092),
+        name: 'content',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 1185249969430114870),
+        name: 'vector',
+        type: 28,
+        flags: 8,
+        indexId: const obx_int.IdUid(4, 6260708321276907025),
+        hnswParams: obx_int.ModelHnswParams(dimensions: 384, distanceType: 2),
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -94,8 +131,8 @@ obx.Store openStore({
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(1, 1718053728221939704),
-    lastIndexId: const obx_int.IdUid(2, 7396986783401268781),
+    lastEntityId: const obx_int.IdUid(2, 2169742263646582653),
+    lastIndexId: const obx_int.IdUid(4, 6260708321276907025),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
     retiredEntityUids: const [],
@@ -152,6 +189,50 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    ObxVectorDoc384: obx_int.EntityDefinition<ObxVectorDoc384>(
+      model: _entities[1],
+      toOneRelations: (ObxVectorDoc384 object) => [],
+      toManyRelations: (ObxVectorDoc384 object) => {},
+      getId: (ObxVectorDoc384 object) => object.id,
+      setId: (ObxVectorDoc384 object, int id) {
+        object.id = id;
+      },
+      objectToFB: (ObxVectorDoc384 object, fb.Builder fbb) {
+        final docKeyOffset = fbb.writeString(object.docKey);
+        final contentOffset =
+            object.content == null ? null : fbb.writeString(object.content!);
+        final vectorOffset =
+            object.vector == null ? null : fbb.writeListFloat32(object.vector!);
+        fbb.startTable(5);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, docKeyOffset);
+        fbb.addOffset(2, contentOffset);
+        fbb.addOffset(3, vectorOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final docKeyParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final contentParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGetNullable(buffer, rootOffset, 8);
+        final vectorParam = const fb.ListReader<double>(
+          fb.Float32Reader(),
+          lazy: false,
+        ).vTableGetNullable(buffer, rootOffset, 10);
+        final object = ObxVectorDoc384(
+          docKey: docKeyParam,
+          content: contentParam,
+          vector: vectorParam,
+        )..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -177,5 +258,28 @@ class ObxVectorDoc_ {
   /// See [ObxVectorDoc.vector].
   static final vector = obx.QueryHnswProperty<ObxVectorDoc>(
     _entities[0].properties[3],
+  );
+}
+
+/// [ObxVectorDoc384] entity fields to define ObjectBox queries.
+class ObxVectorDoc384_ {
+  /// See [ObxVectorDoc384.id].
+  static final id = obx.QueryIntegerProperty<ObxVectorDoc384>(
+    _entities[1].properties[0],
+  );
+
+  /// See [ObxVectorDoc384.docKey].
+  static final docKey = obx.QueryStringProperty<ObxVectorDoc384>(
+    _entities[1].properties[1],
+  );
+
+  /// See [ObxVectorDoc384.content].
+  static final content = obx.QueryStringProperty<ObxVectorDoc384>(
+    _entities[1].properties[2],
+  );
+
+  /// See [ObxVectorDoc384.vector].
+  static final vector = obx.QueryHnswProperty<ObxVectorDoc384>(
+    _entities[1].properties[3],
   );
 }
