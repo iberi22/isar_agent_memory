@@ -27,6 +27,9 @@ export 'src/sync/sync_backend.dart';
 export 'src/sync/firebase_sync_backend.dart';
 export 'src/sync/websocket_sync_backend.dart';
 export 'src/sync/cross_device_sync_manager.dart';
+export 'src/rag/memory_pipeline.dart';
+export 'src/rag/medical_rag_pipeline.dart';
+export 'src/rag/medical_prompt_builder.dart';
 
 // Advanced features (v0.5.0)
 export 'src/memory_consolidation.dart';
