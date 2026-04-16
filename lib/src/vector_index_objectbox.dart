@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
+import 'package:objectbox/objectbox.dart';
 import '../objectbox.g.dart';
 import 'vector_index.dart';
 

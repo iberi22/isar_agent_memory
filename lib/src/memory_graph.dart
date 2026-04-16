@@ -4,6 +4,8 @@ import 'embeddings_adapter.dart';
 import 'models/memory_node.dart';
 import 'models/memory_edge.dart';
 import 'models/memory_embedding.dart';
+import 'models/patient_package.dart';
+import 'models/backend_operation_log.dart';
 import 'vector_index.dart';
 import 'vector_index_objectbox.dart';
 import 'reranking_strategy.dart';
@@ -383,6 +385,64 @@ class MemoryGraph {
   /// A root node is defined as a node with no incoming edges.
   /// The search is limited to a [maxDepth].
   /// Returns a list of paths, where each path is a list of node IDs.
+  /// Stores a medical context node.
+  Future<int> storeMedicalNode({
+    required String content,
+    required String type,
+    required MedicalMetadata medicalMetadata,
+    Map<String, dynamic>? metadata,
+  }) async {
+    final vector = await embeddingsAdapter.embed(content);
+    final embedding = MemoryEmbedding(
+      vector: vector,
+      provider: embeddingsAdapter.providerName,
+      dimension: vector.length,
+    );
+    final node = MemoryNode(
+      content: content,
+      type: type,
+      embedding: embedding,
+      metadata: metadata,
+      medicalMetadata: medicalMetadata,
+    );
+    return await storeNode(node);
+  }
+
+  /// Stores a patient package.
+  Future<int> storePatientPackage(PatientPackage package) async {
+    return await isar.writeTxn(() => isar.patientPackages.put(package));
+  }
+
+  /// Retrieves a patient package by its [patientId].
+  Future<PatientPackage?> getPatientPackage(String patientId) async {
+    return await isar.patientPackages
+        .filter()
+        .patientIdEqualTo(patientId)
+        .findFirst();
+  }
+
+  /// Logs a backend operation.
+  Future<int> logBackendOperation({
+    required String operationType,
+    required String status,
+    String? errorMessage,
+    int? durationMs,
+    String? nodeId,
+    String? patientId,
+    required String tenantId,
+  }) async {
+    final log = BackendOperationLog(
+      operationType: operationType,
+      status: status,
+      errorMessage: errorMessage,
+      durationMs: durationMs,
+      nodeId: nodeId,
+      patientId: patientId,
+      tenantId: tenantId,
+    );
+    return await isar.writeTxn(() => isar.backendOperationLogs.put(log));
+  }
+
   Future<List<List<int>>> _findPathsToNode(int targetId,
       {int maxDepth = 2}) async {
     final List<List<int>> paths = [];
