@@ -26,6 +26,21 @@ class FallbackEmbeddingsAdapter implements EmbeddingsAdapter {
   int get dimension => 0; // Unknown until first embed
 
   @override
+  Future<List<double>> medicalNormalized(String text) async {
+    try {
+      final v = await primary.medicalNormalized(text);
+      if (fallbackOnEmpty && (v.isEmpty)) {
+        final fv = await fallback.medicalNormalized(text);
+        return fv;
+      }
+      return v;
+    } catch (_) {
+      final fv = await fallback.medicalNormalized(text);
+      return fv;
+    }
+  }
+
+  @override
   Future<List<double>> embed(String text) async {
     try {
       final v = await primary.embed(text);

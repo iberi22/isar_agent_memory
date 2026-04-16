@@ -12,6 +12,8 @@ export 'src/embeddings_adapter.dart';
 export 'src/gemini_embeddings_adapter.dart';
 export 'src/fallback_embeddings_adapter.dart';
 export 'src/on_device_embeddings_adapter.dart';
+export 'src/embeddings/medical_embeddings_adapter.dart';
+export 'src/utils/medical_tokenizer.dart';
 export 'src/vector_index.dart';
 export 'src/vector_index_objectbox.dart';
 export 'src/hierarchical_graph.dart';

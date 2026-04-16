@@ -31,6 +31,9 @@ class GeminiEmbeddingsAdapter implements EmbeddingsAdapter {
   @override
   int get dimension => _cachedDim ?? 768; // Will update after first embed.
 
+  @override
+  Future<List<double>> medicalNormalized(String text) => embed(text);
+
   /// Generates an embedding vector for the given text using Gemini API.
   @override
   Future<List<double>> embed(String text) async {

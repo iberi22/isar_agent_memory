@@ -145,6 +145,9 @@ class CodeEmbeddingsAdapter implements EmbeddingsAdapter {
   int get dimension => _dimensions;
 
   @override
+  Future<List<double>> medicalNormalized(String text) => embed(text);
+
+  @override
   Future<List<double>> embed(String code) async {
     // TODO: Implement CodeBERT or GraphCodeBERT
     throw UnimplementedError('Code embedding requires model integration');

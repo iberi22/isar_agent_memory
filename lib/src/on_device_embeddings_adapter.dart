@@ -33,6 +33,9 @@ class OnDeviceEmbeddingsAdapter implements EmbeddingsAdapter {
   @override
   int get dimension => _dimension;
 
+  @override
+  Future<List<double>> medicalNormalized(String text) => embed(text);
+
   /// Initializes the ONNX session and loads the vocabulary.
   /// This must be called before [embed].
   Future<void> initialize() async {
