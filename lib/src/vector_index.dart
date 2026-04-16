@@ -20,6 +20,9 @@ abstract class VectorIndex {
   /// Human-readable name of the backend (e.g., 'objectbox').
   String get provider;
 
+  /// The dimension of the vectors supported by this index.
+  int get dimension;
+
   /// Namespace allows having multiple indices (e.g., by embedding provider + dimension).
   String get namespace;
 

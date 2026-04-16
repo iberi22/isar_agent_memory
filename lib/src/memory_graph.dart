@@ -30,7 +30,11 @@ class MemoryGraph {
     required this.embeddingsAdapter,
     VectorIndex? index,
   }) {
-    _index = index ?? ObjectBoxVectorIndex.open(namespace: 'default');
+    _index = index ??
+        ObjectBoxVectorIndex.open(
+          namespace: 'default',
+          dimension: embeddingsAdapter.dimension,
+        );
   }
 
   /// Initializes the vector index with existing nodes from the Isar database.
