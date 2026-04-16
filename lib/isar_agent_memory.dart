@@ -7,6 +7,9 @@ export 'src/models/memory_node.dart';
 export 'src/models/memory_edge.dart';
 export 'src/models/memory_embedding.dart';
 export 'src/models/degree.dart';
+export 'src/models/medical_constants.dart';
+export 'src/models/patient_package.dart';
+export 'src/models/backend_operation_log.dart';
 export 'src/memory_graph.dart';
 export 'src/embeddings_adapter.dart';
 export 'src/gemini_embeddings_adapter.dart';
@@ -36,4 +39,5 @@ export 'src/forgetting_mechanism.dart';
 export 'src/dynamic_layers.dart';
 export 'src/multi_modal_adapter.dart';
 export 'src/agent_memory_types.dart';
+export 'src/utils/encryption_utils.dart';
 // export 'src/privacy_features.dart'; // TODO: Depends on other implementations
