@@ -59,14 +59,14 @@ class MemoryNode {
     this.isDeleted = false,
     this.modifiedAt,
     this.layer = 0,
-    this.uuid,
+    String? uuid,
     this.accessCount = 0,
     this.medicalMetadata,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now() {
+  })  : uuid = uuid ?? const Uuid().v4(),
+        createdAt = createdAt ?? DateTime.now() {
     this.degree = degree ?? Degree();
     modifiedAt ??= DateTime.now();
-    uuid ??= const Uuid().v4();
   }
 
   /// Unique identifier for this node, managed by Isar.
@@ -77,7 +77,7 @@ class MemoryNode {
   /// Globally unique identifier for synchronization.
   /// Indexed for fast lookups during sync.
   @Index(unique: true, replace: true)
-  String? uuid;
+  late String uuid;
 
   /// The main textual content or value of the memory.
   ///
