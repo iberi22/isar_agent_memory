@@ -24,10 +24,10 @@ class MemoryEdge {
     this.deviceId,
     this.isDeleted = false,
     this.modifiedAt,
-    this.uuid,
-  }) : createdAt = DateTime.now() {
+    String? uuid,
+  })  : uuid = uuid ?? const Uuid().v4(),
+        createdAt = DateTime.now() {
     modifiedAt ??= DateTime.now();
-    uuid ??= const Uuid().v4();
   }
 
   /// Unique identifier for this edge, managed by Isar.
@@ -38,7 +38,7 @@ class MemoryEdge {
   /// Globally unique identifier for synchronization.
   /// Indexed for fast lookups during sync.
   @Index(unique: true, replace: true)
-  String? uuid;
+  late String uuid;
 
   /// The ID of the source node (the origin of the relationship).
   late int fromNodeId;
