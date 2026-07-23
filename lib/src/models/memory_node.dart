@@ -47,7 +47,7 @@ class MemoryNode {
   /// Globally unique identifier for synchronization.
   /// Indexed for fast lookups during sync.
   @Index(unique: true, replace: true)
-  late String uuid;
+  String? uuid;
 
   /// The main textual content or value of the memory.
   ///
@@ -62,7 +62,7 @@ class MemoryNode {
   /// The timestamp when this memory node was created.
   ///
   /// Automatically set to the current time upon creation.
-  late DateTime createdAt;
+  DateTime? createdAt;
 
   /// The timestamp of the last update or access (business logic update).
   ///
