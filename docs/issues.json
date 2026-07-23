@@ -1,0 +1,35 @@
+{
+ "wave": 1,
+ "created": "2026-07-22",
+ "repo": "iberi22/isar_agent_memory",
+ "issues": [
+  {"id": 51, "title": "Local cross-encoder (ONNX)", "group": "core", "file_island": "lib/src/rerankers/", "effort": "medium", "priority": "P2"},
+  {"id": 52, "title": "P2P sync adapter (edge-mesh)", "group": "core", "file_island": "lib/src/sync/", "effort": "medium", "priority": "P2"},
+  {"id": 53, "title": "v0.6.0 release prep", "group": "release", "file_island": "root", "effort": "small", "priority": "P1"},
+  {"id": 54, "title": "Pipeline hooks tests", "group": "tests", "file_island": "test/", "effort": "small", "priority": "P1"},
+  {"id": 55, "title": "QueryRouter tests", "group": "tests", "file_island": "test/", "effort": "small", "priority": "P1"},
+  {"id": 56, "title": "SessionContext tests", "group": "tests", "file_island": "test/", "effort": "small", "priority": "P1"},
+  {"id": 57, "title": "CrossEncoder HTTP tests", "group": "tests", "file_island": "test/", "effort": "small", "priority": "P2"},
+  {"id": 58, "title": "Multi-modal HTTP tests", "group": "tests", "file_island": "test/", "effort": "small", "priority": "P2"},
+  {"id": 59, "title": "On-device backend tests", "group": "tests", "file_island": "test/", "effort": "small", "priority": "P2"},
+  {"id": 60, "title": "Benchmark suite", "group": "quality", "file_island": "tool/", "effort": "medium", "priority": "P2"},
+  {"id": 61, "title": "CI pipeline", "group": "infra", "file_island": ".github/", "effort": "small", "priority": "P1"},
+  {"id": 62, "title": "API reference docs", "group": "docs", "file_island": "docs/", "effort": "medium", "priority": "P1"},
+  {"id": 63, "title": "Demo app", "group": "docs", "file_island": "example/", "effort": "medium", "priority": "P2"},
+  {"id": 64, "title": "CHANGELOG + version mgmt", "group": "release", "file_island": "root", "effort": "small", "priority": "P1"}
+ ],
+ "file_ownership": {
+  "lib/src/rerankers/cross_encoder_reranker.dart": [51],
+  "lib/src/sync/": [52],
+  "test/": [54, 55, 56, 57, 58, 59],
+  "tool/": [60],
+  ".github/": [61],
+  "docs/": [62],
+  "example/": [63],
+  "root": [53, 64]
+ },
+ "conflicts": {
+  "test/": "54-59 share test/ dir — file-per-feature avoids conflicts",
+  "root": "53,64 are doc/config only — no code conflicts"
+ }
+}
