@@ -32,9 +32,11 @@ dependencies:
   firebase_core: ^2.24.2
   firebase_database: ^10.4.0
   web_socket_channel: ^2.4.0
+  tflite_flutter: ^0.12.1
   # Add your embedding provider dependencies as needed (e.g., google_generative_ai, openai, etc.)
 
 dev_dependencies:
+  path: ^1.9.1
   flutter_lints: ^6.0.0
   lints: ^6.0.0
   flutter_test:

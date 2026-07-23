@@ -30,6 +30,10 @@ isar_agent_memory_tests/
 # Test resources (models downloaded on-demand)
 test_resources/
 
+# Internal docs & research papers (exclude from published package)
+docs/
+research_papers/
+
 # Development tools
 tool/
 
