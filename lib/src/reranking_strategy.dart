@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:isar_agent_memory/isar_agent_memory.dart';
+import 'models/memory_node.dart';
 
 /// Abstract interface for a re-ranking strategy.
 ///
