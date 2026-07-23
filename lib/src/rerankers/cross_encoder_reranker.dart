@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+import 'package:onnxruntime/onnxruntime.dart';
 import '../models/memory_node.dart';
 import '../reranking_strategy.dart';
+import '../utils/word_piece_tokenizer.dart';
 import 'bm25_reranker.dart' show BM25ReRanker;
 
 // =============================================================================
@@ -284,32 +288,230 @@ class RemoteCrossEncoderAdapter implements CrossEncoderAdapter {
 }
 
 // =============================================================================
-// Local Cross-Encoder (placeholder)
+// Local Cross-Encoder (ONNX)
 // =============================================================================
 
-/// Placeholder for local ONNX-based cross-encoder.
+/// A local cross-encoder adapter that runs entirely on-device using ONNX Runtime.
 ///
-/// Requires ONNX runtime integration. For now, use [RemoteCrossEncoderAdapter]
-/// or one of the synchronous re-rankers (BM25, MMR, etc.).
+/// Designed to work with BERT-based cross-encoder models.
+/// Requires the ONNX model file and vocabulary file locally.
 class LocalCrossEncoderAdapter implements CrossEncoderAdapter {
   final String modelPath;
+  final String vocabPath;
+  final int dimension;
 
-  LocalCrossEncoderAdapter({required this.modelPath});
+  late final OrtSession _session;
+  late final WordPieceTokenizer _tokenizer;
+  bool _initialized = false;
+
+  // Cache vocabulary to avoid reading the file multiple times
+  static Map<String, int>? _cachedVocab;
+
+  LocalCrossEncoderAdapter({
+    required this.modelPath,
+    required this.vocabPath,
+    this.dimension = 384,
+  });
+
+  /// Initializes the vocabulary tokenizer and the ONNX runtime session.
+  Future<void> initialize() async {
+    if (_initialized) return;
+
+    // 1. Load Vocab
+    if (_cachedVocab == null) {
+      final vocabFile = File(vocabPath);
+      if (!await vocabFile.exists()) {
+        throw Exception('Vocabulary file not found at $vocabPath');
+      }
+      final lines = await vocabFile.readAsLines();
+      _cachedVocab = {
+        for (var i = 0; i < lines.length; i++) lines[i].trim(): i,
+      };
+    }
+
+    _tokenizer = WordPieceTokenizer(vocab: _cachedVocab!);
+
+    // 2. Init ONNX Session
+    OrtEnv.instance.init();
+    final sessionOptions = OrtSessionOptions();
+
+    _session = OrtSession.fromFile(File(modelPath), sessionOptions);
+
+    _initialized = true;
+  }
+
+  /// Releases local ONNX session resources.
+  void release() {
+    if (_initialized) {
+      _session.release();
+      OrtEnv.instance.release();
+      _initialized = false;
+    }
+  }
+
+  /// Releases resources (alias for release).
+  void dispose() {
+    release();
+  }
 
   @override
   Future<double> score(String query, String document) async {
-    throw UnimplementedError(
-      'Local cross-encoder requires ONNX runtime integration. '
-      'Use RemoteCrossEncoderAdapter for API-based inference, '
-      'or one of the built-in synchronous re-rankers.',
-    );
+    final scores = await scoreBatch(query, [document]);
+    return scores.first;
   }
 
   @override
   Future<List<double>> scoreBatch(String query, List<String> documents) async {
-    throw UnimplementedError(
-      'Local cross-encoder batch scoring requires ONNX runtime integration.',
-    );
+    if (documents.isEmpty) return [];
+    if (query.isEmpty) return List.filled(documents.length, 0.0);
+
+    if (!_initialized) {
+      await initialize();
+    }
+
+    final batchSize = documents.length;
+
+    // 1. Tokenize query and each document
+    final qTokens = _tokenizer.tokenize(query);
+    final qIds = qTokens.sublist(1, qTokens.length - 1);
+
+    final allCombinedIds = <List<int>>[];
+    final allTokenTypeIds = <List<int>>[];
+
+    for (final doc in documents) {
+      final dTokens = _tokenizer.tokenize(doc);
+      final dIds = dTokens.sublist(1, dTokens.length - 1);
+
+      final combinedIds = [
+        _tokenizer.clsTokenId,
+        ...qIds,
+        _tokenizer.sepTokenId,
+        ...dIds,
+        _tokenizer.sepTokenId,
+      ];
+      allCombinedIds.add(combinedIds);
+
+      final tokenTypeIds = [
+        ...List.filled(1 + qIds.length + 1, 0),
+        ...List.filled(dIds.length + 1, 1),
+      ];
+      allTokenTypeIds.add(tokenTypeIds);
+    }
+
+    // 2. Pad to max sequence length in batch
+    int maxSeqLen = 0;
+    for (final ids in allCombinedIds) {
+      if (ids.length > maxSeqLen) {
+        maxSeqLen = ids.length;
+      }
+    }
+
+    final paddedInputIds = <int>[];
+    final paddedAttentionMask = <int>[];
+    final paddedTokenTypeIds = <int>[];
+
+    for (int i = 0; i < batchSize; i++) {
+      final ids = allCombinedIds[i];
+      final typeIds = allTokenTypeIds[i];
+
+      final paddingLength = maxSeqLen - ids.length;
+
+      paddedInputIds.addAll(ids);
+      paddedInputIds.addAll(List.filled(paddingLength, _tokenizer.padTokenId));
+
+      paddedAttentionMask.addAll(List.filled(ids.length, 1));
+      paddedAttentionMask.addAll(List.filled(paddingLength, 0));
+
+      paddedTokenTypeIds.addAll(typeIds);
+      paddedTokenTypeIds.addAll(List.filled(paddingLength, 0)); // Pad with 0s
+    }
+
+    // 3. Prepare Inputs
+    final shape = [batchSize, maxSeqLen];
+    final inputIdsInt64 = Int64List.fromList(paddedInputIds);
+    final attentionMaskInt64 = Int64List.fromList(paddedAttentionMask);
+    final tokenTypeIdsInt64 = Int64List.fromList(paddedTokenTypeIds);
+
+    final inputIdsOrt = OrtValueTensor.createTensorWithDataList(inputIdsInt64, shape);
+    final attentionMaskOrt = OrtValueTensor.createTensorWithDataList(attentionMaskInt64, shape);
+    final tokenTypeIdsOrt = OrtValueTensor.createTensorWithDataList(tokenTypeIdsInt64, shape);
+
+    final inputs = {
+      'input_ids': inputIdsOrt,
+      'attention_mask': attentionMaskOrt,
+      'token_type_ids': tokenTypeIdsOrt,
+    };
+
+    final runOptions = OrtRunOptions();
+    List<OrtValue?>? outputs;
+
+    try {
+      // 4. Run Inference
+      outputs = _session.run(runOptions, inputs);
+
+      if (outputs.isEmpty || outputs.first == null) {
+        throw Exception('No output returned from ONNX cross-encoder model.');
+      }
+
+      final outputValue = outputs.first!;
+      final outputTensor = outputValue as OrtValueTensor;
+      final rawValue = outputTensor.value;
+
+      final scores = <double>[];
+
+      // Robustly extract logits from nested / flattened structures
+      if (rawValue is List) {
+        for (int i = 0; i < batchSize; i++) {
+          if (i >= rawValue.length) {
+            scores.add(0.0);
+            continue;
+          }
+          final item = rawValue[i];
+          double logit = 0.0;
+          if (item is List) {
+            if (item.isNotEmpty) {
+              final subItem = item.first;
+              if (subItem is List) {
+                // E.g. [batch_size, seq_len, dim] -> take first token's first value
+                if (subItem.isNotEmpty) {
+                  logit = (subItem.first as num).toDouble();
+                }
+              } else if (subItem is num) {
+                // E.g. [batch_size, 1] or [batch_size, 2]
+                if (item.length >= 2) {
+                  logit = (item[1] as num).toDouble();
+                } else {
+                  logit = (subItem as num).toDouble();
+                }
+              }
+            }
+          } else if (item is num) {
+            // Flat list
+            logit = item.toDouble();
+          }
+          scores.add(_sigmoid(logit));
+        }
+      } else {
+        throw Exception('Unexpected ONNX output format: ${rawValue.runtimeType}');
+      }
+
+      return scores;
+    } finally {
+      // Clean up resources
+      for (final entry in inputs.entries) {
+        entry.value.release();
+      }
+      runOptions.release();
+      if (outputs != null) {
+        for (final v in outputs) {
+          v?.release();
+        }
+      }
+    }
+  }
+
+  double _sigmoid(double x) {
+    return 1.0 / (1.0 + math.exp(-x));
   }
 }
 

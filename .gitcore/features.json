@@ -7,7 +7,7 @@
   {"id": "hirag", "name": "HiRAG layers + multi-hop", "progress_pct": 100, "priority": "P1"},
   {"id": "reranking", "name": "5 re-ranking strategies", "progress_pct": 100, "priority": "P1"},
   {"id": "cross-encoder", "name": "Cross-encoder re-ranking (HTTP)", "progress_pct": 100, "priority": "P1"},
-  {"id": "cross-encoder-local", "name": "Local cross-encoder (ONNX)", "progress_pct": 0, "priority": "P2"},
+  {"id": "cross-encoder-local", "name": "Local cross-encoder (ONNX)", "progress_pct": 100, "priority": "P2"},
   {"id": "pipeline-hooks", "name": "RAG pipeline (5 hooks)", "progress_pct": 100, "priority": "P1"},
   {"id": "query-router", "name": "Agentic query router (7 strategies)", "progress_pct": 100, "priority": "P1"},
   {"id": "session-context", "name": "Multi-tenant session isolation", "progress_pct": 100, "priority": "P1"},

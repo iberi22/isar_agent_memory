@@ -1,5 +1,6 @@
 import 'dart:math';
-import 'package:isar_agent_memory/isar_agent_memory.dart';
+import '../models/memory_node.dart';
+import '../reranking_strategy.dart';
 
 /// A re-ranking strategy based on the BM25 algorithm.
 ///
