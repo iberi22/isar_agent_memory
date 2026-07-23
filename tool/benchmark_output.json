@@ -1,0 +1,169 @@
+{
+  "benchmark": {
+    "date": "2026-07-23T04:32:29.155068Z",
+    "backend": "mock",
+    "total_queries": 12
+  },
+  "quality": {
+    "avg_recall@k": 0.4375,
+    "avg_precision@k": 0.4375,
+    "per_query": [
+      {
+        "query": "user prefers dark mode",
+        "category": "ui",
+        "expected_terms": [
+          "dark mode",
+          "ui preferences",
+          "theme"
+        ],
+        "recall@k": 0.3333333333333333,
+        "precision@k": 0.3333333333333333,
+        "latency_us": 1109
+      },
+      {
+        "query": "work schedule 9 to 5",
+        "category": "preferences",
+        "expected_terms": [
+          "work schedule",
+          "9 AM",
+          "5 PM"
+        ],
+        "recall@k": 0.3333333333333333,
+        "precision@k": 0.3333333333333333,
+        "latency_us": 31
+      },
+      {
+        "query": "project architecture decision",
+        "category": "architecture",
+        "expected_terms": [
+          "architecture",
+          "decision",
+          "design"
+        ],
+        "recall@k": 0.6666666666666666,
+        "precision@k": 0.6666666666666666,
+        "latency_us": 26
+      },
+      {
+        "query": "database migration plan",
+        "category": "technical",
+        "expected_terms": [
+          "migration",
+          "database",
+          "schema"
+        ],
+        "recall@k": 0.6666666666666666,
+        "precision@k": 0.6666666666666666,
+        "latency_us": 24
+      },
+      {
+        "query": "what happened yesterday",
+        "category": "temporal",
+        "expected_terms": [
+          "yesterday",
+          "server",
+          "incident"
+        ],
+        "recall@k": 0.3333333333333333,
+        "precision@k": 0.3333333333333333,
+        "latency_us": 24
+      },
+      {
+        "query": "API authentication method",
+        "category": "technical",
+        "expected_terms": [
+          "auth",
+          "token",
+          "JWT",
+          "OAuth"
+        ],
+        "recall@k": 0.25,
+        "precision@k": 0.25,
+        "latency_us": 26
+      },
+      {
+        "query": "team meeting notes",
+        "category": "meeting",
+        "expected_terms": [
+          "meeting",
+          "team",
+          "decided"
+        ],
+        "recall@k": 0.6666666666666666,
+        "precision@k": 0.6666666666666666,
+        "latency_us": 23
+      },
+      {
+        "query": "code review feedback",
+        "category": "code",
+        "expected_terms": [
+          "review",
+          "feedback",
+          "PR",
+          "merge"
+        ],
+        "recall@k": 0.5,
+        "precision@k": 0.5,
+        "latency_us": 25
+      },
+      {
+        "query": "deployment configuration",
+        "category": "devops",
+        "expected_terms": [
+          "deploy",
+          "config",
+          "environment"
+        ],
+        "recall@k": 0.6666666666666666,
+        "precision@k": 0.6666666666666666,
+        "latency_us": 106
+      },
+      {
+        "query": "error handling strategy",
+        "category": "technical",
+        "expected_terms": [
+          "error",
+          "exception",
+          "fallback",
+          "retry"
+        ],
+        "recall@k": 0.25,
+        "precision@k": 0.25,
+        "latency_us": 27
+      },
+      {
+        "query": "user interface components",
+        "category": "ui",
+        "expected_terms": [
+          "component",
+          "widget",
+          "layout"
+        ],
+        "recall@k": 0.3333333333333333,
+        "precision@k": 0.3333333333333333,
+        "latency_us": 25
+      },
+      {
+        "query": "testing best practices",
+        "category": "code",
+        "expected_terms": [
+          "test",
+          "unit",
+          "integration",
+          "coverage"
+        ],
+        "recall@k": 0.25,
+        "precision@k": 0.25,
+        "latency_us": 24
+      }
+    ]
+  },
+  "latency": {
+    "avg_ms": "0.12",
+    "p50_ms": "0.03",
+    "p90_ms": "0.11",
+    "p95_ms": "1.11",
+    "p99_ms": "1.11",
+    "samples": 12
+  }
+}

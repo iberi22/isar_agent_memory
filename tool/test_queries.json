@@ -1,0 +1,14 @@
+[
+  {"query": "user prefers dark mode", "category": "ui", "expected_content": ["dark mode", "ui preferences", "theme"]},
+  {"query": "work schedule 9 to 5", "category": "preferences", "expected_content": ["work schedule", "9 AM", "5 PM"]},
+  {"query": "project architecture decision", "category": "architecture", "expected_content": ["architecture", "decision", "design"]},
+  {"query": "database migration plan", "category": "technical", "expected_content": ["migration", "database", "schema"]},
+  {"query": "what happened yesterday", "category": "temporal", "expected_content": ["yesterday", "server", "incident"]},
+  {"query": "API authentication method", "category": "technical", "expected_content": ["auth", "token", "JWT", "OAuth"]},
+  {"query": "team meeting notes", "category": "meeting", "expected_content": ["meeting", "team", "decided"]},
+  {"query": "code review feedback", "category": "code", "expected_content": ["review", "feedback", "PR", "merge"]},
+  {"query": "deployment configuration", "category": "devops", "expected_content": ["deploy", "config", "environment"]},
+  {"query": "error handling strategy", "category": "technical", "expected_content": ["error", "exception", "fallback", "retry"]},
+  {"query": "user interface components", "category": "ui", "expected_content": ["component", "widget", "layout"]},
+  {"query": "testing best practices", "category": "code", "expected_content": ["test", "unit", "integration", "coverage"]}
+]
