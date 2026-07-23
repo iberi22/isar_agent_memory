@@ -24,6 +24,7 @@ dependencies:
   langchain_google: ^0.7.0
   graphs: ^2.3.1
   flat_buffers: ^23.5.26 # Required by generated lib/objectbox.g.dart
+  objectbox: ^5.0.0 # HNSW vector index
   onnxruntime: ^1.4.1 # For on-device embeddings
   http: ^1.1.0 # Required for tool scripts
   cryptography: ^2.9.0
