@@ -34,7 +34,7 @@ class MemoryTaskContext {
 @immutable
 abstract class MemoryTaskEvent {
   MemoryTaskEvent({DateTime? timestamp})
-    : timestamp = timestamp ?? DateTime.now().toUtc();
+      : timestamp = timestamp ?? DateTime.now().toUtc();
 
   final DateTime timestamp;
 }
@@ -100,7 +100,7 @@ abstract class MemoryTaskWithInput<TInput, TOutput> extends MemoryTask {
 /// Task that captures raw text content from various sources.
 class CaptureTask extends MemoryTask {
   CaptureTask({this.source = 'manual'})
-    : super(name: 'capture', description: 'Capture content from source');
+      : super(name: 'capture', description: 'Capture content from source');
 
   final String source;
 
@@ -140,7 +140,7 @@ class CaptureTask extends MemoryTask {
 /// Task that chunks content into processable segments.
 class ChunkTask extends MemoryTask {
   ChunkTask({this.maxChunkSize = 512})
-    : super(name: 'chunk', description: 'Chunk content into segments');
+      : super(name: 'chunk', description: 'Chunk content into segments');
 
   final int maxChunkSize;
 
@@ -200,7 +200,7 @@ class ChunkTask extends MemoryTask {
 /// Task that generates embeddings for content chunks.
 class EmbedTask extends MemoryTask {
   EmbedTask({required this.adapter})
-    : super(name: 'embed', description: 'Generate embeddings for chunks');
+      : super(name: 'embed', description: 'Generate embeddings for chunks');
 
   final EmbeddingsAdapter adapter;
 
@@ -243,7 +243,7 @@ class EmbedTask extends MemoryTask {
 /// Task that loads embeddings and content into the memory graph.
 class LoadTask extends MemoryTask {
   LoadTask({required this.memoryGraph})
-    : super(name: 'load', description: 'Load embeddings into memory graph');
+      : super(name: 'load', description: 'Load embeddings into memory graph');
 
   final MemoryGraph memoryGraph;
 

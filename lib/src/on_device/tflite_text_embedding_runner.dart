@@ -26,7 +26,7 @@ class TFLiteTextEmbeddingConfig {
   final bool ensureAllocated;
   final TextTokenizer tokenizer;
   final Map<int, Object> Function(String text, int maxTokens)?
-  extraInputsBuilder;
+      extraInputsBuilder;
 }
 
 /// Utility for running text embedding inference on a TFLite [Interpreter].
@@ -56,7 +56,7 @@ class TFLiteTextEmbeddingRunner {
     );
     final extraInputs =
         config.extraInputsBuilder?.call(text, config.maxTokens) ??
-        const <int, Object>{};
+            const <int, Object>{};
 
     for (var i = 0; i < inputCount; i++) {
       if (i == config.inputIdsIndex) {

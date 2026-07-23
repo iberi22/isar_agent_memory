@@ -155,12 +155,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
       },
       objectToFB: (ObxVectorDoc object, fb.Builder fbb) {
         final docKeyOffset = fbb.writeString(object.docKey);
-        final contentOffset = object.content == null
-            ? null
-            : fbb.writeString(object.content!);
-        final vectorOffset = object.vector == null
-            ? null
-            : fbb.writeListFloat32(object.vector!);
+        final contentOffset =
+            object.content == null ? null : fbb.writeString(object.content!);
+        final vectorOffset =
+            object.vector == null ? null : fbb.writeListFloat32(object.vector!);
         fbb.startTable(5);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, docKeyOffset);
@@ -201,12 +199,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
       },
       objectToFB: (ObxVectorDoc384 object, fb.Builder fbb) {
         final docKeyOffset = fbb.writeString(object.docKey);
-        final contentOffset = object.content == null
-            ? null
-            : fbb.writeString(object.content!);
-        final vectorOffset = object.vector == null
-            ? null
-            : fbb.writeListFloat32(object.vector!);
+        final contentOffset =
+            object.content == null ? null : fbb.writeString(object.content!);
+        final vectorOffset =
+            object.vector == null ? null : fbb.writeListFloat32(object.vector!);
         fbb.startTable(5);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, docKeyOffset);

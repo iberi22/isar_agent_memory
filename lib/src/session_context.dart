@@ -138,12 +138,10 @@ class SessionContext {
   }
 
   bool _matchesScope(MemoryNode node) {
-    if (sessionId != null &&
-        node.metadata?[kSessionKey] != sessionId) {
+    if (sessionId != null && node.metadata?[kSessionKey] != sessionId) {
       return false;
     }
-    if (userId != null &&
-        node.metadata?[kUserKey] != userId) {
+    if (userId != null && node.metadata?[kUserKey] != userId) {
       return false;
     }
     return true;

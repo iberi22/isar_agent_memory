@@ -72,7 +72,7 @@ enum MemoryPipelineStage { started, stream, completed, failed }
 /// see [MemoryPipeline] in pipeline_hooks.dart.
 class TaskPipeline {
   TaskPipeline({required List<MemoryTask> tasks})
-    : _tasks = List.unmodifiable(tasks);
+      : _tasks = List.unmodifiable(tasks);
 
   final List<MemoryTask> _tasks;
 

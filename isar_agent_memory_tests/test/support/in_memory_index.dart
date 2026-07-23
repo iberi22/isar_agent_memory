@@ -13,9 +13,9 @@ class InMemoryVectorIndex implements VectorIndex {
     String namespace = 'test',
     bool normalize = true,
     VectorMetric metric = VectorMetric.cosine,
-  })  : _namespace = namespace,
-        _normalize = normalize,
-        _metric = metric;
+  }) : _namespace = namespace,
+       _normalize = normalize,
+       _metric = metric;
 
   @override
   String get provider => 'in-memory';

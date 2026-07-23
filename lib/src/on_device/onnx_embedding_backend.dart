@@ -10,8 +10,8 @@ import 'onnx_text_embedding_runner.dart';
 typedef OnnxSessionFactory = Future<OrtSession> Function();
 
 /// Runs inference with a prepared [OrtSession].
-typedef OnnxEmbeddingRunner =
-    Future<List<double>> Function(OrtSession session, String text);
+typedef OnnxEmbeddingRunner = Future<List<double>> Function(
+    OrtSession session, String text);
 
 class OnnxEmbeddingBackend implements OnDeviceEmbeddingBackend {
   OnnxEmbeddingBackend({

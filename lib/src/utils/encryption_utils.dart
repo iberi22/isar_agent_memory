@@ -19,10 +19,16 @@ class EncryptionUtils {
       nonce: nonce,
     );
 
-    final combined = Uint8List(secretBox.nonce.length + secretBox.cipherText.length + secretBox.mac.bytes.length);
+    final combined = Uint8List(secretBox.nonce.length +
+        secretBox.cipherText.length +
+        secretBox.mac.bytes.length);
     combined.setRange(0, secretBox.nonce.length, secretBox.nonce);
-    combined.setRange(secretBox.nonce.length, secretBox.nonce.length + secretBox.mac.bytes.length, secretBox.mac.bytes);
-    combined.setRange(secretBox.nonce.length + secretBox.mac.bytes.length, combined.length, secretBox.cipherText);
+    combined.setRange(
+        secretBox.nonce.length,
+        secretBox.nonce.length + secretBox.mac.bytes.length,
+        secretBox.mac.bytes);
+    combined.setRange(secretBox.nonce.length + secretBox.mac.bytes.length,
+        combined.length, secretBox.cipherText);
 
     return base64.encode(combined);
   }

@@ -7,8 +7,8 @@ import 'on_device_embedding_backend.dart';
 import 'tflite_text_embedding_runner.dart';
 
 /// Signature responsible for running inference using a loaded [Interpreter].
-typedef TFLiteEmbeddingRunner =
-    Future<List<double>> Function(Interpreter interpreter, String text);
+typedef TFLiteEmbeddingRunner = Future<List<double>> Function(
+    Interpreter interpreter, String text);
 
 /// On-device embedding backend backed by TensorFlow Lite.
 class TFLiteEmbeddingBackend implements OnDeviceEmbeddingBackend {
