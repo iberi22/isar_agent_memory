@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'memory_edge.dart';
+part of 'memory_node.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,69 +9,86 @@ part of 'memory_edge.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetMemoryEdgeCollection on Isar {
-  IsarCollection<MemoryEdge> get memoryEdges => this.collection();
+extension GetMemoryNodeCollection on Isar {
+  IsarCollection<MemoryNode> get memoryNodes => this.collection();
 }
 
-const MemoryEdgeSchema = CollectionSchema(
-  name: r'MemoryEdge',
-  id: 2749767584170770699,
+const MemoryNodeSchema = CollectionSchema(
+  name: r'MemoryNode',
+  id: 1949420279504451454,
   properties: {
-    r'createdAt': PropertySchema(
+    r'accessCount': PropertySchema(
       id: 0,
+      name: r'accessCount',
+      type: IsarType.long,
+    ),
+    r'content': PropertySchema(
+      id: 1,
+      name: r'content',
+      type: IsarType.string,
+    ),
+    r'createdAt': PropertySchema(
+      id: 2,
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
+    r'degree': PropertySchema(
+      id: 3,
+      name: r'degree',
+      type: IsarType.object,
+      target: r'Degree',
+    ),
     r'deviceId': PropertySchema(
-      id: 1,
+      id: 4,
       name: r'deviceId',
       type: IsarType.string,
     ),
-    r'fromNodeId': PropertySchema(
-      id: 2,
-      name: r'fromNodeId',
-      type: IsarType.long,
+    r'embedding': PropertySchema(
+      id: 5,
+      name: r'embedding',
+      type: IsarType.object,
+      target: r'MemoryEmbedding',
     ),
     r'isDeleted': PropertySchema(
-      id: 3,
+      id: 6,
       name: r'isDeleted',
       type: IsarType.bool,
     ),
+    r'layer': PropertySchema(
+      id: 7,
+      name: r'layer',
+      type: IsarType.long,
+    ),
     r'modifiedAt': PropertySchema(
-      id: 4,
+      id: 8,
       name: r'modifiedAt',
       type: IsarType.dateTime,
     ),
-    r'relation': PropertySchema(
-      id: 5,
-      name: r'relation',
+    r'type': PropertySchema(
+      id: 9,
+      name: r'type',
       type: IsarType.string,
     ),
-    r'toNodeId': PropertySchema(
-      id: 6,
-      name: r'toNodeId',
-      type: IsarType.long,
+    r'updatedAt': PropertySchema(
+      id: 10,
+      name: r'updatedAt',
+      type: IsarType.dateTime,
     ),
     r'uuid': PropertySchema(
-      id: 7,
+      id: 11,
       name: r'uuid',
       type: IsarType.string,
     ),
     r'version': PropertySchema(
-      id: 8,
+      id: 12,
       name: r'version',
       type: IsarType.string,
-    ),
-    r'weight': PropertySchema(
-      id: 9,
-      name: r'weight',
-      type: IsarType.double,
     )
   },
-  estimateSize: _memoryEdgeEstimateSize,
-  serialize: _memoryEdgeSerialize,
-  deserialize: _memoryEdgeDeserialize,
-  deserializeProp: _memoryEdgeDeserializeProp,
+  estimateSize: _memoryNodeEstimateSize,
+  serialize: _memoryNodeSerialize,
+  deserialize: _memoryNodeDeserialize,
+  deserializeProp: _memoryNodeDeserializeProp,
   idName: r'id',
   indexes: {
     r'uuid': IndexSchema(
@@ -89,26 +106,50 @@ const MemoryEdgeSchema = CollectionSchema(
     )
   },
   links: {},
-  embeddedSchemas: {},
-  getId: _memoryEdgeGetId,
-  getLinks: _memoryEdgeGetLinks,
-  attach: _memoryEdgeAttach,
+  embeddedSchemas: {
+    r'MemoryEmbedding': MemoryEmbeddingSchema,
+    r'Degree': DegreeSchema
+  },
+  getId: _memoryNodeGetId,
+  getLinks: _memoryNodeGetLinks,
+  attach: _memoryNodeAttach,
   version: '3.1.0+1',
 );
 
-int _memoryEdgeEstimateSize(
-  MemoryEdge object,
+int _memoryNodeEstimateSize(
+  MemoryNode object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.content.length * 3;
+  {
+    final value = object.degree;
+    if (value != null) {
+      bytesCount +=
+          3 + DegreeSchema.estimateSize(value, allOffsets[Degree]!, allOffsets);
+    }
+  }
   {
     final value = object.deviceId;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.relation.length * 3;
+  {
+    final value = object.embedding;
+    if (value != null) {
+      bytesCount += 3 +
+          MemoryEmbeddingSchema.estimateSize(
+              value, allOffsets[MemoryEmbedding]!, allOffsets);
+    }
+  }
+  {
+    final value = object.type;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   {
     final value = object.uuid;
     if (value != null) {
@@ -124,47 +165,71 @@ int _memoryEdgeEstimateSize(
   return bytesCount;
 }
 
-void _memoryEdgeSerialize(
-  MemoryEdge object,
+void _memoryNodeSerialize(
+  MemoryNode object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.createdAt);
-  writer.writeString(offsets[1], object.deviceId);
-  writer.writeLong(offsets[2], object.fromNodeId);
-  writer.writeBool(offsets[3], object.isDeleted);
-  writer.writeDateTime(offsets[4], object.modifiedAt);
-  writer.writeString(offsets[5], object.relation);
-  writer.writeLong(offsets[6], object.toNodeId);
-  writer.writeString(offsets[7], object.uuid);
-  writer.writeString(offsets[8], object.version);
-  writer.writeDouble(offsets[9], object.weight);
+  writer.writeLong(offsets[0], object.accessCount);
+  writer.writeString(offsets[1], object.content);
+  writer.writeDateTime(offsets[2], object.createdAt);
+  writer.writeObject<Degree>(
+    offsets[3],
+    allOffsets,
+    DegreeSchema.serialize,
+    object.degree,
+  );
+  writer.writeString(offsets[4], object.deviceId);
+  writer.writeObject<MemoryEmbedding>(
+    offsets[5],
+    allOffsets,
+    MemoryEmbeddingSchema.serialize,
+    object.embedding,
+  );
+  writer.writeBool(offsets[6], object.isDeleted);
+  writer.writeLong(offsets[7], object.layer);
+  writer.writeDateTime(offsets[8], object.modifiedAt);
+  writer.writeString(offsets[9], object.type);
+  writer.writeDateTime(offsets[10], object.updatedAt);
+  writer.writeString(offsets[11], object.uuid);
+  writer.writeString(offsets[12], object.version);
 }
 
-MemoryEdge _memoryEdgeDeserialize(
+MemoryNode _memoryNodeDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = MemoryEdge(
-    deviceId: reader.readStringOrNull(offsets[1]),
-    fromNodeId: reader.readLong(offsets[2]),
-    isDeleted: reader.readBoolOrNull(offsets[3]) ?? false,
-    modifiedAt: reader.readDateTimeOrNull(offsets[4]),
-    relation: reader.readString(offsets[5]),
-    toNodeId: reader.readLong(offsets[6]),
-    uuid: reader.readStringOrNull(offsets[7]),
-    version: reader.readStringOrNull(offsets[8]),
-    weight: reader.readDoubleOrNull(offsets[9]),
+  final object = MemoryNode(
+    accessCount: reader.readLongOrNull(offsets[0]) ?? 0,
+    content: reader.readString(offsets[1]),
+    createdAt: reader.readDateTimeOrNull(offsets[2]),
+    degree: reader.readObjectOrNull<Degree>(
+      offsets[3],
+      DegreeSchema.deserialize,
+      allOffsets,
+    ),
+    deviceId: reader.readStringOrNull(offsets[4]),
+    embedding: reader.readObjectOrNull<MemoryEmbedding>(
+      offsets[5],
+      MemoryEmbeddingSchema.deserialize,
+      allOffsets,
+    ),
+    isDeleted: reader.readBoolOrNull(offsets[6]) ?? false,
+    layer: reader.readLongOrNull(offsets[7]) ?? 0,
+    modifiedAt: reader.readDateTimeOrNull(offsets[8]),
+    type: reader.readStringOrNull(offsets[9]),
+    updatedAt: reader.readDateTimeOrNull(offsets[10]),
+    uuid: reader.readStringOrNull(offsets[11]),
+    version: reader.readStringOrNull(offsets[12]),
   );
-  object.createdAt = reader.readDateTime(offsets[0]);
   object.id = id;
   return object;
 }
 
-P _memoryEdgeDeserializeProp<P>(
+P _memoryNodeDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -172,48 +237,62 @@ P _memoryEdgeDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
-    case 2:
-      return (reader.readLong(offset)) as P;
-    case 3:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
-    case 4:
-      return (reader.readDateTimeOrNull(offset)) as P;
-    case 5:
       return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 3:
+      return (reader.readObjectOrNull<Degree>(
+        offset,
+        DegreeSchema.deserialize,
+        allOffsets,
+      )) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
+      return (reader.readObjectOrNull<MemoryEmbedding>(
+        offset,
+        MemoryEmbeddingSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 6:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 7:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 8:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 9:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
+    case 10:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 11:
+      return (reader.readStringOrNull(offset)) as P;
+    case 12:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-Id _memoryEdgeGetId(MemoryEdge object) {
+Id _memoryNodeGetId(MemoryNode object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _memoryEdgeGetLinks(MemoryEdge object) {
+List<IsarLinkBase<dynamic>> _memoryNodeGetLinks(MemoryNode object) {
   return [];
 }
 
-void _memoryEdgeAttach(IsarCollection<dynamic> col, Id id, MemoryEdge object) {
+void _memoryNodeAttach(IsarCollection<dynamic> col, Id id, MemoryNode object) {
   object.id = id;
 }
 
-extension MemoryEdgeByIndex on IsarCollection<MemoryEdge> {
-  Future<MemoryEdge?> getByUuid(String? uuid) {
+extension MemoryNodeByIndex on IsarCollection<MemoryNode> {
+  Future<MemoryNode?> getByUuid(String? uuid) {
     return getByIndex(r'uuid', [uuid]);
   }
 
-  MemoryEdge? getByUuidSync(String? uuid) {
+  MemoryNode? getByUuidSync(String? uuid) {
     return getByIndexSync(r'uuid', [uuid]);
   }
 
@@ -225,12 +304,12 @@ extension MemoryEdgeByIndex on IsarCollection<MemoryEdge> {
     return deleteByIndexSync(r'uuid', [uuid]);
   }
 
-  Future<List<MemoryEdge?>> getAllByUuid(List<String?> uuidValues) {
+  Future<List<MemoryNode?>> getAllByUuid(List<String?> uuidValues) {
     final values = uuidValues.map((e) => [e]).toList();
     return getAllByIndex(r'uuid', values);
   }
 
-  List<MemoryEdge?> getAllByUuidSync(List<String?> uuidValues) {
+  List<MemoryNode?> getAllByUuidSync(List<String?> uuidValues) {
     final values = uuidValues.map((e) => [e]).toList();
     return getAllByIndexSync(r'uuid', values);
   }
@@ -245,35 +324,35 @@ extension MemoryEdgeByIndex on IsarCollection<MemoryEdge> {
     return deleteAllByIndexSync(r'uuid', values);
   }
 
-  Future<Id> putByUuid(MemoryEdge object) {
+  Future<Id> putByUuid(MemoryNode object) {
     return putByIndex(r'uuid', object);
   }
 
-  Id putByUuidSync(MemoryEdge object, {bool saveLinks = true}) {
+  Id putByUuidSync(MemoryNode object, {bool saveLinks = true}) {
     return putByIndexSync(r'uuid', object, saveLinks: saveLinks);
   }
 
-  Future<List<Id>> putAllByUuid(List<MemoryEdge> objects) {
+  Future<List<Id>> putAllByUuid(List<MemoryNode> objects) {
     return putAllByIndex(r'uuid', objects);
   }
 
-  List<Id> putAllByUuidSync(List<MemoryEdge> objects, {bool saveLinks = true}) {
+  List<Id> putAllByUuidSync(List<MemoryNode> objects, {bool saveLinks = true}) {
     return putAllByIndexSync(r'uuid', objects, saveLinks: saveLinks);
   }
 }
 
-extension MemoryEdgeQueryWhereSort
-    on QueryBuilder<MemoryEdge, MemoryEdge, QWhere> {
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterWhere> anyId() {
+extension MemoryNodeQueryWhereSort
+    on QueryBuilder<MemoryNode, MemoryNode, QWhere> {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension MemoryEdgeQueryWhere
-    on QueryBuilder<MemoryEdge, MemoryEdge, QWhereClause> {
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterWhereClause> idEqualTo(Id id) {
+extension MemoryNodeQueryWhere
+    on QueryBuilder<MemoryNode, MemoryNode, QWhereClause> {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -282,7 +361,7 @@ extension MemoryEdgeQueryWhere
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -304,7 +383,7 @@ extension MemoryEdgeQueryWhere
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -313,7 +392,7 @@ extension MemoryEdgeQueryWhere
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -322,7 +401,7 @@ extension MemoryEdgeQueryWhere
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterWhereClause> idBetween(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -338,7 +417,7 @@ extension MemoryEdgeQueryWhere
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterWhereClause> uuidIsNull() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> uuidIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
         indexName: r'uuid',
@@ -347,7 +426,7 @@ extension MemoryEdgeQueryWhere
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterWhereClause> uuidIsNotNull() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> uuidIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.between(
         indexName: r'uuid',
@@ -358,7 +437,7 @@ extension MemoryEdgeQueryWhere
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterWhereClause> uuidEqualTo(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> uuidEqualTo(
       String? uuid) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
@@ -368,7 +447,7 @@ extension MemoryEdgeQueryWhere
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterWhereClause> uuidNotEqualTo(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterWhereClause> uuidNotEqualTo(
       String? uuid) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
@@ -404,10 +483,216 @@ extension MemoryEdgeQueryWhere
   }
 }
 
-extension MemoryEdgeQueryFilter
-    on QueryBuilder<MemoryEdge, MemoryEdge, QFilterCondition> {
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> createdAtEqualTo(
-      DateTime value) {
+extension MemoryNodeQueryFilter
+    on QueryBuilder<MemoryNode, MemoryNode, QFilterCondition> {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      accessCountEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'accessCount',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      accessCountGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'accessCount',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      accessCountLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'accessCount',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      accessCountBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'accessCount',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> contentEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'content',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      contentGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'content',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> contentLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'content',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> contentBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'content',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> contentStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'content',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> contentEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'content',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> contentContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'content',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> contentMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'content',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> contentIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'content',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      contentIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'content',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      createdAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'createdAt',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      createdAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'createdAt',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> createdAtEqualTo(
+      DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'createdAt',
@@ -416,9 +701,9 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       createdAtGreaterThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -430,8 +715,8 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> createdAtLessThan(
-    DateTime value, {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> createdAtLessThan(
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -443,9 +728,9 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> createdAtBetween(
-    DateTime lower,
-    DateTime upper, {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> createdAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -460,7 +745,24 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> deviceIdIsNull() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> degreeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'degree',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      degreeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'degree',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'deviceId',
@@ -468,7 +770,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       deviceIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -477,7 +779,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> deviceIdEqualTo(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
@@ -490,7 +792,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       deviceIdGreaterThan(
     String? value, {
     bool include = false,
@@ -506,7 +808,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> deviceIdLessThan(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -521,7 +823,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> deviceIdBetween(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -540,7 +842,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       deviceIdStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -554,7 +856,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> deviceIdEndsWith(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -567,7 +869,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> deviceIdContains(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -579,7 +881,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> deviceIdMatches(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> deviceIdMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -591,7 +893,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       deviceIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -601,7 +903,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       deviceIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -611,62 +913,25 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> fromNodeIdEqualTo(
-      int value) {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      embeddingIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'fromNodeId',
-        value: value,
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'embedding',
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
-      fromNodeIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      embeddingIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'fromNodeId',
-        value: value,
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'embedding',
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
-      fromNodeIdLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'fromNodeId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> fromNodeIdBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'fromNodeId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> idEqualTo(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> idEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -676,7 +941,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> idGreaterThan(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> idGreaterThan(
     Id value, {
     bool include = false,
   }) {
@@ -689,7 +954,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> idLessThan(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> idLessThan(
     Id value, {
     bool include = false,
   }) {
@@ -702,7 +967,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> idBetween(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -719,7 +984,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> isDeletedEqualTo(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> isDeletedEqualTo(
       bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -729,7 +994,60 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> layerEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'layer',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> layerGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'layer',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> layerLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'layer',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> layerBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'layer',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       modifiedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -738,7 +1056,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       modifiedAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -747,7 +1065,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> modifiedAtEqualTo(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> modifiedAtEqualTo(
       DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -757,7 +1075,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       modifiedAtGreaterThan(
     DateTime? value, {
     bool include = false,
@@ -771,7 +1089,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       modifiedAtLessThan(
     DateTime? value, {
     bool include = false,
@@ -785,7 +1103,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> modifiedAtBetween(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> modifiedAtBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -802,60 +1120,75 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> relationEqualTo(
-    String value, {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'type',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'type',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeEqualTo(
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'relation',
+        property: r'type',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
-      relationGreaterThan(
-    String value, {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeGreaterThan(
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'relation',
+        property: r'type',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> relationLessThan(
-    String value, {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeLessThan(
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'relation',
+        property: r'type',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> relationBetween(
-    String lower,
-    String upper, {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeBetween(
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'relation',
+        property: r'type',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -865,123 +1198,138 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
-      relationStartsWith(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'relation',
+        property: r'type',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> relationEndsWith(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'relation',
+        property: r'type',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> relationContains(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'relation',
+        property: r'type',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> relationMatches(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'relation',
+        property: r'type',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
-      relationIsEmpty() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'relation',
+        property: r'type',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
-      relationIsNotEmpty() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> typeIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'relation',
+        property: r'type',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> toNodeIdEqualTo(
-      int value) {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      updatedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'updatedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      updatedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'updatedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> updatedAtEqualTo(
+      DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'toNodeId',
+        property: r'updatedAt',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
-      toNodeIdGreaterThan(
-    int value, {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
+      updatedAtGreaterThan(
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'toNodeId',
+        property: r'updatedAt',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> toNodeIdLessThan(
-    int value, {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> updatedAtLessThan(
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'toNodeId',
+        property: r'updatedAt',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> toNodeIdBetween(
-    int lower,
-    int upper, {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> updatedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'toNodeId',
+        property: r'updatedAt',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -990,7 +1338,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidIsNull() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'uuid',
@@ -998,7 +1346,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidIsNotNull() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'uuid',
@@ -1006,7 +1354,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidEqualTo(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
@@ -1019,7 +1367,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidGreaterThan(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1034,7 +1382,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidLessThan(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1049,7 +1397,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidBetween(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -1068,7 +1416,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidStartsWith(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -1081,7 +1429,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidEndsWith(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -1094,7 +1442,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidContains(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1106,7 +1454,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidMatches(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1118,7 +1466,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidIsEmpty() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'uuid',
@@ -1127,7 +1475,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> uuidIsNotEmpty() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> uuidIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'uuid',
@@ -1136,7 +1484,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> versionIsNull() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'version',
@@ -1144,7 +1492,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       versionIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -1153,7 +1501,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> versionEqualTo(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
@@ -1166,7 +1514,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       versionGreaterThan(
     String? value, {
     bool include = false,
@@ -1182,7 +1530,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> versionLessThan(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1197,7 +1545,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> versionBetween(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -1216,7 +1564,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> versionStartsWith(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -1229,7 +1577,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> versionEndsWith(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -1242,7 +1590,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> versionContains(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1254,7 +1602,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> versionMatches(
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1266,7 +1614,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> versionIsEmpty() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> versionIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'version',
@@ -1275,7 +1623,7 @@ extension MemoryEdgeQueryFilter
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition>
       versionIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -1284,483 +1632,468 @@ extension MemoryEdgeQueryFilter
       ));
     });
   }
+}
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> weightIsNull() {
+extension MemoryNodeQueryObject
+    on QueryBuilder<MemoryNode, MemoryNode, QFilterCondition> {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> degree(
+      FilterQuery<Degree> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'weight',
-      ));
+      return query.object(q, r'degree');
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition>
-      weightIsNotNull() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterFilterCondition> embedding(
+      FilterQuery<MemoryEmbedding> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'weight',
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> weightEqualTo(
-    double? value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'weight',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> weightGreaterThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'weight',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> weightLessThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'weight',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterFilterCondition> weightBetween(
-    double? lower,
-    double? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'weight',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
+      return query.object(q, r'embedding');
     });
   }
 }
 
-extension MemoryEdgeQueryObject
-    on QueryBuilder<MemoryEdge, MemoryEdge, QFilterCondition> {}
+extension MemoryNodeQueryLinks
+    on QueryBuilder<MemoryNode, MemoryNode, QFilterCondition> {}
 
-extension MemoryEdgeQueryLinks
-    on QueryBuilder<MemoryEdge, MemoryEdge, QFilterCondition> {}
+extension MemoryNodeQuerySortBy
+    on QueryBuilder<MemoryNode, MemoryNode, QSortBy> {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByAccessCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accessCount', Sort.asc);
+    });
+  }
 
-extension MemoryEdgeQuerySortBy
-    on QueryBuilder<MemoryEdge, MemoryEdge, QSortBy> {
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByCreatedAt() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByAccessCountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accessCount', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByContent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'content', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByContentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'content', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByCreatedAtDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByDeviceId() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByDeviceId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deviceId', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByDeviceIdDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByDeviceIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deviceId', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByFromNodeId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'fromNodeId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByFromNodeIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'fromNodeId', Sort.desc);
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByIsDeleted() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByIsDeleted() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isDeleted', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByIsDeletedDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByIsDeletedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isDeleted', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByModifiedAt() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByLayer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'layer', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByLayerDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'layer', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByModifiedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'modifiedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByModifiedAtDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByModifiedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'modifiedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByRelation() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByType() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'relation', Sort.asc);
+      return query.addSortBy(r'type', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByRelationDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByTypeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'relation', Sort.desc);
+      return query.addSortBy(r'type', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByToNodeId() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'toNodeId', Sort.asc);
+      return query.addSortBy(r'updatedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByToNodeIdDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'toNodeId', Sort.desc);
+      return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByUuid() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByUuid() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'uuid', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByUuidDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByUuidDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'uuid', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByVersion() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'version', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByVersionDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> sortByVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'version', Sort.desc);
     });
   }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByWeight() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'weight', Sort.asc);
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> sortByWeightDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'weight', Sort.desc);
-    });
-  }
 }
 
-extension MemoryEdgeQuerySortThenBy
-    on QueryBuilder<MemoryEdge, MemoryEdge, QSortThenBy> {
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByCreatedAt() {
+extension MemoryNodeQuerySortThenBy
+    on QueryBuilder<MemoryNode, MemoryNode, QSortThenBy> {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByAccessCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accessCount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByAccessCountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'accessCount', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByContent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'content', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByContentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'content', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByCreatedAtDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByDeviceId() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByDeviceId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deviceId', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByDeviceIdDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByDeviceIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deviceId', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByFromNodeId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'fromNodeId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByFromNodeIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'fromNodeId', Sort.desc);
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenById() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByIsDeleted() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByIsDeleted() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isDeleted', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByIsDeletedDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByIsDeletedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isDeleted', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByModifiedAt() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByLayer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'layer', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByLayerDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'layer', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByModifiedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'modifiedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByModifiedAtDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByModifiedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'modifiedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByRelation() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByType() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'relation', Sort.asc);
+      return query.addSortBy(r'type', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByRelationDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByTypeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'relation', Sort.desc);
+      return query.addSortBy(r'type', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByToNodeId() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'toNodeId', Sort.asc);
+      return query.addSortBy(r'updatedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByToNodeIdDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'toNodeId', Sort.desc);
+      return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByUuid() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByUuid() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'uuid', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByUuidDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByUuidDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'uuid', Sort.desc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByVersion() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'version', Sort.asc);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByVersionDesc() {
+  QueryBuilder<MemoryNode, MemoryNode, QAfterSortBy> thenByVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'version', Sort.desc);
     });
   }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByWeight() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'weight', Sort.asc);
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QAfterSortBy> thenByWeightDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'weight', Sort.desc);
-    });
-  }
 }
 
-extension MemoryEdgeQueryWhereDistinct
-    on QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> {
-  QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> distinctByCreatedAt() {
+extension MemoryNodeQueryWhereDistinct
+    on QueryBuilder<MemoryNode, MemoryNode, QDistinct> {
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByAccessCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'accessCount');
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByContent(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'content', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> distinctByDeviceId(
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByDeviceId(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'deviceId', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> distinctByFromNodeId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'fromNodeId');
-    });
-  }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> distinctByIsDeleted() {
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByIsDeleted() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isDeleted');
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> distinctByModifiedAt() {
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByLayer() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'layer');
+    });
+  }
+
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByModifiedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'modifiedAt');
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> distinctByRelation(
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByType(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'relation', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'type', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> distinctByToNodeId() {
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'toNodeId');
+      return query.addDistinctBy(r'updatedAt');
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> distinctByUuid(
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByUuid(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'uuid', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> distinctByVersion(
+  QueryBuilder<MemoryNode, MemoryNode, QDistinct> distinctByVersion(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'version', caseSensitive: caseSensitive);
     });
   }
-
-  QueryBuilder<MemoryEdge, MemoryEdge, QDistinct> distinctByWeight() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'weight');
-    });
-  }
 }
 
-extension MemoryEdgeQueryProperty
-    on QueryBuilder<MemoryEdge, MemoryEdge, QQueryProperty> {
-  QueryBuilder<MemoryEdge, int, QQueryOperations> idProperty() {
+extension MemoryNodeQueryProperty
+    on QueryBuilder<MemoryNode, MemoryNode, QQueryProperty> {
+  QueryBuilder<MemoryNode, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<MemoryEdge, DateTime, QQueryOperations> createdAtProperty() {
+  QueryBuilder<MemoryNode, int, QQueryOperations> accessCountProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'accessCount');
+    });
+  }
+
+  QueryBuilder<MemoryNode, String, QQueryOperations> contentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'content');
+    });
+  }
+
+  QueryBuilder<MemoryNode, DateTime?, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
     });
   }
 
-  QueryBuilder<MemoryEdge, String?, QQueryOperations> deviceIdProperty() {
+  QueryBuilder<MemoryNode, Degree?, QQueryOperations> degreeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'degree');
+    });
+  }
+
+  QueryBuilder<MemoryNode, String?, QQueryOperations> deviceIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'deviceId');
     });
   }
 
-  QueryBuilder<MemoryEdge, int, QQueryOperations> fromNodeIdProperty() {
+  QueryBuilder<MemoryNode, MemoryEmbedding?, QQueryOperations>
+      embeddingProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'fromNodeId');
+      return query.addPropertyName(r'embedding');
     });
   }
 
-  QueryBuilder<MemoryEdge, bool, QQueryOperations> isDeletedProperty() {
+  QueryBuilder<MemoryNode, bool, QQueryOperations> isDeletedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isDeleted');
     });
   }
 
-  QueryBuilder<MemoryEdge, DateTime?, QQueryOperations> modifiedAtProperty() {
+  QueryBuilder<MemoryNode, int, QQueryOperations> layerProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'layer');
+    });
+  }
+
+  QueryBuilder<MemoryNode, DateTime?, QQueryOperations> modifiedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'modifiedAt');
     });
   }
 
-  QueryBuilder<MemoryEdge, String, QQueryOperations> relationProperty() {
+  QueryBuilder<MemoryNode, String?, QQueryOperations> typeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'relation');
+      return query.addPropertyName(r'type');
     });
   }
 
-  QueryBuilder<MemoryEdge, int, QQueryOperations> toNodeIdProperty() {
+  QueryBuilder<MemoryNode, DateTime?, QQueryOperations> updatedAtProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'toNodeId');
+      return query.addPropertyName(r'updatedAt');
     });
   }
 
-  QueryBuilder<MemoryEdge, String?, QQueryOperations> uuidProperty() {
+  QueryBuilder<MemoryNode, String?, QQueryOperations> uuidProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'uuid');
     });
   }
 
-  QueryBuilder<MemoryEdge, String?, QQueryOperations> versionProperty() {
+  QueryBuilder<MemoryNode, String?, QQueryOperations> versionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'version');
-    });
-  }
-
-  QueryBuilder<MemoryEdge, double?, QQueryOperations> weightProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'weight');
     });
   }
 }
@@ -1769,30 +2102,45 @@ extension MemoryEdgeQueryProperty
 // JsonSerializableGenerator
 // **************************************************************************
 
-MemoryEdge _$MemoryEdgeFromJson(Map<String, dynamic> json) => MemoryEdge(
-      fromNodeId: json['fromNodeId'] as int,
-      toNodeId: json['toNodeId'] as int,
-      relation: json['relation'] as String,
-      weight: (json['weight'] as num?)?.toDouble(),
+MemoryNode _$MemoryNodeFromJson(Map<String, dynamic> json) => MemoryNode(
+      content: json['content'] as String,
+      type: json['type'] as String?,
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+      embedding: json['embedding'] == null
+          ? null
+          : MemoryEmbedding.fromJson(json['embedding'] as Map<String, dynamic>),
+      degree: json['degree'] == null
+          ? null
+          : Degree.fromJson(json['degree'] as Map<String, dynamic>),
       version: json['version'] as String?,
       deviceId: json['deviceId'] as String?,
       isDeleted: json['isDeleted'] as bool? ?? false,
       modifiedAt: json['modifiedAt'] == null
           ? null
           : DateTime.parse(json['modifiedAt'] as String),
+      layer: json['layer'] as int? ?? 0,
       uuid: json['uuid'] as String?,
-    )..createdAt = DateTime.parse(json['createdAt'] as String);
+      accessCount: json['accessCount'] as int? ?? 0,
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+    );
 
-Map<String, dynamic> _$MemoryEdgeToJson(MemoryEdge instance) =>
+Map<String, dynamic> _$MemoryNodeToJson(MemoryNode instance) =>
     <String, dynamic>{
       'uuid': instance.uuid,
-      'fromNodeId': instance.fromNodeId,
-      'toNodeId': instance.toNodeId,
-      'relation': instance.relation,
-      'weight': instance.weight,
-      'createdAt': instance.createdAt.toIso8601String(),
+      'content': instance.content,
+      'type': instance.type,
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'accessCount': instance.accessCount,
       'modifiedAt': instance.modifiedAt?.toIso8601String(),
       'version': instance.version,
       'deviceId': instance.deviceId,
       'isDeleted': instance.isDeleted,
+      'layer': instance.layer,
+      'embedding': instance.embedding?.toJson(),
+      'degree': instance.degree?.toJson(),
     };

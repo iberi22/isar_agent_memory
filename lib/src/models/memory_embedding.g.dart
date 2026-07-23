@@ -441,3 +441,24 @@ extension MemoryEmbeddingQueryFilter
 
 extension MemoryEmbeddingQueryObject
     on QueryBuilder<MemoryEmbedding, MemoryEmbedding, QFilterCondition> {}
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+MemoryEmbedding _$MemoryEmbeddingFromJson(Map<String, dynamic> json) =>
+    MemoryEmbedding(
+      vector: (json['vector'] as List<dynamic>?)
+              ?.map((e) => (e as num).toDouble())
+              .toList() ??
+          const [],
+      provider: json['provider'] as String? ?? 'unknown',
+      dimension: json['dimension'] as int? ?? 0,
+    );
+
+Map<String, dynamic> _$MemoryEmbeddingToJson(MemoryEmbedding instance) =>
+    <String, dynamic>{
+      'vector': instance.vector,
+      'provider': instance.provider,
+      'dimension': instance.dimension,
+    };

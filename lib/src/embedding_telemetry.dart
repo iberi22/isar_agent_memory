@@ -41,9 +41,8 @@ class EmbeddingTelemetryRecorder {
     if (_samples.isEmpty) {
       return <String, Object?>{'count': 0};
     }
-    final latencies = _samples
-        .map((s) => s.latency.inMicroseconds.toDouble())
-        .toList();
+    final latencies =
+        _samples.map((s) => s.latency.inMicroseconds.toDouble()).toList();
     latencies.sort();
     final total = latencies.reduce((a, b) => a + b);
     final successCount = _samples

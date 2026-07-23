@@ -1,0 +1,38 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: flutter pub run build_runner build
+
+      - name: Run static analysis
+        run: dart analyze lib/
+
+      - name: Run pure-Dart tests
+        run: |
+          flutter test \
+            test/word_piece_tokenizer_test.dart \
+            test/smoke_test.dart \
+            test/sync_manager_test.dart \
+            test/encryption_service_test.dart \
+            test/cross_device_sync_websocket_test.dart

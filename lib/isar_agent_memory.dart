@@ -26,6 +26,7 @@ export 'src/sync/sync_manager.dart';
 export 'src/sync/sync_backend.dart';
 export 'src/sync/firebase_sync_backend.dart';
 export 'src/sync/websocket_sync_backend.dart';
+export 'src/sync/mesh_sync_backend.dart';
 export 'src/sync/cross_device_sync_manager.dart';
 
 // Advanced features (v0.5.0)

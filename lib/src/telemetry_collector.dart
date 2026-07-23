@@ -17,12 +17,10 @@ class TelemetryCollector {
 
   /// Creates a performance report
   PerformanceReport generateReport() {
-    final embeddingEvents = _events
-        .whereType<EmbeddingPerformanceEvent>()
-        .toList();
-    final pipelineEvents = _events
-        .whereType<PipelinePerformanceEvent>()
-        .toList();
+    final embeddingEvents =
+        _events.whereType<EmbeddingPerformanceEvent>().toList();
+    final pipelineEvents =
+        _events.whereType<PipelinePerformanceEvent>().toList();
 
     return PerformanceReport(
       totalEvents: _events.length,
@@ -143,15 +141,15 @@ class EmbeddingPerformanceEvent extends PerformanceEvent {
 
   @override
   Map<String, Object?> toJson() => {
-    'type': 'embedding',
-    'timestamp': timestamp.toIso8601String(),
-    'provider': provider,
-    'model_id': modelId,
-    'latency_ms': latencyMs,
-    'dimension': dimension,
-    'success': success,
-    if (error != null) 'error': error,
-  };
+        'type': 'embedding',
+        'timestamp': timestamp.toIso8601String(),
+        'provider': provider,
+        'model_id': modelId,
+        'latency_ms': latencyMs,
+        'dimension': dimension,
+        'success': success,
+        if (error != null) 'error': error,
+      };
 }
 
 /// Performance event for pipeline operations
@@ -171,13 +169,13 @@ class PipelinePerformanceEvent extends PerformanceEvent {
 
   @override
   Map<String, Object?> toJson() => {
-    'type': 'pipeline',
-    'timestamp': timestamp.toIso8601String(),
-    'task_name': taskName,
-    'stage': stage,
-    'duration_ms': durationMs,
-    'metadata': metadata,
-  };
+        'type': 'pipeline',
+        'timestamp': timestamp.toIso8601String(),
+        'task_name': taskName,
+        'stage': stage,
+        'duration_ms': durationMs,
+        'metadata': metadata,
+      };
 }
 
 /// Summary of embedding performance
@@ -227,22 +225,22 @@ class PerformanceReport {
   final DateTime timestamp;
 
   Map<String, Object?> toJson() => {
-    'timestamp': timestamp.toIso8601String(),
-    'total_events': totalEvents,
-    'embedding_summary': {
-      'total_requests': embeddingSummary.totalRequests,
-      'success_rate': embeddingSummary.successRate,
-      'avg_latency_ms': embeddingSummary.avgLatencyMs,
-      'p95_latency_ms': embeddingSummary.p95LatencyMs,
-      'provider_breakdown': embeddingSummary.providerBreakdown,
-    },
-    'pipeline_summary': {
-      'total_runs': pipelineSummary.totalRuns,
-      'success_rate': pipelineSummary.successRate,
-      'avg_duration_ms': pipelineSummary.avgDurationMs,
-      'task_breakdown': pipelineSummary.taskBreakdown,
-    },
-  };
+        'timestamp': timestamp.toIso8601String(),
+        'total_events': totalEvents,
+        'embedding_summary': {
+          'total_requests': embeddingSummary.totalRequests,
+          'success_rate': embeddingSummary.successRate,
+          'avg_latency_ms': embeddingSummary.avgLatencyMs,
+          'p95_latency_ms': embeddingSummary.p95LatencyMs,
+          'provider_breakdown': embeddingSummary.providerBreakdown,
+        },
+        'pipeline_summary': {
+          'total_runs': pipelineSummary.totalRuns,
+          'success_rate': pipelineSummary.successRate,
+          'avg_duration_ms': pipelineSummary.avgDurationMs,
+          'task_breakdown': pipelineSummary.taskBreakdown,
+        },
+      };
 
   void printSummary() {
     print('🔍 PERFORMANCE REPORT');

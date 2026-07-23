@@ -274,3 +274,21 @@ extension DegreeQueryFilter on QueryBuilder<Degree, Degree, QFilterCondition> {
 }
 
 extension DegreeQueryObject on QueryBuilder<Degree, Degree, QFilterCondition> {}
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+Degree _$DegreeFromJson(Map<String, dynamic> json) => Degree(
+      lastAccessed: json['lastAccessed'] == null
+          ? null
+          : DateTime.parse(json['lastAccessed'] as String),
+      frequency: json['frequency'] as int? ?? 0,
+      importance: (json['importance'] as num?)?.toDouble() ?? 0.5,
+    );
+
+Map<String, dynamic> _$DegreeToJson(Degree instance) => <String, dynamic>{
+      'lastAccessed': instance.lastAccessed?.toIso8601String(),
+      'frequency': instance.frequency,
+      'importance': instance.importance,
+    };

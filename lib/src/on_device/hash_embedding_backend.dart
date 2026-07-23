@@ -12,9 +12,9 @@ class HashEmbeddingBackend implements OnDeviceEmbeddingBackend {
     int dimension = 256,
     this.modelId = 'hash-embeddings-v1',
     this.runtime = 'hash',
-  }) : assert(dimension > 0, 'dimension must be positive'),
-       _dimension = dimension,
-       _buffer = Float32List(dimension);
+  })  : assert(dimension > 0, 'dimension must be positive'),
+        _dimension = dimension,
+        _buffer = Float32List(dimension);
 
   final int _dimension;
 

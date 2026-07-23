@@ -299,7 +299,8 @@ class RemoteMultiModalAdapter implements MultiModalEmbeddingsAdapter {
       }
     }
 
-    throw Exception('Unexpected embedding API response format: ${response.body}');
+    throw Exception(
+        'Unexpected embedding API response format: ${response.body}');
   }
 
   /// Release underlying HTTP client.
