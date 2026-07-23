@@ -48,3 +48,6 @@ isar_agent_memory_tests/pubspec.lock
 
 # Protocol artifacts
 .git-core-protocol-version
+
+# Disabled workflows (GitCore: disabled by default)
+.github/workflows.disabled/
