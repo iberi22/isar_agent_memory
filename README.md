@@ -35,6 +35,7 @@ Used by: **Pocket Cerebro** (SWAL mobile node), **OrionHealth** (clinical assist
 
 ```yaml
 dependencies:
+  # Add the core cognitive memory engine for agentic LLM apps
   isar_agent_memory: ^0.6.0-dev
   isar: ^3.1.0+1
 ```
