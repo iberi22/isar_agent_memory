@@ -42,6 +42,10 @@ dev_dependencies:
     sdk: flutter
   firebase_database_mocks: ^0.6.0
   mockito: ^5.4.4
+<<<<<<< HEAD
+  build_runner: ^2.4.6
+  isar_generator: ^3.1.0+1
+=======
   test: ^1.25.0
   build_runner: any
   json_serializable: any
@@ -53,6 +57,7 @@ dependency_overrides:
   dart_style: ^2.2.3
   build: ^2.4.1
   http: ^1.1.0
+>>>>>>> main
 
 dart_pre_commit:
   tasks:
