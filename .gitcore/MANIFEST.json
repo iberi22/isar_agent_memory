@@ -1,0 +1,41 @@
+{
+  "protocol_version": "3.8.0",
+  "package": "gitcore-consumer",
+  "updated": "2026-07-17",
+  "description": "Files managed by gitcore-update and copied into every SWAL project under .gitcore/",
+  "source_of_truth": {
+    "local_env": "GITCORE_HOME",
+    "local_default": "E:\\\\proyectosSWAL\\\\GitCore",
+    "remote_repo": "iberi22/GitCore",
+    "remote_fallback": "iberi22/Git-Core-Protocol"
+  },
+  "managed_paths": [
+    "PROTOCOL_REFERENCE.md",
+    "docs/SWAL_PRIVATE_ERA.md",
+    "docs/SWAL_GOAL.md",
+    "scripts/gitcore-update.ps1",
+    "scripts/implementation-score.ps1",
+    "scripts/feature-verify.ps1",
+    "scripts/feature-diff-claimed.ps1",
+    "scripts/protocol-health.ps1",
+    "scripts/check-protocol-update.ps1",
+    "scripts/ensure-srs-src.ps1",
+    "scripts/lib/GitCore.Common.ps1",
+    "MANIFEST.json"
+  ],
+  "preserved_paths": [
+    "ARCHITECTURE.md",
+    "AGENT_INDEX.md",
+    "features.json",
+    "features.details/",
+    "planning/",
+    "srs/",
+    "harness/",
+    "STATE.md",
+    "CONTEXT_LOG.md"
+  ],
+  "project_root_touch": [
+    ".git-core-protocol-version"
+  ],
+  "notes": "ARCHITECTURE and planning are never overwritten unless missing. features.json only gets protocol_version field patched."
+}

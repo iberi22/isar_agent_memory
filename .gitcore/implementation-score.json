@@ -1,0 +1,28 @@
+{
+  "project": "isar_agent_memory",
+  "path": "E:\\proyectosSWAL\\isar_agent_memory",
+  "generated_at": "2026-07-17T23:08:29.9776390-05:00",
+  "protocol_version": "3.8.0",
+  "overall_pct": 76.6,
+  "breakdown": {
+    "protocol_pct": 100,
+    "src_pct": 60.0,
+    "srs_pct": 100,
+    "features_pct": 0.0,
+    "features_count": 0,
+    "features_source": "empty features",
+    "swal_compliance": 100
+  },
+  "weights": {
+    "protocol": 0.28,
+    "src": 0.21,
+    "srs": 0.26,
+    "features": 0.15,
+    "swal": 0.1
+  },
+  "gaps": [
+    "Tree",
+    "CrossLink"
+  ],
+  "grade": "B"
+}
