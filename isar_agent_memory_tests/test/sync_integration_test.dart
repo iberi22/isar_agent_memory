@@ -15,10 +15,10 @@ void main() {
 
   setUp(() async {
     final dir = Directory.systemTemp.createTempSync();
-    final isar = await Isar.open(
-      [MemoryNodeSchema, MemoryEdgeSchema],
-      directory: dir.path,
-    );
+    final isar = await Isar.open([
+      MemoryNodeSchema,
+      MemoryEdgeSchema,
+    ], directory: dir.path);
 
     // Mock adapter
     final adapter = FallbackEmbeddingsAdapter(
@@ -26,8 +26,11 @@ void main() {
       fallback: _MockEmbeddingsAdapter(),
     );
 
-    memoryGraph = MemoryGraph(isar,
-        embeddingsAdapter: adapter, index: InMemoryVectorIndex());
+    memoryGraph = MemoryGraph(
+      isar,
+      embeddingsAdapter: adapter,
+      index: InMemoryVectorIndex(),
+    );
     syncManager = SyncManager(memoryGraph);
     await syncManager.initialize(); // Random key
   });
@@ -38,10 +41,12 @@ void main() {
 
   test('SyncManager export and import loop', () async {
     // 1. Create some data
-    final nodeId =
-        await memoryGraph.storeNodeWithEmbedding(content: 'Secret Memory');
+    final nodeId = await memoryGraph.storeNodeWithEmbedding(
+      content: 'Secret Memory',
+    );
     final edgeId = await memoryGraph.storeEdge(
-        MemoryEdge(fromNodeId: nodeId, toNodeId: nodeId, relation: 'self'));
+      MemoryEdge(fromNodeId: nodeId, toNodeId: nodeId, relation: 'self'),
+    );
 
     // 2. Export
     final encrypted = await syncManager.exportEncryptedSnapshot();

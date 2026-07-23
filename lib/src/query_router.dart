@@ -226,28 +226,35 @@ class QueryRouter {
   // Internal search implementations
   // -----------------------------------------------------------------------
 
-  Future<List<RetrievedNode>> _vectorSearch(String query, {int topK = 5}) async {
+  Future<List<RetrievedNode>> _vectorSearch(String query,
+      {int topK = 5}) async {
     final emb = await embeddings.embed(query);
     final results = await graph.semanticSearch(emb, topK: topK);
-    return results.map((r) => RetrievedNode(
-      node: r.node,
-      score: 1.0 - r.distance,
-      source: 'vector',
-      explanation: 'distance=${r.distance.toStringAsFixed(3)}',
-    )).toList();
+    return results
+        .map((r) => RetrievedNode(
+              node: r.node,
+              score: 1.0 - r.distance,
+              source: 'vector',
+              explanation: 'distance=${r.distance.toStringAsFixed(3)}',
+            ))
+        .toList();
   }
 
-  Future<List<RetrievedNode>> _hybridSearch(String query, {int topK = 5}) async {
+  Future<List<RetrievedNode>> _hybridSearch(String query,
+      {int topK = 5}) async {
     final results = await graph.hybridSearch(query, topK: topK);
-    return results.map((r) => RetrievedNode(
-      node: r.node,
-      score: r.score,
-      source: 'hybrid',
-      explanation: 'score=${r.score.toStringAsFixed(3)}',
-    )).toList();
+    return results
+        .map((r) => RetrievedNode(
+              node: r.node,
+              score: r.score,
+              source: 'hybrid',
+              explanation: 'score=${r.score.toStringAsFixed(3)}',
+            ))
+        .toList();
   }
 
-  Future<List<RetrievedNode>> _temporalSearch(String query, {int topK = 5}) async {
+  Future<List<RetrievedNode>> _temporalSearch(String query,
+      {int topK = 5}) async {
     // Extract time range from query (simple heuristics)
     final now = DateTime.now();
     DateTime? since;
@@ -274,14 +281,17 @@ class QueryRouter {
       }).toList();
     }
 
-    return results.take(topK).map((r) => RetrievedNode(
-      node: r.node,
-      score: 1.0 - r.distance,
-      source: 'temporal',
-      explanation: since != null
-          ? 'filtered since ${since.toIso8601String()}'
-          : 'vector search (no time filter)',
-    )).toList();
+    return results
+        .take(topK)
+        .map((r) => RetrievedNode(
+              node: r.node,
+              score: 1.0 - r.distance,
+              source: 'temporal',
+              explanation: since != null
+                  ? 'filtered since ${since.toIso8601String()}'
+                  : 'vector search (no time filter)',
+            ))
+        .toList();
   }
 
   Future<List<RetrievedNode>> _graphSearch(String query, {int topK = 5}) async {
@@ -306,7 +316,8 @@ class QueryRouter {
     return enriched;
   }
 
-  Future<List<RetrievedNode>> _hierarchicalSearch(String query, {int topK = 5}) async {
+  Future<List<RetrievedNode>> _hierarchicalSearch(String query,
+      {int topK = 5}) async {
     final emb = await embeddings.embed(query);
     // Multi-hop search via HiRAG
     final results = await graph.multiHopSearch(
@@ -327,7 +338,8 @@ class QueryRouter {
     }).toList();
   }
 
-  Future<List<RetrievedNode>> _multiStrategySearch(RoutingPlan plan, {int topK = 5}) async {
+  Future<List<RetrievedNode>> _multiStrategySearch(RoutingPlan plan,
+      {int topK = 5}) async {
     // Run vector + hybrid + temporal in parallel, then fuse
     final futures = <Future<List<RetrievedNode>>>[
       _vectorSearch(plan.query, topK: topK),
@@ -392,7 +404,8 @@ class QueryRouter {
   );
 
   static bool _hasTemporalIntent(String q) => _temporalWords.hasMatch(q);
-  static bool _hasRelationshipIntent(String q) => _relationshipWords.hasMatch(q);
+  static bool _hasRelationshipIntent(String q) =>
+      _relationshipWords.hasMatch(q);
   static bool _hasSummaryIntent(String q) => _summaryWords.hasMatch(q);
   static bool _hasPreciseTerms(String q) => _preciseTerms.hasMatch(q);
 
@@ -411,7 +424,8 @@ class QueryRouter {
 
   static List<String> _splitParts(String q) {
     // Simple split on conjunctions and question marks
-    final parts = q.split(RegExp(r'[?]|(?:\s+(?:and|or|also|plus|with)\s+)'))
+    final parts = q
+        .split(RegExp(r'[?]|(?:\s+(?:and|or|also|plus|with)\s+)'))
         .map((s) => s.trim())
         .where((s) => s.isNotEmpty)
         .toList();

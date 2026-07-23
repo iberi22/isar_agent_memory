@@ -30,9 +30,8 @@ class WhitespaceHasherTokenizer extends TextTokenizer {
 
   @override
   TokenizedText tokenize(String text, int maxTokens) {
-    final words = text.trim().isEmpty
-        ? <String>[]
-        : text.trim().split(RegExp(r'\s+'));
+    final words =
+        text.trim().isEmpty ? <String>[] : text.trim().split(RegExp(r'\s+'));
     final ids = <int>[];
     for (final word in words) {
       if (ids.length == maxTokens) break;

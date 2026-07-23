@@ -183,8 +183,8 @@ void _handleOutput(MemoryTaskOutput<dynamic> output, PipelineContext context) {
 
   if (raw is Map<String, Object?>) {
     // Extract the text content from the output map.
-    final content = (raw['chunk'] ?? raw['content'] ?? raw['text'] ?? '')
-        .toString();
+    final content =
+        (raw['chunk'] ?? raw['content'] ?? raw['text'] ?? '').toString();
     if (content.isNotEmpty) {
       final node = MemoryNode(
         content: content,

@@ -13,7 +13,7 @@
   {"id": "session-context", "name": "Multi-tenant session isolation", "progress_pct": 100, "priority": "P1"},
   {"id": "cognitive-memory", "name": "Memory types + consolidation + forgetting", "progress_pct": 100, "priority": "P1"},
   {"id": "sync", "name": "Encrypted sync (Firebase/WebSocket)", "progress_pct": 100, "priority": "P1"},
-  {"id": "p2p-sync", "name": "P2P sync via edge-mesh", "progress_pct": 0, "priority": "P2"},
+  {"id": "p2p-sync", "name": "P2P sync via edge-mesh", "progress_pct": 100, "priority": "P2"},
   {"id": "on-device", "name": "On-device backends (Hash, TFLite, ONNX, Resilient)", "progress_pct": 100, "priority": "P1"},
   {"id": "telemetry", "name": "Embedding telemetry", "progress_pct": 100, "priority": "P2"},
   {"id": "multi-modal", "name": "Multi-modal embeddings (HTTP)", "progress_pct": 100, "priority": "P2"},

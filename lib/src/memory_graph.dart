@@ -458,6 +458,8 @@ class MemoryGraph {
   }) async {
     final searchResults =
         await hybridSearch(query, topK: topK * 2, alpha: alpha);
-    return (await reranker.reRank(searchResults, query: query)).take(topK).toList();
+    return (await reranker.reRank(searchResults, query: query))
+        .take(topK)
+        .toList();
   }
 }

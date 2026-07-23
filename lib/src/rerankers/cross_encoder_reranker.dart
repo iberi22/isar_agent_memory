@@ -19,8 +19,7 @@ class RerankerException implements Exception {
   RerankerException(this.message, {this.statusCode, this.provider});
 
   @override
-  String toString() =>
-      'RerankerException($provider): $message'
+  String toString() => 'RerankerException($provider): $message'
       '${statusCode != null ? ' [HTTP $statusCode]' : ''}';
 }
 
@@ -53,7 +52,8 @@ class RerankerProvider {
   final String defaultModel;
   final bool needsSigmoid; // true if API returns raw logits
 
-  const RerankerProvider._(this.name, this.defaultUrl, this.defaultModel, this.needsSigmoid);
+  const RerankerProvider._(
+      this.name, this.defaultUrl, this.defaultModel, this.needsSigmoid);
 
   /// Cohere Rerank API — returns relevance_score in [0, 1].
   static const cohere = RerankerProvider._(
@@ -408,9 +408,8 @@ class HybridReranker implements ReRankingStrategy {
 
       for (final id in nodeIds) {
         final raw = scoreMap[id] ?? 0.0;
-        final normalized = (range > 0 && normalizeScores)
-            ? (raw - minV) / range
-            : raw;
+        final normalized =
+            (range > 0 && normalizeScores) ? (raw - minV) / range : raw;
         allScores.putIfAbsent(id, () => []);
         allScores[id]!.add(normalized * weighted.weight);
       }
