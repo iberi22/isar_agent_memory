@@ -20,7 +20,7 @@
   {"id": "privacy", "name": "Privacy features (PII, differential privacy)", "progress_pct": 100, "priority": "P2"},
   {"id": "legacy-pipeline", "name": "Legacy streaming pipeline (backward compat)", "progress_pct": 100, "priority": "P2"},
   {"id": "maintenance", "name": "Memory maintenance service", "progress_pct": 100, "priority": "P2"},
-  {"id": "ci-cd", "name": "CI/CD pipeline", "progress_pct": 0, "priority": "P1"},
+  {"id": "ci-cd", "name": "CI/CD pipeline", "progress_pct": 100, "priority": "P1"},
   {"id": "tests-core", "name": "Core tests", "progress_pct": 70, "priority": "P0"},
   {"id": "tests-pipeline", "name": "Pipeline/router/session tests", "progress_pct": 0, "priority": "P1"},
   {"id": "tests-cross-encoder", "name": "Cross-encoder HTTP tests", "progress_pct": 0, "priority": "P2"},
