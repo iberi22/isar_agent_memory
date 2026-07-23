@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
 
 /// Abstract interface for a re-ranking strategy.
@@ -10,7 +11,8 @@ abstract class ReRankingStrategy {
   /// [results] is the initial list of search results to be re-ranked.
   /// [query] is the original search query, required by some strategies like BM25.
   /// Returns a re-ranked list of search results.
-  List<({MemoryNode node, double score})> reRank(
+  /// May return synchronously (existing strategies) or asynchronously (cross-encoder).
+  FutureOr<List<({MemoryNode node, double score})>> reRank(
     List<({MemoryNode node, double score})> results, {
     String? query,
   });

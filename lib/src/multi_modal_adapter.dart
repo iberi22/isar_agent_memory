@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 import 'embeddings_adapter.dart';
 
 /// Multi-modal embeddings adapter for different data types.
@@ -155,19 +158,37 @@ class CodeEmbeddingsAdapter implements EmbeddingsAdapter {
   }
 }
 
-/// Remote multi-modal API adapter (e.g., OpenAI, Cohere).
+/// Remote multi-modal API adapter (e.g., OpenAI, Gemini).
+///
+/// Makes HTTP calls to embedding APIs that support text and image inputs.
+/// Supports provider-agnostic payload construction via configurable endpoints.
+///
+/// Example:
+/// ```dart
+/// final adapter = RemoteMultiModalAdapter(
+///   apiUrl: 'https://api.openai.com/v1/embeddings',
+///   apiKey: 'sk-...',
+///   model: 'text-embedding-3-small',
+/// );
+/// final embedding = await adapter.embedText('Hello world');
+/// ```
 class RemoteMultiModalAdapter implements MultiModalEmbeddingsAdapter {
   final String apiUrl;
   final String apiKey;
   final String model;
+  final http.Client _client;
+  final Duration timeout;
   final int _dimensions;
 
   RemoteMultiModalAdapter({
     required this.apiUrl,
     required this.apiKey,
-    this.model = 'clip-vit-base-patch32',
-    int dimensions = 512,
-  }) : _dimensions = dimensions;
+    this.model = 'text-embedding-3-small',
+    http.Client? client,
+    this.timeout = const Duration(seconds: 30),
+    int dimensions = 768,
+  })  : _client = client ?? http.Client(),
+        _dimensions = dimensions;
 
   @override
   int get dimensions => _dimensions;
@@ -177,25 +198,112 @@ class RemoteMultiModalAdapter implements MultiModalEmbeddingsAdapter {
 
   @override
   Future<List<double>> embedText(String text) async {
-    // TODO: Implement HTTP API call
-    throw UnimplementedError('Remote API integration required');
+    final body = jsonEncode({
+      'model': model,
+      'input': text,
+    });
+    return _post(body);
   }
 
   @override
   Future<List<double>> embedImage(Uint8List imageBytes) async {
-    // TODO: Implement HTTP API call with image upload
-    throw UnimplementedError('Remote API integration required');
+    // Detect MIME type from magic bytes
+    final mime = _detectMime(imageBytes);
+    final base64 = base64Encode(imageBytes);
+
+    // OpenAI-compatible: data URL
+    final dataUrl = 'data:$mime;base64,$base64';
+
+    final body = jsonEncode({
+      'model': model,
+      'input': dataUrl,
+    });
+    return _post(body);
   }
 
   @override
   Future<List<double>> embedAudio(Uint8List audioBytes) async {
-    throw UnsupportedError('Audio not supported by this API');
+    throw UnsupportedError(
+      'Audio embedding not supported by this remote adapter. '
+      'Use a specialized audio embedding service.',
+    );
   }
 
   @override
   Future<List<double>> embedStructured(Map<String, dynamic> data) async {
-    return embedText(data.toString());
+    // Convert structured data to text representation
+    final text = StructuredDataProcessor.jsonToText(data);
+    return embedText(text);
   }
+
+  /// Detect image MIME type from magic bytes.
+  String _detectMime(Uint8List bytes) {
+    if (bytes.length >= 4 &&
+        bytes[0] == 0x89 &&
+        bytes[1] == 0x50 &&
+        bytes[2] == 0x4E &&
+        bytes[3] == 0x47) {
+      return 'image/png';
+    }
+    if (bytes.length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xD8) {
+      return 'image/jpeg';
+    }
+    if (bytes.length >= 4 &&
+        bytes[0] == 0x52 &&
+        bytes[1] == 0x49 &&
+        bytes[2] == 0x46 &&
+        bytes[3] == 0x46) {
+      return 'image/webp';
+    }
+    return 'image/png'; // default fallback
+  }
+
+  Future<List<double>> _post(String body) async {
+    final response = await _client
+        .post(
+          Uri.parse(apiUrl),
+          headers: {
+            'Authorization': 'Bearer $apiKey',
+            'Content-Type': 'application/json',
+          },
+          body: body,
+        )
+        .timeout(timeout);
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Remote embedding API returned HTTP ${response.statusCode}: ${response.body}',
+      );
+    }
+
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+
+    // OpenAI format: { "data": [{ "embedding": [...] }] }
+    if (json.containsKey('data')) {
+      final data = json['data'] as List;
+      if (data.isNotEmpty) {
+        final entry = data.first as Map<String, dynamic>;
+        if (entry.containsKey('embedding')) {
+          final values = entry['embedding'] as List;
+          return values.map((e) => (e as num).toDouble()).toList();
+        }
+      }
+    }
+
+    // Gemini format: { "embedding": { "values": [...] } }
+    if (json.containsKey('embedding')) {
+      final emb = json['embedding'] as Map<String, dynamic>;
+      if (emb.containsKey('values')) {
+        final values = emb['values'] as List;
+        return values.map((e) => (e as num).toDouble()).toList();
+      }
+    }
+
+    throw Exception('Unexpected embedding API response format: ${response.body}');
+  }
+
+  /// Release underlying HTTP client.
+  void dispose() => _client.close();
 }
 
 /// Hybrid adapter that delegates to specialized adapters per modality.
@@ -246,8 +354,9 @@ class HybridMultiModalAdapter implements MultiModalEmbeddingsAdapter {
 
   @override
   Future<List<double>> embedStructured(Map<String, dynamic> data) async {
-    // Convert to text and use text adapter
-    return embedText(data.toString());
+    // Use StructuredDataProcessor for proper structured-to-text conversion
+    final text = StructuredDataProcessor.jsonToText(data);
+    return embedText(text);
   }
 }
 

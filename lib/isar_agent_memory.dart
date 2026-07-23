@@ -7,9 +7,6 @@ export 'src/models/memory_node.dart';
 export 'src/models/memory_edge.dart';
 export 'src/models/memory_embedding.dart';
 export 'src/models/degree.dart';
-export 'src/models/medical_constants.dart';
-export 'src/models/patient_package.dart';
-export 'src/models/backend_operation_log.dart';
 export 'src/memory_graph.dart';
 export 'src/embeddings_adapter.dart';
 export 'src/gemini_embeddings_adapter.dart';
@@ -40,4 +37,32 @@ export 'src/dynamic_layers.dart';
 export 'src/multi_modal_adapter.dart';
 export 'src/agent_memory_types.dart';
 export 'src/utils/encryption_utils.dart';
-// export 'src/privacy_features.dart'; // TODO: Depends on other implementations
+export 'src/privacy_features.dart';
+
+// Pipeline hooks (v0.6.0)
+export 'src/pipeline_hooks.dart';
+export 'src/session_context.dart';
+export 'src/query_router.dart';
+
+// On-device embedding backends (ported from Pocket Cerebro v0.2.2)
+export 'src/on_device/on_device_embedding_backend.dart';
+export 'src/on_device/hash_embedding_backend.dart';
+export 'src/on_device/onnx_embedding_backend.dart';
+export 'src/on_device/onnx_text_embedding_runner.dart';
+export 'src/on_device/tflite_embedding_backend.dart';
+export 'src/on_device/tflite_text_embedding_runner.dart';
+export 'src/on_device/resilient_embedding_backend.dart';
+export 'src/on_device/tokenizer.dart';
+export 'src/on_device/backend_embeddings_adapter.dart';
+
+// Telemetry (ported from Pocket Cerebro v0.2.2)
+export 'src/embedding_telemetry.dart';
+export 'src/telemetry_collector.dart';
+
+// Legacy streaming pipeline (v0.4.x backward compat)
+export 'src/pipeline/memory_task.dart';
+export 'src/pipeline/pipeline_runner.dart';
+export 'src/pipeline/legacy_task.dart';
+
+// Maintenance
+export 'src/memory_maintenance.dart';

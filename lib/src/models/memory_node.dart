@@ -6,35 +6,6 @@ import 'degree.dart';
 
 part 'memory_node.g.dart';
 
-/// Medical metadata schema for clinical data.
-@embedded
-@JsonSerializable()
-class MedicalMetadata {
-  String? patientId;
-  String? specialty;
-  String? medicalRecordType;
-  DateTime? encounterDate;
-  String? providerId;
-  bool consentGranted;
-  String? encryptionLevel;
-  List<String>? relevantNodes;
-
-  MedicalMetadata({
-    this.patientId,
-    this.specialty,
-    this.medicalRecordType,
-    this.encounterDate,
-    this.providerId,
-    this.consentGranted = false,
-    this.encryptionLevel,
-    this.relevantNodes,
-  });
-
-  factory MedicalMetadata.fromJson(Map<String, dynamic> json) =>
-      _$MedicalMetadataFromJson(json);
-  Map<String, dynamic> toJson() => _$MedicalMetadataToJson(this);
-}
-
 /// Represents a memory, fact, message, or concept in the universal agent memory graph.
 ///
 /// Each [MemoryNode] is a fundamental unit of information, analogous to a concept
@@ -61,7 +32,6 @@ class MemoryNode {
     this.layer = 0,
     String? uuid,
     this.accessCount = 0,
-    this.medicalMetadata,
     DateTime? createdAt,
   })  : uuid = uuid ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now() {
@@ -120,9 +90,6 @@ class MemoryNode {
   /// 0 = base layer (raw text/facts).
   /// >0 = summary/abstract layers.
   int layer;
-
-  /// Medical-specific metadata.
-  MedicalMetadata? medicalMetadata;
 
   /// The embedding vector representing the semantic meaning of the [content].
   ///
