@@ -23,7 +23,6 @@ dependencies:
   langchain: ^0.8.0
   langchain_google: ^0.7.0
   graphs: ^2.3.1
-  objectbox: ^5.0.0 # Optional: On-device vector search (HNSW) via ObjectBox
   flat_buffers: ^23.5.26 # Required by generated lib/objectbox.g.dart
   onnxruntime: ^1.4.1 # For on-device embeddings
   http: ^1.1.0 # Required for tool scripts
@@ -42,9 +41,16 @@ dev_dependencies:
   firebase_database_mocks: ^0.6.0
   mockito: ^5.4.4
   test: ^1.25.0
-  build_runner: ^2.4.6
-  objectbox_generator: ^5.0.0
-  json_serializable: ^6.11.2
+  build_runner: any
+  json_serializable: any
+  isar_generator: 3.1.0+1
+
+dependency_overrides:
+  analyzer: ^5.13.0
+  source_gen: ^1.4.0
+  dart_style: ^2.2.3
+  build: ^2.4.1
+  http: ^1.1.0
 
 dart_pre_commit:
   tasks:
