@@ -1,0 +1,138 @@
+{
+  "corpus": [
+    {
+      "id": "doc_ui_1",
+      "category": "UI",
+      "text": "Responsive layouts in Flutter can be built using LayoutBuilder, MediaQuery, or custom adaptive widgets to support mobile and desktop screens."
+    },
+    {
+      "id": "doc_ui_2",
+      "category": "UI",
+      "text": "Flutter's rendering pipeline uses Widgets, Elements, and RenderObjects to draw the user interface on the screen."
+    },
+    {
+      "id": "doc_ui_3",
+      "category": "UI",
+      "text": "State management libraries like Provider, Riverpod, or BLoC help separate UI presentation from business logic."
+    },
+    {
+      "id": "doc_arch_1",
+      "category": "architecture",
+      "text": "The local-first database architecture uses Isar for fast cross-platform persistent storage and relational graph queries."
+    },
+    {
+      "id": "doc_arch_2",
+      "category": "architecture",
+      "text": "The synchronization protocol implements client-side encryption and Last-Write-Wins (LWW) conflict resolution over WebSockets."
+    },
+    {
+      "id": "doc_arch_3",
+      "category": "architecture",
+      "text": "We combine Isar text search with ObjectBox vector search (HNSW) using a weighted scoring hybrid search formula."
+    },
+    {
+      "id": "doc_code_1",
+      "category": "code",
+      "text": "To calculate cosine similarity in Dart, compute the dot product of two vectors and divide by the product of their magnitudes."
+    },
+    {
+      "id": "doc_code_2",
+      "category": "code",
+      "text": "WordPieceTokenizer divides text into subwords, adding CLS and SEP tokens, using a pre-defined vocabulary mapping."
+    },
+    {
+      "id": "doc_code_3",
+      "category": "code",
+      "text": "Implement the EmbeddingsAdapter interface to plug in custom models like Gemini, OpenAI, or local ONNX runtimes."
+    },
+    {
+      "id": "doc_temp_1",
+      "category": "temporal",
+      "text": "The forgetting mechanism applies exponential decay to memory nodes based on access frequency and last accessed timestamp."
+    },
+    {
+      "id": "doc_temp_2",
+      "category": "temporal",
+      "text": "Temporal queries retrieve nodes that were updated or accessed within a specific time window, sorting by timestamp."
+    },
+    {
+      "id": "doc_temp_3",
+      "category": "temporal",
+      "text": "Memory consolidation merges recent interaction logs into long-term structured memory nodes overnight."
+    }
+  ],
+  "queries": [
+    {
+      "id": "q_ui_1",
+      "query": "How do I build responsive screens for mobile and desktop?",
+      "category": "UI",
+      "expected_doc_ids": ["doc_ui_1"]
+    },
+    {
+      "id": "q_ui_2",
+      "query": "What are widgets, elements, and render objects in Flutter?",
+      "category": "UI",
+      "expected_doc_ids": ["doc_ui_2"]
+    },
+    {
+      "id": "q_ui_3",
+      "query": "What is the best way to manage state in UI?",
+      "category": "UI",
+      "expected_doc_ids": ["doc_ui_3"]
+    },
+    {
+      "id": "q_arch_1",
+      "query": "Why does the architecture use Isar database?",
+      "category": "architecture",
+      "expected_doc_ids": ["doc_arch_1"]
+    },
+    {
+      "id": "q_arch_2",
+      "query": "How is synchronization conflict resolved in the protocol?",
+      "category": "architecture",
+      "expected_doc_ids": ["doc_arch_2"]
+    },
+    {
+      "id": "q_arch_3",
+      "query": "How does hybrid search combine vector and text search?",
+      "category": "architecture",
+      "expected_doc_ids": ["doc_arch_3"]
+    },
+    {
+      "id": "q_code_1",
+      "query": "Write code to compute cosine similarity of two vectors.",
+      "category": "code",
+      "expected_doc_ids": ["doc_code_1"]
+    },
+    {
+      "id": "q_code_2",
+      "query": "How does WordPiece tokenization split text into subwords?",
+      "category": "code",
+      "expected_doc_ids": ["doc_code_2"]
+    },
+    {
+      "id": "q_code_3",
+      "query": "How do I create a custom embedding adapter in Dart?",
+      "category": "code",
+      "expected_doc_ids": ["doc_code_3"]
+    },
+    {
+      "id": "q_temp_1",
+      "query": "How are memories decayed and forgotten over time?",
+      "category": "temporal",
+      "expected_doc_ids": ["doc_temp_1"]
+    },
+    {
+      "id": "q_temp_2",
+      "query": "Retrieve recent nodes within a specific timeframe.",
+      "category": "temporal",
+      "expected_doc_ids": ["doc_temp_2"]
+    },
+    {
+      "id": "q_temp_3",
+      "query": "How do short-term logs turn into long-term structured memory?",
+      "category": "temporal",
+      "expected_doc_ids": ["doc_temp_3"]
+    }
+  ]
+}
