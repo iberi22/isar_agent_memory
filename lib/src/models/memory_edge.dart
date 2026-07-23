@@ -38,7 +38,7 @@ class MemoryEdge {
   /// Globally unique identifier for synchronization.
   /// Indexed for fast lookups during sync.
   @Index(unique: true, replace: true)
-  late String uuid;
+  String? uuid;
 
   /// The ID of the source node (the origin of the relationship).
   late int fromNodeId;
