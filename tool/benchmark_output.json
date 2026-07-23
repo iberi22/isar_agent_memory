@@ -1,523 +1,169 @@
 {
-  "timestamp": "2026-07-23T03:55:43.114196Z",
-  "metadata": {
-    "os": "linux",
-    "cores": 4,
-    "model": "all-MiniLM-L6-v2 (INT8)",
-    "provider": "ONNX Runtime",
-    "embedding_dimension": 384
+  "benchmark": {
+    "date": "2026-07-23T04:32:29.155068Z",
+    "backend": "mock",
+    "total_queries": 12
   },
-  "performance": {
-    "total_inferences": 120,
-    "latency_avg_ms": 7.681066666666666,
-    "latency_min_ms": 4.5,
-    "latency_p50_ms": 6.422,
-    "latency_p90_ms": 11.581,
-    "latency_p95_ms": 15.218,
-    "latency_p99_ms": 18.591,
-    "latency_max_ms": 44.561,
-    "inferences_per_second": 130.19025135397862
-  },
-  "retrieval_quality": {
-    "aggregate": {
-      "precision_at_1": 1.0,
-      "recall_at_1": 1.0,
-      "precision_at_3": 0.3333333333333333,
-      "recall_at_3": 1.0,
-      "precision_at_5": 0.19999999999999998,
-      "recall_at_5": 1.0
-    },
-    "by_category": {
-      "UI": {
-        "precision_at_1": 1.0,
-        "recall_at_1": 1.0,
-        "precision_at_3": 0.3333333333333333,
-        "recall_at_3": 1.0,
-        "precision_at_5": 0.20000000000000004,
-        "recall_at_5": 1.0
-      },
-      "architecture": {
-        "precision_at_1": 1.0,
-        "recall_at_1": 1.0,
-        "precision_at_3": 0.3333333333333333,
-        "recall_at_3": 1.0,
-        "precision_at_5": 0.20000000000000004,
-        "recall_at_5": 1.0
-      },
-      "code": {
-        "precision_at_1": 1.0,
-        "recall_at_1": 1.0,
-        "precision_at_3": 0.3333333333333333,
-        "recall_at_3": 1.0,
-        "precision_at_5": 0.20000000000000004,
-        "recall_at_5": 1.0
-      },
-      "temporal": {
-        "precision_at_1": 1.0,
-        "recall_at_1": 1.0,
-        "precision_at_3": 0.3333333333333333,
-        "recall_at_3": 1.0,
-        "precision_at_5": 0.20000000000000004,
-        "recall_at_5": 1.0
-      }
-    },
-    "queries": [
+  "quality": {
+    "avg_recall@k": 0.4375,
+    "avg_precision@k": 0.4375,
+    "per_query": [
       {
-        "query_id": "q_ui_1",
-        "query_text": "How do I build responsive screens for mobile and desktop?",
-        "category": "UI",
-        "expected_doc_ids": [
-          "doc_ui_1"
+        "query": "user prefers dark mode",
+        "category": "ui",
+        "expected_terms": [
+          "dark mode",
+          "ui preferences",
+          "theme"
         ],
-        "retrieved_docs": [
-          {
-            "id": "doc_ui_1",
-            "score": 0.6104580951544417
-          },
-          {
-            "id": "doc_ui_2",
-            "score": 0.24179615948115432
-          },
-          {
-            "id": "doc_ui_3",
-            "score": 0.16678734823199337
-          },
-          {
-            "id": "doc_arch_2",
-            "score": 0.09556125900957395
-          },
-          {
-            "id": "doc_code_3",
-            "score": 0.09533836466349077
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
+        "recall@k": 0.3333333333333333,
+        "precision@k": 0.3333333333333333,
+        "latency_us": 1109
       },
       {
-        "query_id": "q_ui_2",
-        "query_text": "What are widgets, elements, and render objects in Flutter?",
-        "category": "UI",
-        "expected_doc_ids": [
-          "doc_ui_2"
+        "query": "work schedule 9 to 5",
+        "category": "preferences",
+        "expected_terms": [
+          "work schedule",
+          "9 AM",
+          "5 PM"
         ],
-        "retrieved_docs": [
-          {
-            "id": "doc_ui_2",
-            "score": 0.8144872893367237
-          },
-          {
-            "id": "doc_ui_1",
-            "score": 0.545467552848388
-          },
-          {
-            "id": "doc_code_2",
-            "score": 0.433871171763426
-          },
-          {
-            "id": "doc_ui_3",
-            "score": 0.42666881673937707
-          },
-          {
-            "id": "doc_code_1",
-            "score": 0.33087834656705
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
+        "recall@k": 0.3333333333333333,
+        "precision@k": 0.3333333333333333,
+        "latency_us": 31
       },
       {
-        "query_id": "q_ui_3",
-        "query_text": "What is the best way to manage state in UI?",
-        "category": "UI",
-        "expected_doc_ids": [
-          "doc_ui_3"
-        ],
-        "retrieved_docs": [
-          {
-            "id": "doc_ui_3",
-            "score": 0.507248004455245
-          },
-          {
-            "id": "doc_ui_2",
-            "score": 0.29731216863381
-          },
-          {
-            "id": "doc_code_3",
-            "score": 0.2782215732964189
-          },
-          {
-            "id": "doc_temp_3",
-            "score": 0.23166914622438656
-          },
-          {
-            "id": "doc_temp_2",
-            "score": 0.2182916097771686
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
-      },
-      {
-        "query_id": "q_arch_1",
-        "query_text": "Why does the architecture use Isar database?",
+        "query": "project architecture decision",
         "category": "architecture",
-        "expected_doc_ids": [
-          "doc_arch_1"
+        "expected_terms": [
+          "architecture",
+          "decision",
+          "design"
         ],
-        "retrieved_docs": [
-          {
-            "id": "doc_arch_1",
-            "score": 0.6385609819346237
-          },
-          {
-            "id": "doc_arch_3",
-            "score": 0.30024967798317104
-          },
-          {
-            "id": "doc_ui_3",
-            "score": 0.26738343744235366
-          },
-          {
-            "id": "doc_code_3",
-            "score": 0.26287956611215657
-          },
-          {
-            "id": "doc_temp_3",
-            "score": 0.2578365055050151
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
+        "recall@k": 0.6666666666666666,
+        "precision@k": 0.6666666666666666,
+        "latency_us": 26
       },
       {
-        "query_id": "q_arch_2",
-        "query_text": "How is synchronization conflict resolved in the protocol?",
-        "category": "architecture",
-        "expected_doc_ids": [
-          "doc_arch_2"
+        "query": "database migration plan",
+        "category": "technical",
+        "expected_terms": [
+          "migration",
+          "database",
+          "schema"
         ],
-        "retrieved_docs": [
-          {
-            "id": "doc_arch_2",
-            "score": 0.6835828045429138
-          },
-          {
-            "id": "doc_temp_1",
-            "score": 0.3776380204193934
-          },
-          {
-            "id": "doc_temp_3",
-            "score": 0.31831224547524695
-          },
-          {
-            "id": "doc_temp_2",
-            "score": 0.28318194673579333
-          },
-          {
-            "id": "doc_arch_1",
-            "score": 0.266785426089873
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
+        "recall@k": 0.6666666666666666,
+        "precision@k": 0.6666666666666666,
+        "latency_us": 24
       },
       {
-        "query_id": "q_arch_3",
-        "query_text": "How does hybrid search combine vector and text search?",
-        "category": "architecture",
-        "expected_doc_ids": [
-          "doc_arch_3"
-        ],
-        "retrieved_docs": [
-          {
-            "id": "doc_arch_3",
-            "score": 0.6216492930141925
-          },
-          {
-            "id": "doc_code_2",
-            "score": 0.34814778528380186
-          },
-          {
-            "id": "doc_code_1",
-            "score": 0.3042677164221131
-          },
-          {
-            "id": "doc_arch_1",
-            "score": 0.27747501077624337
-          },
-          {
-            "id": "doc_temp_2",
-            "score": 0.21041808679728727
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
-      },
-      {
-        "query_id": "q_code_1",
-        "query_text": "Write code to compute cosine similarity of two vectors.",
-        "category": "code",
-        "expected_doc_ids": [
-          "doc_code_1"
-        ],
-        "retrieved_docs": [
-          {
-            "id": "doc_code_1",
-            "score": 0.7638610532872808
-          },
-          {
-            "id": "doc_arch_3",
-            "score": 0.2531678425615238
-          },
-          {
-            "id": "doc_code_2",
-            "score": 0.15109845576015232
-          },
-          {
-            "id": "doc_arch_2",
-            "score": 0.08044430598879594
-          },
-          {
-            "id": "doc_arch_1",
-            "score": 0.07909909768804774
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
-      },
-      {
-        "query_id": "q_code_2",
-        "query_text": "How does WordPiece tokenization split text into subwords?",
-        "category": "code",
-        "expected_doc_ids": [
-          "doc_code_2"
-        ],
-        "retrieved_docs": [
-          {
-            "id": "doc_code_2",
-            "score": 0.7300688315242577
-          },
-          {
-            "id": "doc_arch_3",
-            "score": 0.2513329404337117
-          },
-          {
-            "id": "doc_ui_3",
-            "score": 0.2496140298804379
-          },
-          {
-            "id": "doc_temp_3",
-            "score": 0.21891942505799325
-          },
-          {
-            "id": "doc_code_3",
-            "score": 0.20954513353905477
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
-      },
-      {
-        "query_id": "q_code_3",
-        "query_text": "How do I create a custom embedding adapter in Dart?",
-        "category": "code",
-        "expected_doc_ids": [
-          "doc_code_3"
-        ],
-        "retrieved_docs": [
-          {
-            "id": "doc_code_3",
-            "score": 0.47357224371187406
-          },
-          {
-            "id": "doc_ui_2",
-            "score": 0.4344156717956889
-          },
-          {
-            "id": "doc_ui_1",
-            "score": 0.38680841486613055
-          },
-          {
-            "id": "doc_code_1",
-            "score": 0.2671187613230044
-          },
-          {
-            "id": "doc_code_2",
-            "score": 0.15934241535489468
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
-      },
-      {
-        "query_id": "q_temp_1",
-        "query_text": "How are memories decayed and forgotten over time?",
+        "query": "what happened yesterday",
         "category": "temporal",
-        "expected_doc_ids": [
-          "doc_temp_1"
+        "expected_terms": [
+          "yesterday",
+          "server",
+          "incident"
         ],
-        "retrieved_docs": [
-          {
-            "id": "doc_temp_1",
-            "score": 0.6569751712440675
-          },
-          {
-            "id": "doc_temp_3",
-            "score": 0.539804793692904
-          },
-          {
-            "id": "doc_temp_2",
-            "score": 0.3553440151171387
-          },
-          {
-            "id": "doc_arch_1",
-            "score": 0.2874904855619939
-          },
-          {
-            "id": "doc_code_2",
-            "score": 0.2354068770151556
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
+        "recall@k": 0.3333333333333333,
+        "precision@k": 0.3333333333333333,
+        "latency_us": 24
       },
       {
-        "query_id": "q_temp_2",
-        "query_text": "Retrieve recent nodes within a specific timeframe.",
-        "category": "temporal",
-        "expected_doc_ids": [
-          "doc_temp_2"
+        "query": "API authentication method",
+        "category": "technical",
+        "expected_terms": [
+          "auth",
+          "token",
+          "JWT",
+          "OAuth"
         ],
-        "retrieved_docs": [
-          {
-            "id": "doc_temp_2",
-            "score": 0.722801386294457
-          },
-          {
-            "id": "doc_temp_1",
-            "score": 0.35605847035782007
-          },
-          {
-            "id": "doc_temp_3",
-            "score": 0.32006593350142665
-          },
-          {
-            "id": "doc_arch_1",
-            "score": 0.251683063543576
-          },
-          {
-            "id": "doc_arch_3",
-            "score": 0.16413395164098468
-          }
-        ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
+        "recall@k": 0.25,
+        "precision@k": 0.25,
+        "latency_us": 26
       },
       {
-        "query_id": "q_temp_3",
-        "query_text": "How do short-term logs turn into long-term structured memory?",
-        "category": "temporal",
-        "expected_doc_ids": [
-          "doc_temp_3"
+        "query": "team meeting notes",
+        "category": "meeting",
+        "expected_terms": [
+          "meeting",
+          "team",
+          "decided"
         ],
-        "retrieved_docs": [
-          {
-            "id": "doc_temp_3",
-            "score": 0.6646495042941967
-          },
-          {
-            "id": "doc_temp_1",
-            "score": 0.47582482164624496
-          },
-          {
-            "id": "doc_code_2",
-            "score": 0.39539857556322294
-          },
-          {
-            "id": "doc_arch_1",
-            "score": 0.39030065687652166
-          },
-          {
-            "id": "doc_code_3",
-            "score": 0.29806744555221076
-          }
+        "recall@k": 0.6666666666666666,
+        "precision@k": 0.6666666666666666,
+        "latency_us": 23
+      },
+      {
+        "query": "code review feedback",
+        "category": "code",
+        "expected_terms": [
+          "review",
+          "feedback",
+          "PR",
+          "merge"
         ],
-        "metrics": {
-          "precision_at_1": 1.0,
-          "recall_at_1": 1.0,
-          "precision_at_3": 0.3333333333333333,
-          "recall_at_3": 1.0,
-          "precision_at_5": 0.2,
-          "recall_at_5": 1.0
-        }
+        "recall@k": 0.5,
+        "precision@k": 0.5,
+        "latency_us": 25
+      },
+      {
+        "query": "deployment configuration",
+        "category": "devops",
+        "expected_terms": [
+          "deploy",
+          "config",
+          "environment"
+        ],
+        "recall@k": 0.6666666666666666,
+        "precision@k": 0.6666666666666666,
+        "latency_us": 106
+      },
+      {
+        "query": "error handling strategy",
+        "category": "technical",
+        "expected_terms": [
+          "error",
+          "exception",
+          "fallback",
+          "retry"
+        ],
+        "recall@k": 0.25,
+        "precision@k": 0.25,
+        "latency_us": 27
+      },
+      {
+        "query": "user interface components",
+        "category": "ui",
+        "expected_terms": [
+          "component",
+          "widget",
+          "layout"
+        ],
+        "recall@k": 0.3333333333333333,
+        "precision@k": 0.3333333333333333,
+        "latency_us": 25
+      },
+      {
+        "query": "testing best practices",
+        "category": "code",
+        "expected_terms": [
+          "test",
+          "unit",
+          "integration",
+          "coverage"
+        ],
+        "recall@k": 0.25,
+        "precision@k": 0.25,
+        "latency_us": 24
       }
     ]
+  },
+  "latency": {
+    "avg_ms": "0.12",
+    "p50_ms": "0.03",
+    "p90_ms": "0.11",
+    "p95_ms": "1.11",
+    "p99_ms": "1.11",
+    "samples": 12
   }
 }
