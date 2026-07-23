@@ -23,7 +23,7 @@
   {"id": "ci-cd", "name": "CI/CD pipeline", "progress_pct": 0, "priority": "P1"},
   {"id": "tests-core", "name": "Core tests", "progress_pct": 70, "priority": "P0"},
   {"id": "tests-pipeline", "name": "Pipeline/router/session tests", "progress_pct": 0, "priority": "P1"},
-  {"id": "tests-cross-encoder", "name": "Cross-encoder HTTP tests", "progress_pct": 0, "priority": "P2"},
+  {"id": "tests-cross-encoder", "name": "Cross-encoder HTTP tests", "progress_pct": 100, "priority": "P2"},
   {"id": "tests-multi-modal", "name": "Multi-modal HTTP tests", "progress_pct": 0, "priority": "P2"},
   {"id": "tests-on-device", "name": "On-device backend tests", "progress_pct": 0, "priority": "P2"},
   {"id": "benchmarks", "name": "Embedding quality benchmarks", "progress_pct": 0, "priority": "P2"},
