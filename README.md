@@ -4,34 +4,34 @@
 [![Isar](https://img.shields.io/badge/db-isar-blue?logo=databricks)](https://isar.dev)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-> **Motor de memoria agéntico para Dart/Flutter.** Graph-based, local-first, LLM-agnostic. Inspirado en Cognee y Graphiti.
+> **Agentic memory engine for Dart/Flutter.** Graph-based, local-first, LLM-agnostic. Inspired by Cognee and Graphiti.
 
 ---
 
-## ¿Qué es?
+## What is it?
 
-`isar_agent_memory` es el **core de memoria para apps agentics** en Dart/Flutter. Proporciona almacenamiento persistente, búsqueda semántica, RAG con pipeline extensible, y aislamiento multi-tenant — todo offline-first, sin depender de un servidor.
+`isar_agent_memory` is the **core memory engine for agentic apps** in Dart/Flutter. Persistent storage, semantic search, extensible RAG pipeline, and multi-tenant isolation — all offline-first, no server required.
 
-Usado por: **Pocket Cerebro** (nodo móvil SWAL), **OrionHealth** (asistente clínico).
+Used by: **Pocket Cerebro** (SWAL mobile node), **OrionHealth** (clinical assistant).
 
 ---
 
 ## Features
 
-| Capa | Features |
-|------|----------|
-| **Memoria** | Graph CRUD (MemoryGraph), embeddings adaptables, búsqueda semántica/híbrida/multi-hop |
-| **RAG** | Pipeline de 5 hooks (Expansion/Retrieval/ReRank/Enrich/Evaluate), QueryRouter (7 estrategias), re-ranking (BM25, MMR, Diversity, Recency, CrossEncoder) |
-| **Multi-tenant** | SessionContext para aislamiento por sesión/usuario |
-| **Memoria cognitiva** | Tipos episódico/semántico/procedural/working, consolidación, olvido automático |
-| **On-device** | Backends Hash, TFLite, ONNX, Resilient + adaptador universal |
-| **Sync** | Firebase/WebSocket cifrado (AES-256-GCM, LWW) + Pipeline legacy |
-| **Privacidad** | PII masking, differential privacy, k-anonymity |
-| **Multi-modal** | Embeddings remotos vía HTTP, delegación híbrida |
+| Layer | Features |
+|-------|----------|
+| **Memory** | Graph CRUD (MemoryGraph), pluggable embeddings, semantic/hybrid/multi-hop search |
+| **RAG** | 5-hook pipeline (Expansion/Retrieval/ReRank/Enrich/Evaluate), QueryRouter (7 strategies), re-ranking (BM25, MMR, Diversity, Recency, CrossEncoder) |
+| **Multi-tenant** | SessionContext for session/user isolation |
+| **Cognitive memory** | Episodic/semantic/procedural/working types, consolidation, automatic forgetting |
+| **On-device** | Hash, TFLite, ONNX, Resilient backends + universal adapter |
+| **Sync** | Firebase/WebSocket encrypted (AES-256-GCM, LWW) + legacy pipeline |
+| **Privacy** | PII masking, differential privacy, k-anonymity |
+| **Multi-modal** | Remote embeddings via HTTP, hybrid delegation |
 
 ---
 
-## Empezar
+## Quickstart
 
 ```yaml
 dependencies:
@@ -47,21 +47,21 @@ final adapter = GeminiEmbeddingsAdapter(apiKey: 'YOUR_API_KEY');
 final isar = await Isar.open([], directory: './db');
 final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
 
-// Guardar
+// Store
 final id = await graph.storeNodeWithEmbedding(
-  content: 'El usuario prefiere modo oscuro',
+  content: 'User prefers dark mode',
 );
 
-// Buscar
+// Search
 final results = await graph.semanticSearch(
-  await adapter.embed('preferencias de UI'),
+  await adapter.embed('UI preferences'),
   topK: 3,
 );
 ```
 
 ---
 
-## Pipeline RAG
+## RAG Pipeline
 
 ```dart
 final pipeline = MemoryPipeline()
@@ -69,20 +69,20 @@ final pipeline = MemoryPipeline()
   ..addRetrievalHook(HybridRetrievalHook(graph: graph))
   ..addEnrichmentHook(MultiHopEnrichmentHook(graph: graph));
 
-final result = await pipeline.run('¿qué decidimos sobre la DB migration?');
+final result = await pipeline.run('what did we decide about the DB migration?');
 ```
 
 ---
 
-## Sesiones multi-tenant
+## Multi-tenant Sessions
 
 ```dart
 final session = SessionContext(
   graph: memoryGraph,
   sessionId: 'user-123',
 );
-await session.store('contexto de esta sesión');
-final memories = await session.hybridSearch('tema relevante');
+await session.store('context for this session');
+final memories = await session.hybridSearch('relevant topic');
 ```
 
 ---
@@ -91,14 +91,14 @@ final memories = await session.hybridSearch('tema relevante');
 
 ```dart
 final router = QueryRouter(graph: graph, embeddings: adapter);
-final plan = router.classify('¿qué pasó ayer con el servidor?');
+final plan = router.classify('what happened yesterday with the server?');
 // plan.strategy → QueryStrategy.temporal
 final results = await router.execute(plan);
 ```
 
 ---
 
-## Sync cifrado
+## Encrypted Sync
 
 ```dart
 final syncManager = SyncManager(graph);
@@ -109,7 +109,7 @@ await syncManager.importEncryptedSnapshot(snapshot);
 
 ---
 
-## On-device + Telemetría
+## On-device + Telemetry
 
 ```dart
 final backend = HashEmbeddingBackend(dimension: 256);
@@ -128,30 +128,33 @@ final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
 ```bash
 flutter pub get
 dart analyze lib/
-dart test
+flutter test
 ```
 
-Nota: algunos tests requieren Isar codegen (`build_runner`). Los tests puros Dart (smoke, encryption, tokenizer, sync_manager) funcionan sin codegen.
+Pure-Dart tests (smoke, encryption, tokenizer, sync_manager) pass without build_runner. Tests requiring Isar codegen need `dart run build_runner build`.
 
 ---
 
 ## Roadmap
 
-- [x] Graph CRUD + embeddings + búsqueda vectorial
-- [x] HiRAG (capas jerárquicas, multi-hop)
+- [x] Graph CRUD + embeddings + vector search
+- [x] HiRAG (hierarchical layers, multi-hop)
 - [x] Re-ranking (BM25, MMR, Diversity, Recency, CrossEncoder)
-- [x] Pipeline RAG de 5 hooks + QueryRouter
+- [x] 5-hook RAG pipeline + QueryRouter
 - [x] SessionContext multi-tenant
-- [x] Sync cifrado (Firebase/WebSocket)
-- [x] Memoria cognitiva (episodic/semantic/procedural/working)
+- [x] Encrypted sync (Firebase/WebSocket)
+- [x] Cognitive memory (episodic/semantic/procedural/working)
 - [x] On-device backends (Hash, TFLite, ONNX, Resilient)
-- [x] Telemetría de embeddings
-- [ ] Cross-encoder local (ONNX)
-- [ ] Sync P2P vía edge-mesh
-- [ ] Publicación v0.6.0 en pub.dev
+- [x] Embedding telemetry
+- [x] Multi-modal remote embeddings
+- [x] Privacy features (PII, differential privacy)
+- [ ] Local cross-encoder (ONNX)
+- [ ] P2P sync via edge-mesh
+- [ ] Xavier integration (sync protocol)
+- [ ] v0.6.0 release on pub.dev
 
 ---
 
-## Licencia
+## License
 
 MIT

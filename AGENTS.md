@@ -1,22 +1,22 @@
 # AGENTS.md — isar_agent_memory
 
 **Repo:** https://github.com/iberi22/isar_agent_memory
-**Lenguaje:** Dart | **SDK:** >=3.2.0 <4.0.0
-**Versión:** 0.6.0-dev
+**Language:** Dart | **SDK:** >=3.2.0 <4.0.0
+**Version:** 0.6.0-dev
 
 ## Stack
 
-- **DB:** Isar 3.1 (persistencia) + ObjectBox 5.0 (vectores HNSW)
+- **DB:** Isar 3.1 (persistence) + ObjectBox 5.0 (HNSW vector index)
 - **Embeddings:** Gemini, ONNX, TFLite, Hash, Resilient
 - **Sync:** Firebase Realtime, WebSocket, E2E encryption (AES-256-GCM)
 - **LLM:** LangChain 0.8, google_generative_ai
 
-## Comandos
+## Commands
 
 ```bash
 flutter pub get
-dart analyze lib/         # 0 errores reales (Isar codegen esperado)
-dart test                 # tests puros Dart pasan sin codegen
+dart analyze lib/         # 0 real errors (Isar codegen expected)
+flutter test              # pure-Dart tests pass without codegen
 ```
 
 ## Layout
@@ -25,13 +25,13 @@ dart test                 # tests puros Dart pasan sin codegen
 lib/
 ├── isar_agent_memory.dart    # Barrel (51 exports)
 ├── src/
-│   ├── memory_graph.dart     # Core CRUD + búsqueda
+│   ├── memory_graph.dart     # Core CRUD + search
 │   ├── pipeline_hooks.dart   # RAG pipeline (5 hooks)
-│   ├── query_router.dart     # Router agéntico (7 estrategias)
-│   ├── session_context.dart  # Aislamiento multi-tenant
+│   ├── query_router.dart     # Agentic router (7 strategies)
+│   ├── session_context.dart  # Multi-tenant isolation
 │   ├── embeddings_adapter.dart / gemini / on_device / fallback
 │   ├── hierarchical_graph.dart / dynamic_layers.dart   # HiRAG
-│   ├── reranking_strategy.dart + rerankers/ (5 estrategias)
+│   ├── reranking_strategy.dart + rerankers/ (5 strategies)
 │   ├── agent_memory_types.dart / consolidation / forgetting / quality
 │   ├── multi_modal_adapter.dart / privacy_features.dart
 │   ├── sync/ (manager, firebase, websocket, encryption)
@@ -40,12 +40,12 @@ lib/
 │   ├── embedding_telemetry.dart / telemetry_collector.dart
 │   ├── memory_maintenance.dart
 │   └── models/ (memory_node, edge, embedding, degree)
-└── test/ (14 archivos, 4 requieren Flutter)
+└── test/ (14 files, 4 require Flutter)
 ```
 
-## Reglas
+## Rules
 
-- NO mezclar lógica de negocio (médico, blockchain, etc.) en el package
-- El barrel (`isar_agent_memory.dart`) es la API pública — NO importar `src/` directamente
-- Preferir `FutureOr` para interfaces que pueden ser sync o async
-- Tests puros Dart deben pasar sin `build_runner`
+- DO NOT mix business logic (medical, blockchain, etc.) into this package
+- The barrel (`isar_agent_memory.dart`) is the public API — do NOT import `src/` directly
+- Use `FutureOr` for interfaces that may be sync or async
+- Pure-Dart tests must pass without `build_runner`
