@@ -19,7 +19,7 @@ class ForgettingMechanism {
     double score = 0.0;
 
     // Factor 1: Recency (newer memories are more important)
-    final age = DateTime.now().difference(node.createdAt);
+    final age = DateTime.now().difference(node.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0));
     final recencyScore = math.exp(-age.inDays / 30.0); // Decay over ~30 days
     score += recencyScore * 0.3;
 
@@ -141,7 +141,7 @@ class ForgettingMechanism {
     for (final node in nodes) {
       if (node.metadata?['protected'] == true) continue;
 
-      final age = DateTime.now().difference(node.createdAt);
+      final age = DateTime.now().difference(node.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0));
       final accessCount = node.metadata?['access_count'] ?? 0;
 
       // Skip recently accessed memories
