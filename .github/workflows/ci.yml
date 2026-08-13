@@ -19,6 +19,9 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Clean pub cache (fix corrupt/partial downloads)
+        run: rm -rf "$HOME/.pub-cache"
+
       - name: Install dependencies
         run: flutter pub get
 
