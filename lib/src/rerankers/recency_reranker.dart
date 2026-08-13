@@ -10,8 +10,8 @@ class RecencyReRanker implements ReRankingStrategy {
     String? query,
   }) {
     results.sort((a, b) {
-      final dateA = a.node.updatedAt ?? a.node.createdAt;
-      final dateB = b.node.updatedAt ?? b.node.createdAt;
+      final dateA = a.node.updatedAt ?? a.node.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final dateB = b.node.updatedAt ?? b.node.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
       return dateB.compareTo(dateA);
     });
     return results;

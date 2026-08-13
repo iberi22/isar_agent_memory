@@ -277,7 +277,7 @@ class QueryRouter {
     if (since != null) {
       final cutoff = since;
       results = results.where((r) {
-        return r.node.createdAt.isAfter(cutoff);
+        return (r.node.createdAt?.isAfter(cutoff) ?? false);
       }).toList();
     }
 
