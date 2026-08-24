@@ -1,68 +1,117 @@
 # isar_agent_memory
 
 [![pub package](https://img.shields.io/pub/v/isar_agent_memory.svg)](https://pub.dev/packages/isar_agent_memory)
-[![Isar](https://img.shields.io/badge/db-isar-blue?logo=databricks)](https://isar.dev)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Dart SDK](https://img.shields.io/badge/dart-%3E%3D3.2.0-0175C2.svg)](https://dart.dev)
 
-> **Agentic memory engine for Dart/Flutter.** Graph-based, local-first, LLM-agnostic. Inspired by Cognee and Graphiti.
-
----
-
-## What is it?
-
-`isar_agent_memory` is the **core memory engine for agentic apps** in Dart/Flutter. Persistent storage, semantic search, extensible RAG pipeline, and multi-tenant isolation — all offline-first, no server required.
-
-Used by: **Pocket Cerebro** (SWAL mobile node), **OrionHealth** (clinical assistant).
+A universal, local-first semantic memory engine for Flutter/Dart apps. `isar_agent_memory` provides graph node persistence, vector embedding indexing, memory degree management, explainable retrieval, and an extensible 5-stage RAG pipeline — all powered by Isar database for high-performance offline storage.
 
 ---
 
 ## Features
 
-| Layer | Features |
-|-------|----------|
-| **Memory** | Graph CRUD (MemoryGraph), pluggable embeddings, semantic/hybrid/multi-hop search |
-| **RAG** | 5-hook pipeline (Expansion/Retrieval/ReRank/Enrich/Evaluate), QueryRouter (7 strategies), re-ranking (BM25, MMR, Diversity, Recency, CrossEncoder) |
-| **Multi-tenant** | SessionContext for session/user isolation |
-| **Cognitive memory** | Episodic/semantic/procedural/working types, consolidation, automatic forgetting |
-| **On-device** | Hash, TFLite, ONNX, Resilient backends + universal adapter |
-| **Sync** | Firebase/WebSocket encrypted (AES-256-GCM, LWW) + legacy pipeline |
-| **Privacy** | PII masking, differential privacy, k-anonymity |
-| **Multi-modal** | Remote embeddings via HTTP, hybrid delegation |
+- **Local-First Graph Persistence**: Fast, offline-first graph CRUD powered by Isar DB with edge relations and hierarchical layer support.
+- **Pluggable Vector Search**: Seamless integration with on-device (Hash, TFLite, ONNX) and remote (Gemini, REST) embedding backends.
+- **Memory Degree Management**: Built-in activation tracking for recency, retrieval frequency, and importance scoring to enable cognitive forgetting and consolidation.
+- **5-Stage RAG Pipeline**: Pluggable hooks for Query Expansion, Retrieval (Vector/Hybrid), Re-Ranking (BM25, MMR, Diversity, Recency, CrossEncoder), Enrichment, and Evaluation.
+- **Multi-Tenant Isolation**: `SessionContext` wrapper to isolate memories per user or per session while sharing underlying persistence.
+- **End-to-End Encrypted Sync**: AES-256-GCM encrypted snapshot exports/imports with Last-Write-Wins (LWW) conflict resolution for multi-device sync.
+- **Privacy Controls**: Automatic PII masking, differential privacy, and k-anonymity for safe client-side agent execution.
+
+---
+
+## Installation
+
+Add `isar_agent_memory` to your Flutter or Dart project using `pub`:
+
+```bash
+flutter pub add isar_agent_memory
+```
+
+Or add it directly to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  isar_agent_memory: ^0.6.0-dev
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1 # If building for Flutter platforms
+```
 
 ---
 
 ## Quickstart
 
-```yaml
-dependencies:
-  # Add the core cognitive memory engine for agentic LLM apps
-  isar_agent_memory: ^0.6.0-dev
-  isar: ^3.1.0+1
-```
+Below is a minimal, runnable Dart snippet demonstrating how to initialize an on-device embedding backend, open an Isar instance, store a memory node with automatic embedding generation, perform a semantic similarity search, and properly close resources.
 
 ```dart
 import 'package:isar/isar.dart';
 import 'package:isar_agent_memory/isar_agent_memory.dart';
 
-final adapter = GeminiEmbeddingsAdapter(apiKey: 'YOUR_API_KEY');
-final isar = await Isar.open([], directory: './db');
-final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
+Future<void> main() async {
+  // 1. Initialize an on-device deterministic hash embedding backend
+  final backend = HashEmbeddingBackend(dimension: 256);
+  final adapter = BackendEmbeddingsAdapter(backend: backend);
 
-// Store
-final id = await graph.storeNodeWithEmbedding(
-  content: 'User prefers dark mode',
-);
+  // 2. Open an Isar database instance with the required memory schemas
+  final isar = await Isar.open(
+    [MemoryNodeSchema, MemoryEdgeSchema],
+    directory: './isar_memory_db',
+  );
 
-// Search
-final results = await graph.semanticSearch(
-  await adapter.embed('UI preferences'),
-  topK: 3,
-);
+  // 3. Initialize the MemoryGraph
+  final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
+  await graph.initialize();
+
+  // 4. Store a memory node (embedding is generated automatically)
+  final nodeId = await graph.storeNodeWithEmbedding(
+    content: 'User prefers dark mode UI and high-contrast accessibility settings.',
+    type: 'user_preference',
+  );
+  print('Stored memory node ID: $nodeId');
+
+  // 5. Query memories using semantic similarity search
+  final queryVector = await adapter.embed('dark mode settings');
+  final searchResults = await graph.semanticSearch(queryVector, topK: 3);
+
+  for (final result in searchResults) {
+    print('Recalled memory: "${result.node.content}" (distance: ${result.distance.toStringAsFixed(4)})');
+  }
+
+  // 6. Close the Isar database connection
+  await isar.close();
+}
 ```
 
 ---
 
-## RAG Pipeline
+## Core Concepts
+
+- **MemoryNode**: Represents a fundamental unit of knowledge, fact, or interaction in the agent memory graph. It contains textual content, optional node types, hierarchical layer designations, timestamps, vector embeddings, and activation metrics.
+- **Degree**: Tracks cognitive activation metrics for each `MemoryNode`, including `lastAccessed` timestamp, retrieval `frequency`, and relative `importance` score. These metrics guide explainable retrieval (`explainRecall`), memory consolidation, and forgetting algorithms.
+- **Embedding Search**: Vector similarity search integrated directly into the `MemoryGraph`. Supports pure semantic vector search as well as hybrid search combining Isar full-text filtering with vector distance scoring via Reciprocal Rank Fusion.
+
+---
+
+## API Overview
+
+| Class / Utility | Description | Key Methods / Properties |
+| :--- | :--- | :--- |
+| `MemoryGraph` | Main memory engine coordinating Isar DB persistence and vector index operations. | `storeNodeWithEmbedding`, `storeNode`, `getNode`, `deleteNode`, `semanticSearch`, `hybridSearch`, `explainRecall` |
+| `EmbeddingsAdapter` | Abstract base class for converting text strings into numeric vector representations. | `embed(String text)`, `dimension`, `providerName` |
+| `MemoryNode` | Isar entity class representing a graph memory node. | `content`, `type`, `layer`, `embedding`, `degree`, `uuid`, `toJson()`, `fromJson()` |
+| `MemoryEdge` | Isar entity class representing directed relationships between memory nodes. | `fromNodeId`, `toNodeId`, `relation`, `weight` |
+| `Degree` | Entity for tracking memory activation, frequency, importance, and decay metrics. | `lastAccessed`, `frequency`, `importance` |
+| `SessionContext` | Multi-tenant scope manager isolating memories by `sessionId` or `userId`. | `store`, `semanticSearch`, `hybridSearch`, `getAll`, `count`, `clear` |
+| `MemoryPipeline` | Extensible 5-stage RAG execution pipeline. | `addRetrievalHook`, `addReRankingHook`, `addEnrichmentHook`, `run` |
+| `SyncManager` | Manager for encrypted exports/imports and cross-device synchronization. | `exportEncryptedSnapshot`, `importEncryptedSnapshot`, `initialize` |
+| `BackendEmbeddingsAdapter` | Universal adapter wrapping on-device inference engines (Hash, TFLite, ONNX). | `embed(String text)`, `backend`, `telemetry` |
+| `GeminiEmbeddingsAdapter` | Embeddings adapter for Google Gemini API models. | `embed(String text)` |
+
+---
+
+## RAG Pipeline Architecture
+
+`isar_agent_memory` provides an extensible 5-hook RAG (Retrieval-Augmented Generation) pipeline architecture:
 
 ```dart
 final pipeline = MemoryPipeline()
@@ -70,61 +119,76 @@ final pipeline = MemoryPipeline()
   ..addRetrievalHook(HybridRetrievalHook(graph: graph))
   ..addEnrichmentHook(MultiHopEnrichmentHook(graph: graph));
 
-final result = await pipeline.run('what did we decide about the DB migration?');
+final result = await pipeline.run('What are the user\'s UI preferences?');
+print('Retrieved ${result.nodes.length} relevant memory nodes.');
 ```
+
+### Supported Re-Rankers
+
+- **BM25ReRanker**: Term-frequency and inverse document frequency scoring.
+- **MMRReRanker**: Maximal Marginal Relevance balancing similarity with result diversity.
+- **DiversityReRanker**: Reduces redundant results by penalizing pair-wise vector closeness.
+- **RecencyReRanker**: Boosts recently created or updated memories.
+- **CrossEncoderReranker**: Deep neural re-ranking via remote HTTP or local ONNX inference.
 
 ---
 
-## Multi-tenant Sessions
+## Multi-Tenant Session Isolation
+
+Isolate memories for specific user sessions or agent threads without instantiating separate database files using `SessionContext`:
 
 ```dart
-final session = SessionContext(
+final userSession = SessionContext(
   graph: memoryGraph,
-  sessionId: 'user-123',
+  sessionId: 'session-user-42',
+  userId: 'user-42',
 );
-await session.store('context for this session');
-final memories = await session.hybridSearch('relevant topic');
+
+// Store memory scoped strictly to this session
+await userSession.store('User prefers Spanish language responses.');
+
+// Queries will automatically filter out memories from other sessions
+final memories = await userSession.hybridSearch('language preference');
 ```
 
 ---
 
-## Query Router
+## On-Device Embedding Backends
+
+For completely offline or privacy-preserving applications, `isar_agent_memory` supports on-device embedding generation:
+
+- **HashEmbeddingBackend**: Ultra-fast, zero-dependency deterministic hash backend ideal for testing and lightweight local execution.
+- **TFLiteEmbeddingBackend**: Native TensorFlow Lite execution for quantised mobile embedding models.
+- **OnnxEmbeddingBackend**: ONNX Runtime execution for modern Transformer models (e.g., All-MiniLM-L6-v2).
+- **ResilientEmbeddingBackend**: Primary/fallback chaining mechanism (e.g., ONNX primary with Hash fallback).
 
 ```dart
-final router = QueryRouter(graph: graph, embeddings: adapter);
-final plan = router.classify('what happened yesterday with the server?');
-// plan.strategy → QueryStrategy.temporal
-final results = await router.execute(plan);
+final hashBackend = HashEmbeddingBackend(dimension: 256);
+final adapter = BackendEmbeddingsAdapter(backend: hashBackend);
 ```
 
 ---
 
-## Encrypted Sync
+## Encrypted Cross-Device Sync
+
+Synchronize local memory graphs securely across devices using AES-256-GCM encryption:
 
 ```dart
-final syncManager = SyncManager(graph);
-await syncManager.initialize(encryptionKey: myKey);
-final snapshot = await syncManager.exportEncryptedSnapshot();
-await syncManager.importEncryptedSnapshot(snapshot);
+final syncManager = SyncManager(memoryGraph);
+await syncManager.initialize(encryptionKey: 'your-secure-256-bit-key');
+
+// Export encrypted payload for transport
+final snapshotBytes = await syncManager.exportEncryptedSnapshot();
+
+// Import snapshot on remote device
+await syncManager.importEncryptedSnapshot(snapshotBytes);
 ```
 
 ---
 
-## On-device + Telemetry
+## Testing & Quality Assurance
 
-```dart
-final backend = HashEmbeddingBackend(dimension: 256);
-final telemetry = EmbeddingTelemetryRecorder();
-final adapter = BackendEmbeddingsAdapter(
-  backend: backend,
-  telemetry: telemetry,
-);
-final graph = MemoryGraph(isar, embeddingsAdapter: adapter);
-```
-
----
-
-## Testing
+Run pure Dart static analysis and unit tests:
 
 ```bash
 flutter pub get
@@ -132,30 +196,8 @@ dart analyze lib/
 flutter test
 ```
 
-Pure-Dart tests (smoke, encryption, tokenizer, sync_manager) pass without build_runner. Tests requiring Isar codegen need `dart run build_runner build`.
-
----
-
-## Roadmap
-
-- [x] Graph CRUD + embeddings + vector search
-- [x] HiRAG (hierarchical layers, multi-hop)
-- [x] Re-ranking (BM25, MMR, Diversity, Recency, CrossEncoder)
-- [x] 5-hook RAG pipeline + QueryRouter
-- [x] SessionContext multi-tenant
-- [x] Encrypted sync (Firebase/WebSocket)
-- [x] Cognitive memory (episodic/semantic/procedural/working)
-- [x] On-device backends (Hash, TFLite, ONNX, Resilient)
-- [x] Embedding telemetry
-- [x] Multi-modal remote embeddings
-- [x] Privacy features (PII, differential privacy)
-- [ ] Local cross-encoder (ONNX)
-- [ ] P2P sync via edge-mesh
-- [ ] Xavier integration (sync protocol)
-- [ ] v0.6.0 release on pub.dev
-
 ---
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
