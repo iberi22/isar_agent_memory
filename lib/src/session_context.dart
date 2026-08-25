@@ -21,6 +21,7 @@ library;
 import 'memory_graph.dart';
 import 'models/memory_node.dart';
 import 'models/memory_edge.dart';
+import 'package:isar/isar.dart';
 
 /// Scoped memory context for a single session or user.
 ///

@@ -1,5 +1,7 @@
 import 'memory_graph.dart';
 import 'models/memory_edge.dart';
+import 'models/memory_node.dart';
+import 'package:isar/isar.dart';
 
 /// Summary of a maintenance operation.
 class MemoryMaintenanceSummary {
@@ -59,7 +61,7 @@ class MemoryMaintenanceService {
 
     for (final node in allNodes) {
       if (type != null && node.type != type) continue;
-      if (node.createdAt.isBefore(cutoff)) {
+      if (node.createdAt != null && node.createdAt!.isBefore(cutoff)) {
         if (await graph.deleteNode(node.id)) removed++;
       }
     }
@@ -84,8 +86,9 @@ class MemoryMaintenanceService {
       return const MemoryMaintenanceSummary();
     }
 
-    // Sort oldest first
-    allNodes.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    // Sort oldest first (null createdAt treated as oldest)
+    allNodes.sort((a, b) => (a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+        .compareTo(b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
     final toRemove = allNodes.take(allNodes.length - maxEntries);
     int removed = 0;
 
