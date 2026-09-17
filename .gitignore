@@ -2,13 +2,11 @@
 .dart_tool/
 .packages
 build/
-
 # IDE-specific
 .idea/
 .vscode/
 *.iml
 *.ipr
-
 # Logs and databases
 *.log
 *.db
@@ -18,37 +16,29 @@ build/
 *.isar-lck
 # Local db directories (exampledb/, testdb/, etc.)
 *db/
-
 # Native Binaries
 *.dll
 *.so
 *.dylib
-
 # Test resources (models are downloaded on demand)
 test_resources/
-
 # Other
 .DS_Store
 .dart_tool/
 .dart_tool/package_graph.json
 .dart_tool/package_config.json
-
 # Env files (keep example tracked)
 .env
 .env.*
 !.env.example
-
 # Lockfiles (do not version in library packages)
 pubspec.lock
 isar_agent_memory_tests/pubspec.lock
-
 # Generated artifacts
 .flutter-plugins
 .flutter-plugins-dependencies
-
 # Protocol artifacts
 .git-core-protocol-version
-
 # Disabled workflows (GitCore: disabled by default)
 .github/workflows.disabled/
 
@@ -70,6 +60,7 @@ isar_agent_memory_tests/pubspec.lock
 .gitcore/chronicles/
 .gitcore/waves/
 .gitcore/sdd/
+.gitcore/releases/
 .gitcore/issues/
 .gitcore/features.details/
 .gitcore/CONTEXT_LOG.md
@@ -89,6 +80,7 @@ isar_agent_memory_tests/pubspec.lock
 .atl/
 .gestalt/
 .jules/
+.xavier/
 .xavier-backups/
 .skill-registry.cache.json
 
