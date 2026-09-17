@@ -51,3 +51,59 @@ isar_agent_memory_tests/pubspec.lock
 
 # Disabled workflows (GitCore: disabled by default)
 .github/workflows.disabled/
+
+# >>> GITCORE PUBLIC REPO HARDENING >>>
+# ─────────────────────────────────────────────────────────────────────────────
+# GitCore — fragmento para repos PÚBLICOS
+# Añadir al .gitignore del repo público. Bloquea el estado interno del
+# laboratorio que el protocolo GitCore crea en TODOS los repos.
+#
+# IMPORTANTE: ignorar un archivo ya trackeado NO lo despublica.
+# Para archivos ya commiteados hay que ejecutar:
+#   git rm -r --cached <ruta>
+#   git commit -m "chore: stop publishing internal lab state"
+# y, si ya se publicó, purgar el historial.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Planificación y estado de sesión (interno)
+.gitcore/planning/
+.gitcore/chronicles/
+.gitcore/waves/
+.gitcore/sdd/
+.gitcore/issues/
+.gitcore/features.details/
+.gitcore/CONTEXT_LOG.md
+.gitcore/STATE.md
+.gitcore/TODO.md
+.gitcore/features-status.md
+.gitcore/implementation-score.json
+.gitcore/AGENT_INDEX.md
+.gitcore/ARCHITECTURE.md
+.gitcore/SRC.md
+.gitcore/skill-registry.json
+.gitcore/.skill-registry.cache.json
+.gitcore/_tmp_*
+
+# Estado del harness y agentes
+.hermes/
+.atl/
+.gestalt/
+.jules/
+.xavier-backups/
+.skill-registry.cache.json
+
+# Planificación suelta en la raíz o en docs/
+PLANNING.md
+TASK.md
+tasks.json
+
+# Configuración local con rutas absolutas
+.mcp.json
+
+# Runtime y artefactos
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+*.profraw
+# <<< GITCORE PUBLIC REPO HARDENING <<<
