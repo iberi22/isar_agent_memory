@@ -23,7 +23,6 @@ import 'memory_graph.dart';
 import 'embeddings_adapter.dart';
 import 'pipeline_hooks.dart';
 import 'hierarchical_graph.dart';
-import 'models/memory_node.dart';
 
 // ---------------------------------------------------------------------------
 // Query classification

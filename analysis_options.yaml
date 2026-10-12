@@ -1,6 +1,8 @@
 include: package:lints/recommended.yaml
 
 analyzer:
+  errors:
+    experimental_member_use: ignore
   exclude:
     - isar_agent_memory_tests/**
 linter:
