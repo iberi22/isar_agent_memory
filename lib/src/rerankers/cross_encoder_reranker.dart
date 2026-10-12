@@ -8,7 +8,6 @@ import 'package:onnxruntime/onnxruntime.dart';
 import '../models/memory_node.dart';
 import '../reranking_strategy.dart';
 import '../utils/word_piece_tokenizer.dart';
-import 'bm25_reranker.dart' show BM25ReRanker;
 
 // =============================================================================
 // Exceptions
@@ -432,9 +431,12 @@ class LocalCrossEncoderAdapter implements CrossEncoderAdapter {
     final attentionMaskInt64 = Int64List.fromList(paddedAttentionMask);
     final tokenTypeIdsInt64 = Int64List.fromList(paddedTokenTypeIds);
 
-    final inputIdsOrt = OrtValueTensor.createTensorWithDataList(inputIdsInt64, shape);
-    final attentionMaskOrt = OrtValueTensor.createTensorWithDataList(attentionMaskInt64, shape);
-    final tokenTypeIdsOrt = OrtValueTensor.createTensorWithDataList(tokenTypeIdsInt64, shape);
+    final inputIdsOrt =
+        OrtValueTensor.createTensorWithDataList(inputIdsInt64, shape);
+    final attentionMaskOrt =
+        OrtValueTensor.createTensorWithDataList(attentionMaskInt64, shape);
+    final tokenTypeIdsOrt =
+        OrtValueTensor.createTensorWithDataList(tokenTypeIdsInt64, shape);
 
     final inputs = {
       'input_ids': inputIdsOrt,
@@ -481,7 +483,7 @@ class LocalCrossEncoderAdapter implements CrossEncoderAdapter {
                 if (item.length >= 2) {
                   logit = (item[1] as num).toDouble();
                 } else {
-                  logit = (subItem as num).toDouble();
+                  logit = subItem.toDouble();
                 }
               }
             }
@@ -492,7 +494,8 @@ class LocalCrossEncoderAdapter implements CrossEncoderAdapter {
           scores.add(_sigmoid(logit));
         }
       } else {
-        throw Exception('Unexpected ONNX output format: ${rawValue.runtimeType}');
+        throw Exception(
+            'Unexpected ONNX output format: ${rawValue.runtimeType}');
       }
 
       return scores;
