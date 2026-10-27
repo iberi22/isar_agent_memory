@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI
 
 on:
   push:
@@ -27,6 +27,12 @@ jobs:
 
       - name: Run static analysis
         run: dart analyze lib/
+
+      - name: Dry run publish (build check)
+        run: dart pub publish --dry-run
+
+      - name: Compile example
+        run: flutter build bundle --target=example/main.dart
 
       - name: Run pure-Dart tests
         run: |

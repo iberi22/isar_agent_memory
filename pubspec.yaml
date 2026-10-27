@@ -36,6 +36,7 @@ dependencies:
   # Add your embedding provider dependencies as needed (e.g., google_generative_ai, openai, etc.)
 
 dev_dependencies:
+  fake_async: ^1.3.3
   path: ^1.9.1
   flutter_lints: ^6.0.0
   lints: ^6.0.0
