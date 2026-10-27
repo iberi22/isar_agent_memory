@@ -1,5 +1,6 @@
 # isar_agent_memory
 
+[![CI](https://github.com/iberi22/isar_agent_memory/actions/workflows/ci.yml/badge.svg)](https://github.com/iberi22/isar_agent_memory/actions/workflows/ci.yml)
 [![pub package](https://img.shields.io/pub/v/isar_agent_memory.svg)](https://pub.dev/packages/isar_agent_memory)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Dart SDK](https://img.shields.io/badge/dart-%3E%3D3.2.0-0175C2.svg)](https://dart.dev)
@@ -7,6 +8,10 @@
 A universal, local-first semantic memory engine for Flutter/Dart apps. `isar_agent_memory` provides graph node persistence, vector embedding indexing, memory degree management, explainable retrieval, and an extensible 5-stage RAG pipeline — all powered by Isar database for high-performance offline storage.
 
 ---
+
+## Security
+
+For information on supported versions, vulnerability reporting, and response targets, please see our [Security Policy](SECURITY.md).
 
 ## Features
 

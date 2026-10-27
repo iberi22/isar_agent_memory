@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "pub"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
@@ -57,3 +57,9 @@ updates:
     labels:
       - "ci"
     open-pull-requests-limit: 5
+    groups:
+      actions-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
