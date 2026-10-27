@@ -31,6 +31,9 @@ jobs:
       - name: Dry run publish (build check)
         run: dart pub publish --dry-run
 
+      - name: Compile example
+        run: flutter build bundle --target=example/main.dart
+
       - name: Run pure-Dart tests
         run: |
           flutter test \
