@@ -28,6 +28,9 @@ jobs:
       - name: Run static analysis
         run: dart analyze lib/
 
+      - name: Dry run publish (build check)
+        run: dart pub publish --dry-run
+
       - name: Run pure-Dart tests
         run: |
           flutter test \

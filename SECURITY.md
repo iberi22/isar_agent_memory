@@ -23,6 +23,6 @@ To report a vulnerability, please use the GitHub Security Advisories feature:
 
 We take security seriously and will make a best effort to handle your report appropriately:
 - **Acknowledgement**: We aim to acknowledge receipt of your vulnerability report within 5 business days.
-- **Status Update**: We will provide a status update on the report within 14 days of acknowledgement.
+- **Status Update**: We will provide a status update on the report within 14 days of report receipt.
 - **Disclosure**: We practice coordinated disclosure. Please do not disclose vulnerabilities publicly until a fix has been released or we have given permission to do so.
 - **Bug Bounty**: At this time, we do not operate a bug bounty program and do not offer monetary rewards for vulnerability reports.
